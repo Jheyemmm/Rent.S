@@ -1,0 +1,129 @@
+/* Main container */
+.container {
+    display: flex;
+    align-items: center;
+    margin: auto;
+    margin-top: 130px;
+    background: #fff;
+    height: 60vh;
+    width: 53vw;
+    border-radius: 15px;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+    flex-direction: row;
+}
+
+/* Left section for logo */
+.logo {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #EAF7F0;
+    width: 45%;
+    height: 90%;
+    margin: 10px;
+    margin-left: 30px;
+    border-radius: 15px;
+}
+
+.logo img {
+    width: 80%;
+}
+
+/* Right section for form */
+.login-form {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: 45%;
+    margin-left: 20px;
+    margin-bottom: 20px;
+}
+
+/* Log In heading */
+.header h1 {
+    text-align: center;
+    font-size: 32px;
+    font-weight: bold;
+    margin-bottom: 20px; /* Increased spacing */
+}
+
+/* Inputs container */
+.inputs {
+    flex-direction: column;
+    justify-content: center;
+    width: 80%;
+    padding: 20px 50px;
+}
+
+/* Each input field */
+.input {
+    display: flex;
+    height: 70px;
+    flex-direction: column;
+    margin-bottom: 20px; /* Increased spacing */
+}
+
+/* Labels */
+.input label {
+    text-align: left;
+    font-size: 18px; /* Reduced size for better readability */
+    font-weight: bold;
+    margin-bottom: 8px; /* Increased spacing below labels */
+    color: #333;
+}
+
+/* Input fields */
+.input input {
+    padding: 12px;
+    font-size: 16px;
+    border: 1px solid #1FAC71;
+    border-radius: 10px;
+    outline: none;
+    width: 100%; /* Full width */
+    background-color: #F5F7FA;
+    height: 100px;
+}
+
+/* Forgot Password */
+.forgot-password {
+    text-align: left;
+    font-size: 14px;
+    margin-top: 10px;
+}
+
+.forgot-password span {
+    color: #0D865D;
+    cursor: pointer;
+    font-weight: 600;
+}
+
+/* Log In Button */
+.submit-container {
+    margin-top: 30px; /* More space before button */
+    text-align: center;
+    width: 108%;
+}
+
+.submit {
+    width: 100%;
+    padding: 14px; /* Increased padding */
+    background: #0D865D;
+    color: white;
+    font-size: 18px;
+    font-weight: bold;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+.submit:hover {
+    background: #096E4B;
+}
+
+/* Sign Up text */
+.signup {
+    text-align: center;
+    font-size: 14px;
+    margin-top: 12px;
+}
