@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import "./Login.css";
-import loginlogo from "../assets/icon/LoginLogo.png";
+import loginlogo from "../assets/icons/LoginLogo.png";
 
 const Login: React.FC = () => {
     const [username, setUsername] = useState<string>("");

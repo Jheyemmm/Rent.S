@@ -1,0 +1,118 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+.sidebar {
+    font-family: 'Poppins', sans-serif;
+    font-weight: 400;
+    letter-spacing: 0.5px; 
+    line-height: 1.6; 
+    position: fixed;
+    top: 0;
+    left: -250px;
+    width: 250px;
+    height: 100%;
+    background-color: #ffffff;
+    color: #A2A3A5;
+    transition: left 0.3s ease;
+    padding-top: 20px; 
+    box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+    z-index: 1000;
+    overflow-x: hidden;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    
+}
+
+.sidebar.open {
+    left: 0;
+}
+
+.sidebar-logo {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.sidebar-logo .logo {
+    width: 100%;
+    max-width: 220px; 
+    margin: 0 auto;
+}
+
+.sidebar ul {
+    padding: 0;
+    margin: 0;
+    width: 100%;
+}
+
+.sidebar li {
+    margin: 10px 0;
+    width: 100%;
+}
+
+.sidebar a, .menu-btn {
+    font-family: 'Poppins', sans-serif;
+    font-weight: 400;
+    letter-spacing: 0.5px; 
+    line-height: 1.6; 
+    color: #A2A3A5;
+    text-decoration: none;
+    font-size: 16px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    width: 100%;
+    text-align: left;
+    display: flex;
+    align-items: center;
+    padding: 10px;
+    border-radius: 5px;
+    outline: none;
+    box-sizing: border-box;
+    margin-bottom: 15px;
+}
+
+.sidebar a.active, .menu-btn.active {
+    color: green;
+    background-color: #E5F2F1;
+}
+
+.sidebar a:hover, .menu-btn:hover {
+    background-color: transparent;
+    color: inherit;
+}
+
+.menu-toggle {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    background: none;
+    border: none;
+    font-size: 24px;
+    cursor: pointer;
+    outline: none;
+}
+
+.submenu {
+    padding-left: 20px;
+}
+
+.submenu li {
+    margin: 5px 0;
+    margin-left: 30px;
+    display: flex;
+    align-items: center;
+    margin-bottom: -15px;
+    margin-top: -15px;
+}
+
+.submenu .icon {
+    margin-right: 10px;
+    width: 20px;
+    height: 20px;
+}
+
+.icon {
+    margin-right: 10px;
+    margin-left: 10px;
+    width: 24px; 
+    height: 24px; 
+}
