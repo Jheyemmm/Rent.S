@@ -13,7 +13,7 @@ import paymentsIcon from '../assets/icons/payments.png';
 import coloredPaymentsIcon from '../assets/icons/colored_payments.png';
 import settingsIcon from '../assets/icons/Settings.png';
 import coloredSettingsIcon from '../assets/icons/colored_settings.png';
-
+import logoutIcon from '../assets/icons/logout.png';
 // Logo
 import logo from '../assets/icons/Logo.png';
 
@@ -137,6 +137,13 @@ const MenuComponent = forwardRef<HTMLDivElement, MenuComponentProps>(({ isOpen, 
                             <img src={settingsActive ? coloredSettingsIcon : settingsIcon} className="icon" alt="Settings" />
                             Settings
                         </Link>
+                    </li>
+                    <li>
+                    <Link to="/" className="link-logout" onClick={() => setIsOpen(false)}>
+                        <img src={logoutIcon} className="icon-logout" alt="Logout" />
+                        Logout
+                    </Link>
+
                     </li>
                 </ul>
             </div>
