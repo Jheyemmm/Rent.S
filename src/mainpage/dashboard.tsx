@@ -1,33 +1,40 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import MenuComponent from '../components/frontdesk_menu'; // Adjust the path as needed
+import Header from '../components/header'; // Adjust the path as needed
+import './dashboard.css'; // Import the CSS file for styling
 
 const Dashboard: React.FC = () => {
-    const [sidebarOpen, setSidebarOpen] = useState(false);
+    const [isOpen, setIsOpen] = useState(false);
     const sidebarRef = useRef<HTMLDivElement>(null);
 
-    const handleOutsideClick = (event: MouseEvent) => {
-        if (sidebarRef.current && !sidebarRef.current.contains(event.target as Node)) {
-            setSidebarOpen(false);
-        }
-    };
-
+    // Handle clicks outside the sidebar to close it
     useEffect(() => {
-        document.addEventListener('click', handleOutsideClick);
+        const handleOutsideClick = (event: MouseEvent) => {
+            if (sidebarRef.current && !sidebarRef.current.contains(event.target as Node)) {
+                setIsOpen(false);
+            }
+        };
+
+        document.addEventListener('mousedown', handleOutsideClick);
         return () => {
-            document.removeEventListener('click', handleOutsideClick);
+            document.removeEventListener('mousedown', handleOutsideClick);
         };
     }, []);
 
+    useEffect(() => {
+        console.log('Dashboard mounted');
+    }, []);
+
     return (
-        <div>
-            <div className="header">
-                <div className="header-container">
-                    
-                    <h1>Dashboard</h1>
-                </div>
+        <div className="dashboard-container">
+            <Header />
+            <div className="dashboard-content">
+                {/* Attach ref to MenuComponent */}
+                <MenuComponent ref={sidebarRef} isOpen={isOpen} setIsOpen={setIsOpen} />
+                <main className="dashboard-main">
+                    <p>Dashboard</p>
+                </main>
             </div>
-            <MenuComponent ref={sidebarRef} isOpen={sidebarOpen} setIsOpen={setSidebarOpen} />
-            {/* Other Dashboard content */}
         </div>
     );
 };
