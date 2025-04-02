@@ -3,7 +3,7 @@
   import Login from "./pages/Login";
   import Register from "./pages/Register";
   import Addtenant from "./pages/main/Addtenant";
- 
+  import Viewtenant from "./pages/main/Viewtenant";
 
   const App: React.FC = () => {
     return (
@@ -12,6 +12,7 @@
           <Route path="/" element={<Login />} />
           <Route path="/register" element={<Register />} />
           <Route path="/addtenant" element={<Addtenant />} /> 
+          <Route path="/viewtenant" element={<Viewtenant />}/>
         </Routes>
       </Router>
       
