@@ -1,0 +1,130 @@
+/* Addtenant.css */
+body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    margin: 0;
+    background: #F7FAFF;
+    font-family: Arial, sans-serif;
+  }
+  
+  .form-container {
+    width: 500px;
+    background: white;
+    padding: 30px;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+  }
+  
+  h1 {
+    text-align: center;
+    margin: 0 0 25px 0;
+    font-size: 22px;
+    color: #333;
+  }
+  
+  h2 {
+    margin: 0 0 15px 0;
+    font-size: 16px;
+    color: #444;
+    font-weight: 500;
+  }
+  
+  .divider {
+    height: 1px;
+    background: #eee;
+    margin: 20px 0;
+  }
+  
+  .form-row {
+    display: flex;
+    gap: 70px;
+    margin-bottom: 20px;
+  }
+  
+  .form-group {
+    flex: 1;
+    max-width: 200px; /* Add this to limit width */
+  }
+  
+  .form-group label {
+    display: block;
+    margin-bottom: 8px;
+    font-size: 14px;
+    color: #555;
+  }
+  
+  .form-group input {
+     /* Current styles */
+  height: 18px; /* Increased from default */
+  padding: 12px 15px; /* More internal space */
+  font-size: 12px; /* Slightly larger text */ 
+  
+  
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 14px;
+  }
+  
+  .form-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 15px;
+    margin-top: 20px;
+  }
+  
+  .clear-btn, .submit-btn {
+    padding: 10px 25px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+  }
+  
+  /* Addtenant.css */
+/* Previous styles remain the same until buttons */
+.submit-btn{
+    background: #4CBD8D;
+    color: white;
+    border: 1px solid #4CBD8D; /* Added border */
+    transition: all 0.3s;
+}
+.submit-btn:hover{
+    border-color: #00ff95;
+    background: #96f3cc;
+}
+.clear-btn {
+    background: white;
+    color: #4CBD8D;
+    border: 1px solid #4CBD8D; /* Added border */
+    transition: all 0.3s;
+  }
+  
+  .clear-btn:hover {
+    border-color: #4CBD8D;
+    background: #96f3cc;
+  }
+  
+  /* Text field styling */
+  .form-group input {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #E5F2F1; /* Green border */
+    border-radius: 4px;
+    font-size: 14px;
+    background-color: #E5F2F1; /* Light green background */
+    transition: all 0.3s;
+  }
+
+  .form-group input:focus {
+    outline: none;
+    border-color: #4CBD8D; /* Darker green when focused */
+    box-shadow: 0 0 0 2px rgba(76, 175, 80, 0.2); /* Green glow */
+  }
+  
+  input::placeholder {
+    color: #4CBD8D; 
+  }

@@ -3,7 +3,7 @@
   import Login from "./pages/Login";
   import Register from "./pages/Register";
   import Addtenant from "./pages/main/Addtenant";
-
+ 
 
   const App: React.FC = () => {
     return (
