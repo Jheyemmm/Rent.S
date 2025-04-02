@@ -106,7 +106,7 @@
 }
 
 .submit {
-    width: 100%;
+    width: 110%;
     padding: 14px; /* Increased padding */
     background: #0D865D;
     color: white;
@@ -115,6 +115,7 @@
     border: none;
     border-radius: 8px;
     cursor: pointer;
+    margin-top: 10px;
 }
 
 .submit:hover {
