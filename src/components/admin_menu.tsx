@@ -1,4 +1,4 @@
-import React, { useState, forwardRef } from 'react';
+import React, { forwardRef } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import './frontdesk_menu.css';
 
@@ -12,27 +12,16 @@ import paymentsIcon from '../assets/icons/payments.png';
 import coloredPaymentsIcon from '../assets/icons/colored_payments.png';
 import settingsIcon from '../assets/icons/Settings.png';
 import coloredSettingsIcon from '../assets/icons/colored_settings.png';
-import logo from '../assets/icons/Logo.png';
 import logoutIcon from '../assets/icons/logout.png';
+import logo from '../assets/icons/Logo.png';
+
 interface MenuComponentProps {
     isOpen: boolean;
     setIsOpen: (open: boolean) => void;
 }
 
 const MenuComponent = forwardRef<HTMLDivElement, MenuComponentProps>(({ isOpen, setIsOpen }, ref) => {
-    const [tenantOpen, setTenantOpen] = useState(false);
-    const [paymentsOpen, setPaymentsOpen] = useState(false);
-    const [unitsOpen, setUnitsOpen] = useState(false);
     const location = useLocation();
-
-    React.useEffect(() => {
-        setIsOpen(false);
-    }, [location.pathname, setIsOpen]);
-
-    const toggleSidebar = (e: React.MouseEvent<HTMLButtonElement>) => {
-        e.stopPropagation();
-        setIsOpen(!isOpen);
-    };
     const dashboardActive = location.pathname === "/dashboard";
     const tenantActive = location.pathname === "/add-tenant" || location.pathname === "/view-tenants";
     const unitsActive = location.pathname === "/add-units" || location.pathname === "/units";
@@ -41,12 +30,7 @@ const MenuComponent = forwardRef<HTMLDivElement, MenuComponentProps>(({ isOpen, 
 
     return (
         <div>
-            <button className="menu-toggle" onClick={toggleSidebar}>
-                &#9776;
-            </button>
-
-            <div ref={ref} className={`sidebar ${isOpen ? 'open' : ''}`} onClick={(e) => e.stopPropagation()}>
-                
+            <div ref={ref} className="sidebar open">
                 <div className="logo-container">
                     <img src={logo} alt="Logo" />
                 </div>
@@ -60,72 +44,24 @@ const MenuComponent = forwardRef<HTMLDivElement, MenuComponentProps>(({ isOpen, 
                     </li>
 
                     <li>
-                        <button className={`menu-btn ${tenantActive ? "active" : ""}`} onClick={(e) => { e.stopPropagation(); setTenantOpen(!tenantOpen); }}>
+                        <Link to="/add-tenant" className={tenantActive ? "active" : ""}>
                             <img src={tenantActive ? coloredTenantsIcon : tenantsIcon} className="icon" alt="Tenant" />
                             Tenant
-                        </button>
-                        {tenantOpen && (
-                            <ul className="submenu">
-                                <li>
-                                    <Link to="/add-tenant" className={location.pathname === "/add-tenant" ? "active" : ""}>
-                                        <img src={tenantsIcon} className="icon" alt="Add Tenant" />
-                                        Add Tenant
-                                    </Link>
-                                </li>
-                                <li>
-                                    <Link to="/view-tenants" className={location.pathname === "/view-tenants" ? "active" : ""}>
-                                        <img src={tenantsIcon} className="icon" alt="View Tenants" />
-                                        View Tenants
-                                    </Link>
-                                </li>
-                            </ul>
-                        )}
+                        </Link>
                     </li>
 
                     <li>
-                        <button className={`menu-btn ${unitsActive ? "active" : ""}`} onClick={(e) => { e.stopPropagation(); setUnitsOpen(!unitsOpen); }}>
+                        <Link to="/units" className={unitsActive ? "active" : ""}>
                             <img src={unitsActive ? coloredUnitsIcon : unitsIcon} className="icon" alt="Units" />
                             Units
-                        </button>
-                        {unitsOpen && (
-                            <ul className="submenu">
-                                <li>
-                                    <Link to="/add-units" className={location.pathname === "/add-units" ? "active" : ""}>
-                                        <img src={unitsIcon} className="icon" alt="Add Units" />
-                                        Add Units
-                                    </Link>
-                                </li>
-                                <li>
-                                    <Link to="/units" className={location.pathname === "/units" ? "active" : ""}>
-                                        <img src={unitsIcon} className="icon" alt="View Units" />
-                                        View Units
-                                    </Link>
-                                </li>
-                            </ul>
-                        )}
+                        </Link>
                     </li>
 
                     <li>
-                        <button className={`menu-btn ${paymentsActive ? "active" : ""}`} onClick={(e) => { e.stopPropagation(); setPaymentsOpen(!paymentsOpen); }}>
+                        <Link to="/add-payment" className={paymentsActive ? "active" : ""}>
                             <img src={paymentsActive ? coloredPaymentsIcon : paymentsIcon} className="icon" alt="Payments" />
                             Payments
-                        </button>
-                        {paymentsOpen && (
-                            <ul className="submenu">
-                                <li>
-                                    <Link to="/add-payment" className={location.pathname === "/add-payment" ? "active" : ""}>
-                                        <img src={paymentsIcon} className="icon" alt="Add Payment" />
-                                        Add Payment
-                                    </Link>
-                                </li>
-                                <li>
-                                    <Link to="/view-payments" className={location.pathname === "/view-payments" ? "active" : ""}>
-                                        <img src={paymentsIcon} className="icon" alt="View Payments" />
-                                        View Payments
-                                    </Link>
-                                </li>
-                            </ul>
-                        )}
+                        </Link>
                     </li>
 
                     <li>
@@ -134,11 +70,12 @@ const MenuComponent = forwardRef<HTMLDivElement, MenuComponentProps>(({ isOpen, 
                             Settings
                         </Link>
                     </li>
+
                     <li>
-                    <Link to="/" className="link-logout" onClick={() => setIsOpen(false)}>
-                        <img src={logoutIcon} className="icon-logout" alt="Logout" />
-                        Logout
-                    </Link>
+                        <Link to="/" className="link-logout" onClick={() => setIsOpen(false)}>
+                            <img src={logoutIcon} className="icon-logout" alt="Logout" />
+                            Logout
+                        </Link>
                     </li>
                 </ul>
             </div>

@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import Dashboard from "./mainpage/dashboard";
+import Units from "./mainpage/units";
 const App: React.FC = () => {
   return (
     <Router>
@@ -11,6 +12,7 @@ const App: React.FC = () => {
         <Route path="/register" element={<Register />} />
         
         <Route path="/dashboard" element={<Dashboard/>} />
+        <Route path="/units" element={<Units/>} />
       </Routes>
     </Router>
     

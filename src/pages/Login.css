@@ -1,130 +1,146 @@
-/* Main container */
-.container {
-    display: flex;
-    align-items: center;
-    margin: auto;
-    margin-top: 130px;
-    background: #fff;
-    height: 60vh;
-    width: 53vw;
-    border-radius: 15px;
-    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
-    flex-direction: row;
+/* Reset some defaults */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
 }
 
-/* Left section for logo */
+body, html {
+  width: 100%;
+  height: 100%;
+  font-family: Arial, sans-serif;
+}
+
+/* Full screen container split in two */
+.container {
+  display: flex;
+  width: 100vw;
+  height: 100vh;
+}
+
+/* Left Section: Logo */
 .logo {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: #EAF7F0;
-    width: 45%;
-    height: 90%;
-    margin: 10px;
-    margin-left: 30px;
-    border-radius: 15px;
+  flex: 1;
+  background: #EAF7F0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .logo img {
-    width: 80%;
+  width: 80%;
+  max-width: 400px;
 }
 
-/* Right section for form */
+/* Right Section: Login Form */
 .login-form {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    width: 45%;
-    margin-left: 20px;
-    margin-bottom: 20px;
+  flex: 1;
+  background: #EAF7F0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Inner container for the form with reduced width */
+.inner-login {
+  width: 100%;
+  background: #fff;
+  max-width: 350px;
+  padding: 20px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
 }
 
 /* Log In heading */
-.header h1 {
-    text-align: center;
-    font-size: 32px;
-    font-weight: bold;
-    margin-bottom: 20px; /* Increased spacing */
+.inner-login h1 {
+  text-align: center;
+  font-size: 28px;
+  font-weight: bold;
+  margin-bottom: 20px;
 }
 
-/* Inputs container */
-.inputs {
-    flex-direction: column;
-    justify-content: center;
-    width: 80%;
-    padding: 20px 50px;
-}
-
-/* Each input field */
+/* Input container */
 .input {
-    display: flex;
-    height: 70px;
-    flex-direction: column;
-    margin-bottom: 20px; /* Increased spacing */
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 16px;
 }
 
-/* Labels */
 .input label {
-    text-align: left;
-    font-size: 18px; /* Reduced size for better readability */
-    font-weight: bold;
-    margin-bottom: 8px; /* Increased spacing below labels */
-    color: #333;
+  font-size: 14px;
+  font-weight: bold;
+  margin-bottom: 6px;
+  color: #333;
 }
 
-/* Input fields */
 .input input {
-    padding: 12px;
-    font-size: 16px;
-    border: 1px solid #1FAC71;
-    border-radius: 10px;
-    outline: none;
-    width: 100%; /* Full width */
-    background-color: #F5F7FA;
-    height: 100px;
+  padding: 10px;
+  font-size: 14px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  background-color: #F5F7FA;
+  outline: none;
 }
 
-/* Forgot Password */
+.input input:focus {
+  border-color: #999;
+}
+
+/* Error message */
+.error {
+  text-align: center;
+  color: red;
+  margin-bottom: 10px;
+}
+
+/* Forgot Password text */
 .forgot-password {
-    text-align: left;
-    font-size: 14px;
-    margin-top: 10px;
+  text-align: left;
+  font-size: 12px;
+  margin-bottom: 16px;
+  color: #000;
+  cursor: pointer;
+  text-decoration: none;
+  transition: text-decoration 0.3s ease;
 }
 
-.forgot-password span {
-    color: #0D865D;
-    cursor: pointer;
-    font-weight: 600;
+.forgot-password:hover {
+  text-decoration: underline;
 }
 
 /* Log In Button */
-.submit-container {
-    margin-top: 30px; /* More space before button */
-    text-align: center;
-    width: 108%;
-}
-
 .submit {
-    width: 110%;
-    padding: 14px; /* Increased padding */
-    background: #0D865D;
-    color: white;
-    font-size: 18px;
-    font-weight: bold;
-    border: none;
-    border-radius: 8px;
-    cursor: pointer;
-    margin-top: 10px;
+  width: 100%;
+  padding: 12px;
+  background: #0D865D;
+  color: white;
+  font-size: 16px;
+  font-weight: bold;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background 0.3s ease;
+  margin-bottom: 16px;
 }
 
 .submit:hover {
-    background: #096E4B;
+  background: #096E4B;
 }
 
 /* Sign Up text */
 .signup {
-    text-align: center;
-    font-size: 14px;
-    margin-top: 12px;
+  text-align: center;
+  font-size: 12px;
+  color: #000;
+  cursor: pointer;
+}
+
+.signup span {
+  text-decoration: none;
+  transition: text-decoration 0.3s ease;
+}
+
+.signup span:hover {
+  text-decoration: underline;
 }
