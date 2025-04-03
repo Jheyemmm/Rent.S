@@ -1,9 +1,8 @@
-@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
 .sidebar {
     font-family: 'Poppins', sans-serif;
     font-weight: 400;
-    letter-spacing: 0.5px; 
-    line-height: 1.6; 
+    letter-spacing: 0.5px;
+    line-height: 1.6;
     position: fixed;
     top: 0;
     left: -250px;
@@ -12,14 +11,13 @@
     background-color: #ffffff;
     color: #A2A3A5;
     transition: left 0.3s ease;
-    padding-top: 20px; 
+    padding-top: 20px;
     box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
     z-index: 1000;
     overflow-x: hidden;
     display: flex;
     flex-direction: column;
     align-items: center;
-    
 }
 
 .sidebar.open {
@@ -33,7 +31,7 @@
 
 .sidebar-logo .logo {
     width: 100%;
-    max-width: 220px; 
+    max-width: 220px;
     margin: 0 auto;
 }
 
@@ -41,43 +39,91 @@
     padding: 0;
     margin: 0;
     width: 100%;
+    list-style: none;
+    flex-grow: 1;
 }
 
 .sidebar li {
-    margin: 10px 0;
+    margin: 5px 0;
     width: 100%;
+    display: flex;
+    justify-content: center;
 }
 
-.sidebar a, .menu-btn {
+.sidebar a,
+.menu-btn {
+    width: 90%;
     font-family: 'Poppins', sans-serif;
     font-weight: 400;
-    letter-spacing: 0.5px; 
-    line-height: 1.6; 
+    letter-spacing: 0.5px;
+    line-height: 1.6;
     color: #A2A3A5;
     text-decoration: none;
     font-size: 16px;
     background: none;
     border: none;
     cursor: pointer;
-    width: 100%;
     text-align: left;
     display: flex;
     align-items: center;
-    padding: 10px;
+    padding: 12px 15px;
     border-radius: 5px;
     outline: none;
     box-sizing: border-box;
-    margin-bottom: 15px;
+    margin-bottom: 10px;
+    transition: background-color 0.2s ease, width 0.2s ease;
 }
 
-.sidebar a.active, .menu-btn.active {
+.sidebar a.active,
+.menu-btn.active {
+    width: 90%;
     color: green;
     background-color: #E5F2F1;
 }
 
-.sidebar a:hover, .menu-btn:hover {
-    background-color: transparent;
-    color: inherit;
+.sidebar a:hover,
+.menu-btn:hover {
+    width: 90%;
+    background-color: #f0f0f0;
+    color: #000;
+}
+
+.icon {
+    margin-right: 10px;
+    width: 24px;
+    height: 24px;
+}
+
+.sidebar .logout-container {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    margin-top: auto;
+    padding: 0 15px 20px;
+    box-sizing: border-box;
+}
+
+.sidebar .link-logout {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+    padding: 12px 80%;
+    background: none;
+    margin-right: 45%;
+    margin-top: 100%;
+}
+
+.sidebar .link-logout:hover {
+    width: 90%;
+    background-color: #f0f0f0;
+    color: #000;
+}
+
+.sidebar .icon-logout {
+    width: 24px;
+    height: 24px;
+    margin-right: 12px;
 }
 
 .menu-toggle {
@@ -89,43 +135,4 @@
     font-size: 24px;
     cursor: pointer;
     outline: none;
-}
-
-.submenu {
-    padding-left: 20px;
-}
-
-.submenu li {
-    margin: 5px 0;
-    margin-left: 30px;
-    display: flex;
-    align-items: center;
-    margin-bottom: -15px;
-    margin-top: -15px;
-}
-
-.submenu .icon {
-    margin-right: 10px;
-    width: 20px;
-    height: 20px;
-}
-
-.icon {
-    margin-right: 10px;
-    margin-left: 10px;
-    width: 24px; 
-    height: 24px; 
-}
-.icon-logout {
-    width: 24px; 
-    height: 24px;
-    margin-right: 8px; 
-}
-
-.link-logout {
-    display: flex;
-    align-items: center;
-    margin-top: 280px;
-    text-decoration: none; 
-    color: inherit;
 }

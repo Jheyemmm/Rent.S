@@ -1,6 +1,6 @@
 import * as React from 'react';
-import MenuComponent from '../components/frontdesk_menu'; // Adjust the path as needed
-import './header.css'; // Make sure to import the CSS file
+import MenuComponent from '../components/frontdesk_menu';
+import './header.css';
 import notification from '../assets/icons/bell.png';
 import user from '../assets/icons/User.png';
 
