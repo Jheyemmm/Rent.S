@@ -70,6 +70,12 @@ const MenuComponent = forwardRef<HTMLDivElement, MenuComponentProps>(({ isOpen, 
                             Settings
                         </Link>
                     </li>
+                    <li>
+                        <Link to="/accountlists" className={settingsActive ? "active" : ""}>
+                            <img src={settingsActive ? coloredSettingsIcon : settingsIcon} className="icon" alt="Account-Settings" />
+                            Account Settings
+                        </Link>
+                    </li>
 
                     <li>
                         <Link to="/" className="link-logout" onClick={() => setIsOpen(false)}>

@@ -1,0 +1,97 @@
+/* Overlay background to dim the rest of the screen */
+.overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 50;
+  }
+  
+  /* White container (form box) */
+  .add-unit-container {
+    background-color: white;
+    padding: 2rem;
+    border-radius: 0.5rem;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    width: 100%;
+    max-width: 400px;
+  }
+  
+  /* Form Title */
+  .form-title {
+    font-size: 1.5rem;
+    font-weight: bold;
+    text-align: center;
+    margin-bottom: 1.5rem;
+  }
+  
+  /* Group for form fields */
+  .form-group {
+    margin-bottom: 1rem;
+  }
+  
+  /* Labels for form fields */
+  .form-label {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: #4A4A4A;
+  }
+  
+  /* Input and textarea styles */
+  .form-input {
+    width: 100%;
+    padding: 0.75rem;
+    margin-top: 0.5rem;
+    border: 1px solid #d1d5db;
+    border-radius: 0.375rem;
+    outline: none;
+    transition: all 0.3s ease;
+  }
+  
+  .form-input:focus {
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.5);
+  }
+  
+  /* Actions (Cancel and Submit buttons) */
+  .form-actions {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 1rem;
+  }
+  
+  /* Cancel button */
+  .cancel-btn {
+    padding: 0.5rem 1.25rem;
+    background-color: #e5e7eb;
+    color: #4B5563;
+    border-radius: 0.375rem;
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+  
+  .cancel-btn:hover {
+    background-color: #d1d5db;
+  }
+  
+  /* Submit button */
+  .submit-btn {
+    padding: 0.5rem 1.25rem;
+    background-color: #10B981;
+    color: white;
+    border-radius: 0.375rem;
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+  
+  .submit-btn:hover {
+    background-color: #059669;
+  }
+  
