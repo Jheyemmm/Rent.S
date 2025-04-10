@@ -63,6 +63,7 @@ const MenuComponent = forwardRef<HTMLDivElement, MenuComponentProps>(({ isOpen, 
                             Payments
                         </Link>
                     </li>
+                    
 
                     <li>
                         <Link to="/settings" className={settingsActive ? "active" : ""}>
@@ -70,6 +71,7 @@ const MenuComponent = forwardRef<HTMLDivElement, MenuComponentProps>(({ isOpen, 
                             Settings
                         </Link>
                     </li>
+                    
 
                     <li>
                         <Link to="/" className="link-logout" onClick={() => setIsOpen(false)}>

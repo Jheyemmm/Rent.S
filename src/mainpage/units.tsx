@@ -1,6 +1,6 @@
 import React, { useState, ChangeEvent } from 'react';
-import Header from '../components/header';
-import FrontdeskMenu from '../components/frontdesk_menu';
+import Header from '../components/admin_header';
+import AdminMenu from '../components/admin_menu';
 import './units.css';
 import AddUnitButtonIcon from '../assets/icons/add-unit-button.png';
 import AddUnit from '../components/add-unit';  // Import the AddUnit component
@@ -26,7 +26,7 @@ const mockUnits: Unit[] = [
 
 const Units: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
-  const [units, setUnits] = useState<Unit[]>(mockUnits);
+  const [units] = useState<Unit[]>(mockUnits);
   const [search, setSearch] = useState('');
   const [isDropdownOpen, setIsDropdownOpen] = useState<number | null>(null);
   const [isAddUnitFormVisible, setIsAddUnitFormVisible] = useState(false); // Manage the visibility of AddUnit form
@@ -78,7 +78,7 @@ const Units: React.FC = () => {
       <Header />
 
       <div className="main-content-container">
-        <FrontdeskMenu isOpen={isOpen} setIsOpen={setIsOpen} />
+        <AdminMenu isOpen={isOpen} setIsOpen={setIsOpen} />
 
         <div className="content-wrapper">
           <div className="white-container">

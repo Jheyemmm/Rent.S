@@ -1,6 +1,6 @@
 import React, { forwardRef } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import './frontdesk_menu.css';
+import './admin_menu.css';
 
 import dashboardIcon from '../assets/icons/dashboard.png';
 import coloredDashboardIcon from '../assets/icons/colored_dashboard.png';
@@ -11,6 +11,8 @@ import coloredUnitsIcon from '../assets/icons/colored_units.png';
 import paymentsIcon from '../assets/icons/payments.png';
 import coloredPaymentsIcon from '../assets/icons/colored_payments.png';
 import settingsIcon from '../assets/icons/Settings.png';
+import AccountsettingsIcon from '../assets/icons/Account.png';
+import coloredAccountsettingsIcon from '../assets/icons/coloredAccount.png';
 import coloredSettingsIcon from '../assets/icons/colored_settings.png';
 import logoutIcon from '../assets/icons/logout.png';
 import logo from '../assets/icons/Logo.png';
@@ -27,6 +29,7 @@ const MenuComponent = forwardRef<HTMLDivElement, MenuComponentProps>(({ isOpen, 
     const unitsActive = location.pathname === "/add-units" || location.pathname === "/units";
     const paymentsActive = location.pathname === "/add-payment" || location.pathname === "/view-payments";
     const settingsActive = location.pathname === "/settings";
+    const AccountsettingsActive = location.pathname === "/account-settings";
 
     return (
         <div>
@@ -63,6 +66,7 @@ const MenuComponent = forwardRef<HTMLDivElement, MenuComponentProps>(({ isOpen, 
                             Payments
                         </Link>
                     </li>
+                    
 
                     <li>
                         <Link to="/settings" className={settingsActive ? "active" : ""}>
@@ -71,11 +75,12 @@ const MenuComponent = forwardRef<HTMLDivElement, MenuComponentProps>(({ isOpen, 
                         </Link>
                     </li>
                     <li>
-                        <Link to="/accountlists" className={settingsActive ? "active" : ""}>
-                            <img src={settingsActive ? coloredSettingsIcon : settingsIcon} className="icon" alt="Account-Settings" />
+                        <Link to="/account-settings" className={AccountsettingsActive ? "active" : ""}>
+                            <img src={AccountsettingsActive ? coloredAccountsettingsIcon : AccountsettingsIcon} className="icon" alt="Settings" />
                             Account Settings
                         </Link>
                     </li>
+                    
 
                     <li>
                         <Link to="/" className="link-logout" onClick={() => setIsOpen(false)}>

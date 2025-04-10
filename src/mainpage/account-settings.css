@@ -1,0 +1,76 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+
+* {
+  font-family: 'Poppins', sans-serif;
+}
+
+h1 {
+  font-size: 2rem;
+  margin-bottom: 1rem;
+  font-weight:bold;
+}
+h3 {
+  font-size: 1.5rem;
+  margin-bottom: 1rem;
+  font-weight: normal;
+  margin-left: 10px;
+}
+.user-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 2rem;
+  }
+  
+  .user-table th{
+    color: #333;
+    padding: 12px;
+    text-align: left;
+    font-weight: bold;
+  }
+  .user-table td {
+    text-align: left;
+    padding: 12px;
+    border-bottom: 1px solid #ddd;
+  }
+  
+  .dropdown-cell {
+    position: relative;
+    width: 50px;
+  }
+  
+  .dots-button {
+    cursor: pointer;
+    font-size: 20px;
+    text-align: center;
+    padding: 5px;
+  }
+  
+  .dropdown-menu {
+    position: absolute;
+    top: 30px;
+    right: 0;
+    background-color: white;
+    border: 1px solid #ddd;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    border-radius: 6px;
+    padding: 0.5rem;
+    display: none;
+    flex-direction: column;
+    width: 100px;
+    z-index: 5;
+  }
+  
+  .dropdown-menu.open {
+    display: flex;
+  }
+  
+  .dropdown-option {
+    cursor: pointer;
+    padding: 0.5rem;
+    transition: background 0.2s ease;
+  }
+  
+  .dropdown-option:hover {
+    background-color: #f0f0f0;
+  }
+  
