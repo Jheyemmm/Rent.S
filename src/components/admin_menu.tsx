@@ -45,6 +45,12 @@ const MenuComponent = forwardRef<HTMLDivElement, MenuComponentProps>(({ isOpen, 
                             Dashboard
                         </Link>
                     </li>
+                    <li>
+                        <Link to="/units" className={unitsActive ? "active" : ""}>
+                            <img src={unitsActive ? coloredUnitsIcon : unitsIcon} className="icon" alt="Units" />
+                            Units
+                        </Link>
+                    </li>
 
                     <li>
                         <Link to="/add-tenant" className={tenantActive ? "active" : ""}>
@@ -53,12 +59,6 @@ const MenuComponent = forwardRef<HTMLDivElement, MenuComponentProps>(({ isOpen, 
                         </Link>
                     </li>
 
-                    <li>
-                        <Link to="/units" className={unitsActive ? "active" : ""}>
-                            <img src={unitsActive ? coloredUnitsIcon : unitsIcon} className="icon" alt="Units" />
-                            Units
-                        </Link>
-                    </li>
 
                     <li>
                         <Link to="/add-payment" className={paymentsActive ? "active" : ""}>
