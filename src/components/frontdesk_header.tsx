@@ -1,5 +1,5 @@
 import * as React from 'react';
-import MenuComponent from './admin_menu';
+import MenuComponent from './frontdesk_menu';
 import './header.css';
 import notification from '../assets/icons/bell.png';
 import user from '../assets/icons/User.png';

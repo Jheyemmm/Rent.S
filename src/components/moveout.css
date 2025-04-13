@@ -1,0 +1,108 @@
+/* Moveout Modal Specific Styles */
+.moveout-modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+  }
+  
+  .moveout-modal-container {
+    background-color: white;
+    padding: 30px 40px;
+    border-radius: 20px;
+    width: 700px;
+    height: 500px;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .moveout-modal-container h2 {
+    margin-top: 0;
+    color: #333;
+    font-size: 1.6rem;
+    text-align: center;
+    margin-bottom: 30px;
+  }
+  
+  .moveout-form-row {
+    display: flex;
+    margin-bottom: 20px;
+    gap: 20px;
+  }
+  
+  .moveout-form-group {
+    flex: 1;
+  }
+  
+  .moveout-form-group label {
+    display: block;
+    margin-bottom: 6px;
+    font-weight: 600;
+    color: #333;
+    font-size: 0.95rem;
+  }
+  
+  .moveout-form-group input {
+    width: 100%;
+    padding: 12px 14px;
+    border: none;
+    background-color: #eaf4f4;
+    border-radius: 10px;
+    font-size: 1rem;
+    color: #333;
+  }
+  
+  .moveout-form-group input:disabled {
+    background-color: #eaf4f4;
+    color: #666;
+  }
+  
+  .moveout-modal-actions {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    margin-top: auto;
+    padding-top: 20px;
+    width: 100%;
+  }
+  
+  .moveout-modal-cancel-btn,
+  .moveout-modal-submit-btn {
+    padding: 12px 28px;
+    font-size: 1rem;
+    border-radius: 5px;
+    font-weight: 550;
+    min-width: 130px;
+    cursor: pointer;
+    transition: 0.3s ease;
+    height: 48px;
+    margin: 0;
+  }
+  
+  .moveout-modal-cancel-btn {
+    background-color: white;
+    border: 1px solid #BF455C;
+    color: #BF455C;
+  }
+  
+  .moveout-modal-submit-btn {
+    background-color: #BF455C;
+    border: 1px solid #BF455C;
+    color: white;
+  }
+  
+  .moveout-modal-cancel-btn:hover {
+    background-color: #ffe5e5;
+  }
+  
+  .moveout-modal-submit-btn:hover {
+    background-color: #a53d50;
+  }
+

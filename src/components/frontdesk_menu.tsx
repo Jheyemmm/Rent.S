@@ -44,7 +44,7 @@ const MenuComponent = forwardRef<HTMLDivElement, MenuComponentProps>(({ isOpen, 
                     </li>
 
                     <li>
-                        <Link to="/add-tenant" className={tenantActive ? "active" : ""}>
+                        <Link to="/viewtenant" className={tenantActive ? "active" : ""}>
                             <img src={tenantActive ? coloredTenantsIcon : tenantsIcon} className="icon" alt="Tenant" />
                             Tenant
                         </Link>
