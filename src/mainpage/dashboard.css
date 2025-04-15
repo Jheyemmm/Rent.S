@@ -1,4 +1,8 @@
-/* Page Container (if needed) */
+body, html {
+  padding: 12px;
+  
+  overflow-x: hidden;
+}
 .page-container {
     width: 100%;
     min-height: 100vh;

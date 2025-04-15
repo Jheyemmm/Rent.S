@@ -39,8 +39,6 @@
     padding: 0;
     margin: 0;
     width: 100%;
-    list-style: none;
-    flex-grow: 1;
 }
 
 .sidebar li {
@@ -111,7 +109,7 @@
     padding: 12px 80%;
     background: none;
     margin-right: 45%;
-    margin-top: 100%;
+    margin-top: 34vh;
 }
 
 .sidebar .link-logout:hover {

@@ -35,6 +35,7 @@ const ViewTenant: React.FC = () => {
   };
 
   return (
+    
     <div className="dashboard-container">
       <Header />
       <div className="dashboard-content">

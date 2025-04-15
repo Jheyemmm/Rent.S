@@ -22,7 +22,7 @@ interface MenuComponentProps {
     setIsOpen: (open: boolean) => void;
 }
 
-const MenuComponent = forwardRef<HTMLDivElement, MenuComponentProps>(({ isOpen, setIsOpen }, ref) => {
+const AdminMenuComponent = forwardRef<HTMLDivElement, MenuComponentProps>(({ isOpen, setIsOpen }, ref) => {
     const location = useLocation();
     const dashboardActive = location.pathname === "/dashboard";
     const tenantActive = location.pathname === "/add-tenant" || location.pathname === "/view-tenants";
@@ -33,8 +33,8 @@ const MenuComponent = forwardRef<HTMLDivElement, MenuComponentProps>(({ isOpen, 
 
     return (
         <div>
-            <div ref={ref} className="sidebar open">
-                <div className="logo-container">
+            <div ref={ref} className="admin_sidebar open">
+                <div className="admin_logo-container">
                     <img src={logo} alt="Logo" />
                 </div>
 
@@ -94,4 +94,4 @@ const MenuComponent = forwardRef<HTMLDivElement, MenuComponentProps>(({ isOpen, 
     );
 });
 
-export default MenuComponent;
+export default AdminMenuComponent;

@@ -1,10 +1,11 @@
+
 import * as React from 'react';
 import MenuComponent from './admin_menu';
-import './header.css';
+import './admin_header.css';
 import notification from '../assets/icons/bell.png';
 import user from '../assets/icons/User.png';
 
-const Header: React.FC = () => {
+const AdminHeader: React.FC = () => {
     const [sidebarOpen, setSidebarOpen] = React.useState(false);
     const sidebarRef = React.useRef(null);
 
@@ -27,4 +28,4 @@ const Header: React.FC = () => {
     );
 };
 
-export default Header;
+export default AdminHeader;

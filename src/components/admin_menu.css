@@ -1,4 +1,4 @@
-.sidebar {
+.admin_sidebar {
     font-family: 'Poppins', sans-serif;
     font-weight: 400;
     letter-spacing: 0.5px;
@@ -20,37 +20,35 @@
     align-items: center;
 }
 
-.sidebar.open {
+.admin_sidebar.open {
     left: 0;
 }
 
-.sidebar-logo {
+.admin_sidebar-logo {
     text-align: center;
     margin-bottom: 20px;
 }
 
-.sidebar-logo .logo {
+.admin_sidebar-logo .logo {
     width: 100%;
     max-width: 220px;
     margin: 0 auto;
 }
 
-.sidebar ul {
+.admin_sidebar ul {
     padding: 0;
     margin: 0;
     width: 100%;
-    list-style: none;
-    flex-grow: 1;
 }
 
-.sidebar li {
+.admin_sidebar li {
     margin: 5px 0;
     width: 100%;
     display: flex;
     justify-content: center;
 }
 
-.sidebar a,
+.admin_sidebar a,
 .menu-btn {
     width: 90%;
     font-family: 'Poppins', sans-serif;
@@ -74,14 +72,14 @@
     transition: background-color 0.2s ease, width 0.2s ease;
 }
 
-.sidebar a.active,
+.admin_sidebar a.active,
 .menu-btn.active {
     width: 90%;
     color: green;
     background-color: #E5F2F1;
 }
 
-.sidebar a:hover,
+.admin_sidebar a:hover,
 .menu-btn:hover {
     width: 90%;
     background-color: #f0f0f0;
@@ -94,7 +92,7 @@
     height: 24px;
 }
 
-.sidebar .logout-container {
+.admin_sidebar .logout-container {
     width: 100%;
     display: flex;
     justify-content: center;
@@ -103,7 +101,7 @@
     box-sizing: border-box;
 }
 
-.sidebar .link-logout {
+.admin_sidebar .link-logout {
     display: flex;
     align-items: center;
     justify-content: center;
@@ -111,16 +109,16 @@
     padding: 12px 80%;
     background: none;
     margin-right: 45%;
-    margin-top: 73%;
+    margin-top: 23vh;
 }
 
-.sidebar .link-logout:hover {
+.admin_sidebar .link-logout:hover {
     width: 90%;
     background-color: #f0f0f0;
     color: #000;
 }
 
-.sidebar .icon-logout {
+.admin_sidebar .icon-logout {
     width: 24px;
     height: 24px;
     margin-right: 12px;

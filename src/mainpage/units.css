@@ -1,3 +1,4 @@
+
 * {
   margin: 0;
   padding: 0;
@@ -8,7 +9,6 @@
 .page-container {
   display: flex;
   flex-direction: column;
-  min-height: 100vh;
 }
 
 .main-content-container {
@@ -17,7 +17,7 @@
   margin-top: 80px;
 }
 
-.frontdesk-menu {
+.admin-menu {
   width: 250px;
   height: calc(100vh - 80px);
   position: fixed;
@@ -174,7 +174,7 @@
     margin-top: 60px;
   }
 
-  .frontdesk-menu {
+  .admin-menu {
     display: none;
   }
 

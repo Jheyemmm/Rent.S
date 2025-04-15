@@ -12,22 +12,22 @@
   background-color: #A5DEC6;
   padding: 1rem 0;
   position: relative;
+  margin-top: -20px;
+  margin-right: -25px;
 }
 
 .header-container {
   display: flex;
   justify-content: flex-end;
-  width: 98vw; /* Full viewport width */
+  width: 100%; 
   margin: 0;
   padding: 0;
 }
-
 /* Right Content - Now Glued to Edge */
 .header-right {
   display: flex;
-  align-items: center;
   gap: 15px;
-  padding-right: 0; /* Removed all right padding */
+  padding-right: 35px; /* Removed all right padding */
   margin-right: 0; /* Removed all right margin */
   transform: translateX(-5px); /* Micro-adjust to kill last pixel */
 }

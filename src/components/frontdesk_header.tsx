@@ -1,22 +1,23 @@
+
 import * as React from 'react';
-import MenuComponent from './frontdesk_menu';
-import './header.css';
+import MenuComponent from './admin_menu';
+import './frontdesk_header.css';
 import notification from '../assets/icons/bell.png';
 import user from '../assets/icons/User.png';
 
-const Header: React.FC = () => {
+const FrontDeskHeader: React.FC = () => {
     const [sidebarOpen, setSidebarOpen] = React.useState(false);
     const sidebarRef = React.useRef(null);
 
     return (
         <div>
-            <div className="header custom-header-color">
-                <div className="header-container">
-                    <div className="header-right">
+            <div className="frontdesk_header frontdesk_custom-header-color">
+                <div className="frontdesk_header-container">
+                    <div className="frontdesk_header-right">
                         <img src={notification} alt="Notification" className="icon-bell" />
                         <div className="user-info">
                             <span className="user-name">John</span>
-                            <span className="user-role">Front Desk</span>
+                            <span className="user-role">FrontDesk</span>
                         </div>
                         <img src={user} alt="User" className="icon-user" />
                     </div>
@@ -27,4 +28,4 @@ const Header: React.FC = () => {
     );
 };
 
-export default Header;
+export default FrontDeskHeader;
