@@ -7,6 +7,7 @@ import Units from "./mainpage/units";
 import FrontdeskDashboard from "./mainpage/frontdeskdashboard";
 import ViewTenant from "./mainpage/Viewtenant";
 import ViewPayment from "./mainpage/ViewPayment";
+import AdminViewPayment from "./mainpage/AdminViewPayment";
 import AccountSettings from "./mainpage/account-settings";
 
 const App: React.FC = () => {
@@ -19,6 +20,7 @@ const App: React.FC = () => {
         <Route path="/frontdeskDashboard" element={<FrontdeskDashboard/>} />
         <Route path="/viewtenant" element={<ViewTenant/>} />
         <Route path="/viewpayment" element={<ViewPayment/>} />
+        <Route path="/adminViewPayment" element={<AdminViewPayment/>} />
         <Route path="/units" element={<Units/>} />
         <Route path="/account-settings" element={<AccountSettings />} />
       </Routes>

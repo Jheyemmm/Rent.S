@@ -1,0 +1,127 @@
+/* Main container */
+.register-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 95vw;
+  height: 90vh;
+  font-family: Arial, sans-serif;
+  background-color: #111; /* optional dark bg like in your screenshot */
+}
+  /* Form container */
+  .register-form-container {
+    width: 50%;
+    height: 95  vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #ffffff;
+    overflow-y: auto;
+  }
+  
+  .register-form-inner {
+    width: 100%;
+    max-width: 400px;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+  
+  /* Logo container */
+  .register-logo-container {
+    width: 50%;
+    height: 90vh;
+    background-color: #E9F7F1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  
+  .register-logo {
+
+    width: 60%;
+    max-width: 300px;
+    height: auto;
+    object-fit: contain;
+  }
+  
+  /* Form styles */
+  .register-title {
+    font-size: 2.5rem;
+    margin-bottom: 2rem;
+    color: #000;
+    text-align: center;
+    font-family: 'Georgia', serif;
+  }
+  
+  .register-form {
+    width: 100%;
+  }
+  
+  .register-input-group {
+    margin-bottom: 1.5rem;
+  }
+  
+  .register-input-wrapper {
+    margin-bottom: 1.5rem;
+  }
+  
+  .register-label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: bold;
+    color: #333;
+  }
+  
+  .register-name-fields {
+    display: flex;
+    gap: 1rem;
+  }
+  
+  .register-name-fields .register-input {
+    flex: 1;
+  }
+  
+  .register-input,
+  .register-select {
+    width: 100%;
+    padding: 0.8rem;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    font-size: 1rem;
+    box-sizing: border-box;
+    background-color: #f9fafb;
+  }
+  
+  .register-input:focus,
+  .register-select:focus {
+    outline: none;
+    border-color: #28a86c;
+    box-shadow: 0 0 0 2px rgba(40, 168, 108, 0.2);
+  }
+  
+  .register-error {
+    color: #dc3545;
+    margin-bottom: 1rem;
+    text-align: center;
+    font-weight: bold;
+  }
+  
+  .register-submit {
+    width: 100%;
+    padding: 1rem;
+    background-color: #28a86c;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 1rem;
+    cursor: pointer;
+    margin-top: 1rem;
+    transition: background-color 0.3s;
+  }
+  
+  .register-submit:hover {
+    background-color: #218c5b;
+  }
+  
