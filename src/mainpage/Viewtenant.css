@@ -74,11 +74,12 @@ body {
 }
 
 .tenant-header h1 {
-  font-size: 25px;
-  font-weight: 600;
-  color: #333;
+  font-size: 32px;
+  font-weight: 420;
+  color: black;
   margin: 0;
   white-space: nowrap;
+  margin-left: 20px; /* Adjust value as needed */
 }
 
 .header-right-section {
