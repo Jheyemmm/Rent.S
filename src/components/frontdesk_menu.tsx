@@ -1,6 +1,6 @@
 import React, { forwardRef } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import './FrontDesk_menu.css';
+import './frontdesk_menu.css';
 
 import dashboardIcon from '../assets/icons/dashboard.png';
 import coloredDashboardIcon from '../assets/icons/colored_dashboard.png';

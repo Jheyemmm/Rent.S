@@ -1,4 +1,6 @@
 import React, { useState } from "react";
+import supabase from "../supabaseClient";
+import { useNavigate } from "react-router-dom";
 import "./Login.css";
 import loginlogo from "../assets/icons/LoginLogo.png";
 
@@ -7,14 +9,52 @@ const Login: React.FC = () => {
   const [password, setPassword] = useState<string>("");
   const [error, setError] = useState<string>("");
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const navigate = useNavigate();
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    setError("");
+    
     if (!username || !password) {
       setError("All fields are required!");
-    } else {
-      setError("");
-      alert("Login button clicked (for debugging purposes)");
+    return
     }
+
+    try {
+    // 1. Get email based on entered username
+    const { data: userData, error: fetchError } = await supabase
+    .from("Users")
+    .select("Email")
+    .eq("Username", username)
+    .single();
+
+  if (fetchError || !userData) {
+    setError("Username not found.");
+    return;
+    }
+
+    const email = userData.Email;
+
+    // 2. Authenticate using email and password
+    const { error: loginError } = await supabase.auth.signInWithPassword({
+      email,
+      password
+    });
+
+    if (loginError) {
+      console.error("Login error:", loginError.message);
+      setError("Invalid credentials.");
+      return;
+    }
+
+    // ✅ Logged in successfully!
+    alert("Login successful!");
+    navigate("/dashboard"); // or whatever route after login
+
+  } catch (err: any) {
+    console.error(err);
+    setError("Something went wrong. Please try again.");
+  }
   };
 
   return (
@@ -54,7 +94,9 @@ const Login: React.FC = () => {
             <p className="forgot-password">Forgot password?</p>
             <button type="submit" className="submit">Log In</button>
           </form>
-          <p className="signup">Don't have an account? <span>Sign Up</span></p>
+          <p className="signup">Don't have an account? 
+            <span onClick={() => navigate("/register")}
+            >Sign Up</span></p>
         </div>
       </div>
     </div>
