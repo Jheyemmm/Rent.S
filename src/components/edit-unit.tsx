@@ -1,19 +1,47 @@
 import React, { useState } from 'react';
 import './AddUnit.css'; // Same styles as before
+import supabase from '../supabaseClient';
 
 interface EditUnitProps {
-  unit: { name: string; price: number; details: string }; // Pass the unit to be edited
+  unit: { unitID: number; number: string; price: number; details: string }; // Pass the unit to be edited
   closeForm: () => void;
+  refreshUnits: () => void;
 }
 
-const EditUnit: React.FC<EditUnitProps> = ({ unit, closeForm }) => {
-  const [unitName, setUnitName] = useState(unit.name);
+const EditUnit: React.FC<EditUnitProps> = ({ unit, closeForm, refreshUnits }) => {
+  const [unitName, setUnitName] = useState(unit.number);
   const [unitPrice, setUnitPrice] = useState(unit.price.toString());
   const [unitDetails, setUnitDetails] = useState(unit.details);
+  const [loading, setLoading] = useState(false); // For loading state
+  const [error, setError] = useState<string | null>(null); // For error handling
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    // to prevent submitting if loading or there is an error
+    if (loading) return; 
+    setLoading(true); // start loading
+
+    const { data, error } = await supabase
+    .from('Units')
+    .update({
+      Price: parseFloat(unitPrice),
+      Description: unitDetails,
+      UnitNumber: unitName
+    })
+    .eq('UnitID', unit.unitID);
+
+    if (error) {
+      setError(error.message);
+      setLoading(false);
+      return;
+    }
+
+
     console.log('Unit updated:', { unitName, unitPrice, unitDetails });
+
+    await refreshUnits();
+    setLoading(false);
     closeForm(); // Close the form after updating
   };
 
@@ -73,3 +101,7 @@ const EditUnit: React.FC<EditUnitProps> = ({ unit, closeForm }) => {
 };
 
 export default EditUnit;
+function refreshUnits() {
+  throw new Error('Function not implemented.');
+}
+

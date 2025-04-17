@@ -5,40 +5,60 @@ import './units.css';
 import AddUnitButtonIcon from '../assets/icons/add-unit-button.png';
 import AddUnit from '../components/add-unit';  // Import the AddUnit component
 import EditUnit from '../components/edit-unit'; // Import the EditUnit component
+import supabase from '../supabaseClient';
+import { useEffect } from 'react';
 
 interface Unit {
-  id: number;
-  name: string;
+  unitID: number;
+  number: string;
   price: number;
   details: string;
   status: 'Available' | 'Occupied';
 }
 
-const mockUnits: Unit[] = [
-  {
-    id: 1,
-    name: 'Unit 101',
-    price: 18000,
-    details: '2 bedrooms, 2 restrooms, includes balcony',
-    status: 'Available',
-  },
-];
-
 const Units: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
-  const [units] = useState<Unit[]>(mockUnits);
+  const [units, setUnits] = useState<Unit[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [search, setSearch] = useState('');
   const [isDropdownOpen, setIsDropdownOpen] = useState<number | null>(null);
   const [isAddUnitFormVisible, setIsAddUnitFormVisible] = useState(false); // Manage the visibility of AddUnit form
   const [isEditUnitFormVisible, setIsEditUnitFormVisible] = useState(false); // Manage visibility of EditUnit form
   const [unitToEdit, setUnitToEdit] = useState<Unit | null>(null); // Store the unit being edited
 
+  const fetchUnits = async () => {
+    setLoading(true);
+    const { data, error } = await supabase
+    .from('Units')
+    .select('UnitID, UnitNumber, Price, Description, UnitStatus');
+
+    if (error) {
+      console.error('Error fetching units:', error.message);
+      setError('Failed to load units.');
+    } else {
+      const formattedUnits = data.map((unit: any) => ({
+        unitID: unit.UnitID,
+        number: unit.UnitNumber,
+        price: unit.Price,
+        details: unit.Description,
+        status: unit.UnitStatus,
+      }));
+      setUnits(formattedUnits);
+    }
+    setLoading(false);
+  };
+
+  useEffect(() => {
+    fetchUnits();
+  }, [])
+
   const handleSearchChange = (e: ChangeEvent<HTMLInputElement>) => {
     setSearch(e.target.value);
   };
 
   const filteredUnits = units.filter((unit) =>
-    unit.name.toLowerCase().includes(search.toLowerCase())
+    unit.number.toLowerCase().includes(search.toLowerCase())
   );
 
   const toggleDropdown = (unitId: number) => {
@@ -50,16 +70,28 @@ const Units: React.FC = () => {
   };
 
   const handleUpdate = (unitId: number) => {
-    const unitToEdit = units.find((unit) => unit.id === unitId);
+    const unitToEdit = units.find((unit) => unit.unitID === unitId);
     if (unitToEdit) {
       setUnitToEdit(unitToEdit); // Set the unit to edit
       setIsEditUnitFormVisible(true); // Show the EditUnit form
     }
   };
 
-  const handleDelete = (unitId: number) => {
-    console.log(`Delete unit ${unitId}`);
-    // Add delete logic here
+  const handleDelete = async (unitID: number) => {
+    const confirmDelete = window.confirm('Are you sure you want to delete this unit?')
+    if (!confirmDelete) return;
+
+    const { error } = await supabase
+    .from('Units')
+    .delete()
+    .eq('UnitID', unitID)
+
+    if (error) {
+      console.error('Error deleting unit:', error.message);
+      setError('Failed to delete unit.');
+    } else {
+      fetchUnits();
+    }
   };
 
   // Toggle Add Unit Form visibility
@@ -106,37 +138,41 @@ const Units: React.FC = () => {
             </div>
 
             {/* Conditionally render AddUnit and EditUnit components */}
-            {isAddUnitFormVisible && <AddUnit closeForm={toggleAddUnitForm} />}
+            {isAddUnitFormVisible && <AddUnit closeForm={toggleAddUnitForm} refreshUnits={fetchUnits}/>}
             {isEditUnitFormVisible && unitToEdit && (
-              <EditUnit unit={unitToEdit} closeForm={closeEditUnitForm} />
+              <EditUnit unit = {unitToEdit} closeForm={closeEditUnitForm} refreshUnits={fetchUnits}/>
             )}
 
             <div className="unit-list">
-              {filteredUnits.length === 0 ? (
+              {loading ? (
+                <p>Loading units...</p>
+              ) : error ? (
+                <p className='form-error'>{error}</p>
+              ) : filteredUnits.length === 0 ? (
                 <p>Unit list is empty.</p>
               ) : (
                 filteredUnits.map((unit) => (
-                  <div className="unit-card" key={unit.id}>
+                  <div className="unit-card" key={unit.unitID}>
                     <div className="unit-thumbnail">
                       <div
                         className="dots-button"
-                        onClick={() => toggleDropdown(unit.id)}
+                        onClick={() => toggleDropdown(unit.unitID)}
                       >
                         &#x2022;&#x2022;&#x2022; {/* Ellipsis icon */}
                       </div>
 
                       <div
-                        className={`dropdown-menu ${isDropdownOpen === unit.id ? 'open' : ''}`}
+                        className={`dropdown-menu ${isDropdownOpen === unit.unitID ? 'open' : ''}`}
                       >
                         <div
                           className="dropdown-option"
-                          onClick={() => handleUpdate(unit.id)}
+                          onClick={() => handleUpdate(unit.unitID)}
                         >
                           Edit
                         </div>
                         <div
                           className="dropdown-option"
-                          onClick={() => handleDelete(unit.id)}
+                          onClick={() => handleDelete(unit.unitID)}
                         >
                           Delete
                         </div>
@@ -145,7 +181,7 @@ const Units: React.FC = () => {
 
                     <div className="unit-details">
                       <div className="unit-header">
-                        <strong>{unit.name}</strong>
+                        <strong>{unit.number}</strong>
                         <span>₱{unit.price.toLocaleString()}.00</span>
                       </div>
                       <p>{unit.details}</p>
