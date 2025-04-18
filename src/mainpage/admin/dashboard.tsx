@@ -1,6 +1,6 @@
 import React from "react";
-import AdminHeader from "../components/frontdesk_header";
-import AdminMenuComponent from "../components/frontdesk_menu";
+import Header from "../../components/admin_header";
+import MenuComponent from "../../components/admin_menu";
 import "./dashboard.css";
 
 import RentCollected_Icon from "../assets/icons/rent_collected.png";
@@ -11,10 +11,10 @@ import Overdue_Icon from "../assets/icons/overdue_icon.png";
 const Dashboard: React.FC = () => {
   return (
     <div className="page-container">
-      <AdminHeader />
+      <Header />
       
       <div className="main-content-container">
-        <AdminMenuComponent isOpen={false} setIsOpen={() => {}} />
+        <MenuComponent isOpen={false} setIsOpen={() => {}} />
         <div className="content-wrapper">
           <div className="dashboard-container">
             <h2 className="dashboard-title">Dashboard</h2>

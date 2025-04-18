@@ -1,7 +1,7 @@
 import React, { useState, useRef } from 'react';
-import MenuComponent from '../components/frontdesk_menu';
-import AddPaymentModal from '../components/addpayment';
-import { EditPaymentModal } from '../components/EditPaymentModal';
+import MenuComponent from '../../components/frontdesk_menu';
+import AddPaymentModal from '../../components/addpayment';
+import { EditPaymentModal } from '../../components/EditPaymentModal';
 import './AdminViewPayment.css';
 
 const AdminViewPayment: React.FC = () => {

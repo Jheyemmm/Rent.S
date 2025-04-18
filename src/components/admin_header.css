@@ -10,10 +10,9 @@
 /* Header Container */
 .custom-header-color {
   background-color: #A5DEC6;
-  padding: 1rem 0;
-  position: relative;
-  margin-top: -20px;
-  margin-right: -25px;
+  padding: 1rem 2rem;
+  position: inherit;
+  margin-right: -40px;
 }
 
 .header-container {
