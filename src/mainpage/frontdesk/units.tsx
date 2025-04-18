@@ -1,5 +1,5 @@
 import React, { useState, ChangeEvent, useEffect } from 'react';
-import Header from '../../components/frontdesk_header';
+import Header from '../../components/header';
 import AdminMenu from '../../components/frontdesk_menu';
 import './frontdeskunits.css';
 import supabase from '../../supabaseClient';

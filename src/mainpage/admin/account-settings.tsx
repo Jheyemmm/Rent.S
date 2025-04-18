@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import Header from '../../components/admin_header';
+import Header from '../../components/header';
 import AdminMenu from '../../components/admin_menu';
 import EditUser from '../../components/edit_user'; 
 import './account-settings.css';

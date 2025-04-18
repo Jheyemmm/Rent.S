@@ -14,57 +14,73 @@ const Login: React.FC = () => {
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setError("");
-    
+
     if (!username || !password) {
       setError("All fields are required!");
-    return
-    }
-
-    try {
-    // 1. Get email based on entered username
-    const { data: userData, error: fetchError } = await supabase
-    .from("Users")
-    .select("Email")
-    .eq("Username", username)
-    .single();
-
-  if (fetchError || !userData) {
-    setError("Username not found.");
-    return;
-    }
-
-    const email = userData.Email;
-
-    // 2. Authenticate using email and password
-    const { error: loginError } = await supabase.auth.signInWithPassword({
-      email,
-      password
-    });
-
-    if (loginError) {
-      console.error("Login error:", loginError.message);
-      setError("Invalid credentials.");
       return;
     }
 
-    // ✅ Logged in successfully!
-    alert("Login successful!");
-    navigate("/dashboard"); // or whatever route after login
+    try {
+      // Step 1: Get the user's email and RoleID by username
+      const { data: userData, error: fetchError } = await supabase
+        .from("Users")
+        .select("Email, RoleID")
+        .ilike("Username", username)
+        .single();
 
-  } catch (err: any) {
-    console.error(err);
-    setError("Something went wrong. Please try again.");
-  }
+      if (fetchError || !userData) {
+        setError("Username not found.");
+        return;
+      }
+
+      const { Email: email, RoleID } = userData;
+
+      // Step 2: Sign in using Supabase auth
+      const { error: loginError } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
+
+      if (loginError) {
+        setError("Invalid credentials.");
+        return;
+      }
+
+      // Step 3: Fetch the role name based on RoleID
+      const { data: roleData, error: roleError } = await supabase
+        .from("Roles")
+        .select("Role")
+        .eq("RoleID", RoleID)
+        .single();
+
+      if (roleError || !roleData) {
+        setError("Could not retrieve user role.");
+        return;
+      }
+
+      const userRole = roleData.Role;
+
+      // Step 4: Navigate based on the user role
+      if (userRole === "Admin") {
+        navigate("/admin-dashboard");
+      } else if (userRole === "Front Desk") {
+        navigate("/frontdesk-dashboard");
+      } else {
+        setError("Unauthorized role.");
+      }
+
+    } catch (err: any) {
+      console.error("Unexpected error:", err);
+      setError("Something went wrong. Please try again.");
+    }
   };
 
   return (
     <div className="container">
-      {/* Left Section - Logo */}
       <div className="logo">
         <img src={loginlogo} alt="Logo" />
       </div>
-      
-      {/* Right Section - Login Form */}
+
       <div className="login-form">
         <div className="inner-login">
           <h1>Log In</h1>
@@ -72,31 +88,33 @@ const Login: React.FC = () => {
           <form onSubmit={handleSubmit}>
             <div className="input">
               <label>Username</label>
-              <input 
-                type="text" 
-                value={username} 
-                onChange={(e) => setUsername(e.target.value)} 
-                placeholder="Enter your username" 
-                required 
+              <input
+                type="text"
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
+                placeholder="Enter your username"
+                required
               />
             </div>
             <div className="input">
               <label>Password</label>
-              <input 
-                type="password" 
-                value={password} 
-                onChange={(e) => setPassword(e.target.value)} 
-                placeholder="Enter your password" 
-                required 
+              <input
+                type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                placeholder="Enter your password"
+                required
               />
             </div>
-            {/* Forgot password positioned just after password field */}
             <p className="forgot-password">Forgot password?</p>
-            <button type="submit" className="submit">Log In</button>
+            <button type="submit" className="submit">
+              Log In
+            </button>
           </form>
-          <p className="signup">Don't have an account? 
-            <span onClick={() => navigate("/register")}
-            >Sign Up</span></p>
+          <p className="signup">
+            Don't have an account?{" "}
+            <span onClick={() => navigate("/register")}>Sign Up</span>
+          </p>
         </div>
       </div>
     </div>

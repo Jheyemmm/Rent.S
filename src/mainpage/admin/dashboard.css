@@ -191,11 +191,6 @@ body, html {
   margin-right: 12px;
 }
 
-.card-icon-image {
-  width: 24px;
-  height: 24px;
-}
-
 /* Specific icon background colors */
 .document-icon {
   background-color: #e5f7ed;

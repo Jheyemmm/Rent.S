@@ -1,5 +1,5 @@
 import React from "react";
-import Header from "../../components/admin_header";
+import Header from "../../components/header";
 import MenuComponent from "../../components/admin_menu";
 import "./dashboard.css";
 import RentCollected_Icon from "../../assets/icons/rent_collected.png";

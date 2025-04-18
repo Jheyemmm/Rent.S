@@ -1,6 +1,6 @@
 import React, { useState, useRef } from 'react';
 
-import Header from "../../components/admin_header";
+import Header from "../../components/header";
 import MenuComponent from '../../components/admin_menu';
 import AddPaymentModal from '../../components/addpayment';
 import { EditPaymentModal } from '../../components/EditPaymentModal';

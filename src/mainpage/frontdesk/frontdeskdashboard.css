@@ -154,7 +154,6 @@ body, html {
   white-space: nowrap;
 }
 
-/* Card common styling */
 .card {
   background-color: white;
   border-radius: 12px;
@@ -190,13 +189,6 @@ body, html {
   justify-content: center;
   margin-right: 12px;
 }
-
-.card-icon-image {
-  width: 24px;
-  height: 24px;
-}
-
-/* Specific icon background colors */
 .document-icon {
   background-color: #e5f7ed;
 }

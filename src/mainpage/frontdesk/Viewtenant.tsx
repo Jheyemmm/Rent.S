@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import Header from '../../components/frontdesk_header';
+import Header from '../../components/header';
 import MenuComponent from '../../components/frontdesk_menu';
 import { AddTenantModal } from '../../components/Addtenant';
 import { MoveOutModal } from '../../components/moveout';
