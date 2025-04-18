@@ -3,12 +3,12 @@ import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import Dashboard from "./mainpage/admin/dashboard";
-import Units from "./mainpage/admin/units";
-import FrontdeskDashboard from "./mainpage/frontdesk_dashboard";
+import Units from "./mainpage/frontdesk/units";
+import FrontdeskDashboard from "./mainpage/frontdesk/frontdesk_dashboard";
 import ViewTenant from "./mainpage/frontdesk/Viewtenant";
-import ViewPayment from "./mainpage/ViewPayment";
-import AdminViewPayment from "./mainpage/AdminViewPayment";
-import AccountSettings from "./mainpage/account-settings";
+import ViewPayment from "./mainpage/frontdesk/ViewPayment";
+import AdminViewPayment from "./mainpage/admin/AdminViewPayment";
+import AccountSettings from "./mainpage/admin/account-settings";
 
 const App: React.FC = () => {
   return (

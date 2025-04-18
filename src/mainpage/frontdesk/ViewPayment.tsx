@@ -1,7 +1,7 @@
 import React, { useState, useRef } from 'react';
-import MenuComponent from '../components/frontdesk_menu';
-import Header from '../components/frontdesk_header';
-import AddPaymentModal from '../components/addpayment';
+import MenuComponent from '../../components/frontdesk_menu';
+import Header from '../../components/frontdesk_header';
+import AddPaymentModal from '../../components/addpayment';
 import './ViewPayment.css';
 
 const Payments: React.FC = () => {

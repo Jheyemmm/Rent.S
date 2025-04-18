@@ -1,6 +1,6 @@
 import React, { useState, ChangeEvent } from 'react';
-import Header from '../components/admin_header';
-import AdminMenu from '../components/admin_menu';
+import Header from '../../components/admin_header';
+import AdminMenu from '../../components/admin_menu';
 import './units.css';
 import AddUnitButtonIcon from '../assets/icons/add-unit-button.png';
 
