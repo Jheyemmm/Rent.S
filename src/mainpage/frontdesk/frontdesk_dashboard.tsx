@@ -139,7 +139,7 @@ const Dashboard: React.FC = () => {
               <div className="transactions">
                 <div className="transactions-header">
                   <h3>Recent Transactions</h3>
-                  <a href="#" className="see-all-link">
+                  <a href="/frontdesk-payment" className="see-all-link">
                     See all →
                   </a>
                 </div>

@@ -1,16 +1,16 @@
 /* AdminViewPayment.css */
 
 /* Base Styles */
-.admin-dashboard-content {
+.admin-payment-content {
   display: flex;
-  flex-direction: column; /* Changed to column to accommodate header */
+  flex-direction: column;
   min-height: 100vh;
   font-family: 'Poppins', sans-serif;
   background-color: #f5f7fa;
 }
 
 /* Added for header spacing */
-.admin-dashboard-content header {
+.admin-payment-content header {
   height: 60px;
   z-index: 1000;
   position: fixed;
@@ -58,7 +58,7 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 25px;
+  margin-bottom: 10px;
   flex-shrink: 0;
 }
 

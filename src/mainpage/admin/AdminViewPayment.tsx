@@ -100,10 +100,10 @@ const AdminViewPayment: React.FC = () => {
   );
 
   return (
-    <div className="admin-dashboard-content">
+    <div className="admin-payment-content">
       <Header />
       <MenuComponent ref={sidebarRef} isOpen={true} setIsOpen={() => {}} />
-      <main className="admin-dashboard-main">
+      <main className="admin-payment-main">
         <div className="admin-payment-container">
           <div className="admin-payment-header">
             <h1>Payments</h1>
