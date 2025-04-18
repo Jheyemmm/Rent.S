@@ -1,0 +1,363 @@
+body, html {
+  overflow-x: hidden;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+.page-container {
+  width: 100%;
+  min-height: 100vh;
+  max-width: 100%;
+}
+
+/* Main Content Wrapper */
+.content-wrapper {
+  margin-top: -10vh;
+  width: 100%;
+  padding: 0 20px;
+  box-sizing: border-box;
+}
+
+/* Dashboard Container */
+.dashboard-container {
+  padding: 2px;
+  background-color: #f7f9fc;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.dashboard-title {
+  font-size: 24px;
+  font-weight: 600;
+  margin-bottom: 24px;
+  color: #1a1a1a;
+}
+
+/* Top Section Layout: Two columns – left for cards and right for upcoming rent card */
+.top-section {
+  display: grid;
+  grid-template-columns: 3fr 2fr;
+  gap: 20px;
+  margin-bottom: 30px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+/* Cards Column holds two rows: one for financial cards, one for units cards */
+.cards-column {
+  display: grid;
+  grid-template-rows: auto auto;
+  gap: 20px;
+  width: 100%;
+}
+
+/* Financial Cards (first row in .cards-column) */
+.financial-cards {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+  width: 100%;
+}
+
+/* Units Cards (second row in .cards-column) */
+.units-cards {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+  width: 100%;
+}
+
+/* Upcoming Rent Card on the right side spanning 2 rows */
+.upcoming-rent-card {
+  grid-column: 2;
+  background-color: white;
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  width: 100%;
+  box-sizing: border-box;
+}
+
+/* Heading inside Upcoming Rent Card */
+.upcoming-rent-card h3 {
+  font-size: 18px;
+  font-weight: 600;
+  margin-bottom: 15px;
+  color: #222;
+}
+
+/* Rent List */
+.rent-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  width: 100%;
+}
+
+.rent-list li {
+  padding: 10px 0;
+  border-bottom: 1px solid #eee;
+  width: 100%;
+}
+
+.rent-list li:last-child {
+  border-bottom: none;
+}
+
+.rent-item {
+  display: flex;
+  align-items: center;
+  width: 100%;
+}
+
+.unit-icon {
+  width: 40px;
+  height: 40px;
+  min-width: 40px;
+  background-color: #e5f7ed;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 12px;
+}
+
+.unit-icon.overdue {
+  background-color: #ffebee;
+  color: #e63946;
+}
+
+.unit-details {
+  flex: 1;
+  min-width: 0;
+}
+
+.unit-number {
+  font-weight: 500;
+  margin: 0 0 4px 0;
+  color: #222;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.due-date {
+  font-size: 12px;
+  color: #858585;
+  margin: 0;
+}
+
+.rent-amount {
+  font-weight: 600;
+  color: #222;
+  white-space: nowrap;
+}
+
+/* Card common styling */
+.card {
+  background-color: white;
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.card-title {
+  color: #858585;
+  font-size: 14px;
+  margin-bottom: 16px;
+  font-weight: 500;
+}
+
+.card-content {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  width: 100%;
+}
+
+.card-icon {
+  width: 40px;
+  height: 40px;
+  min-width: 40px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 12px;
+}
+
+.card-icon-image {
+  width: 24px;
+  height: 24px;
+}
+
+/* Specific icon background colors */
+.document-icon {
+  background-color: #e5f7ed;
+}
+
+.warning-icon {
+  background-color: #ffebee;
+}
+
+.card-amount, .card-number {
+  font-size: 22px;
+  font-weight: 600;
+  color: #222;
+  white-space: nowrap;
+}
+
+.overdue {
+  color: #e63946;
+}
+
+/* Units card specific layout */
+.units-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+}
+
+/* Circle Progress */
+.circle-progress {
+  width: 65px;
+  height: 65px;
+  min-width: 65px;
+  border-radius: 50%;
+  border: 8px solid #e5e5e5;
+  position: relative;
+}
+
+.circle-progress.green {
+  border-top-color: #20c86e;
+  border-right-color: #20c86e;
+  border-bottom-color: #e5e5e5;
+  border-left-color: #e5e5e5;
+  transform: rotate(45deg);
+}
+
+.circle-progress.blue {
+  border-top-color: #4361ee;
+  border-right-color: #4361ee;
+  border-bottom-color: #4361ee;
+  border-left-color: #e5e5e5;
+  transform: rotate(45deg);
+}
+
+/* Dashboard Bottom Section */
+.dashboard-bottom {
+  display: grid;
+  grid-template-columns: 1.5fr 1fr;
+  gap: 20px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+/* Transactions Section */
+.transactions {
+  background-color: white;
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.transactions-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  width: 100%;
+}
+
+.transactions-header h3 {
+  font-size: 18px;
+  font-weight: 600;
+  color: #222;
+}
+
+.see-all-link {
+  color: #4361ee;
+  text-decoration: none;
+  font-size: 14px;
+}
+
+.transactions-table {
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: fixed;
+}
+
+.transactions-table th {
+  background-color: #4CBD8D;
+  text-align: left;
+  padding: 12px 8px;
+  border-bottom: 1px solid #eee;
+  color: #ffffff;
+  font-weight: 500;
+  font-size: 14px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.transactions-table td {
+  padding: 12px 8px;
+  border-bottom: 1px solid #eee;
+  color: #222;
+  font-size: 14px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Overdue Tenants Card */
+.overdue-tenants-card {
+  background-color: white;
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.overdue-tenants-card h3 {
+  font-size: 18px;
+  font-weight: 600;
+  margin-bottom: 15px;
+  color: #222;
+}
+
+/* Add responsiveness for smaller screens */
+@media (max-width: 992px) {
+  .top-section,
+  .dashboard-bottom {
+    grid-template-columns: 1fr;
+  }
+  
+  .upcoming-rent-card {
+    grid-column: 1;
+  }
+}
+
+@media (max-width: 768px) {
+  .financial-cards,
+  .units-cards {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Fix for main content container */
+.main-content-container {
+  width: 100%;
+  display: flex;
+  box-sizing: border-box;
+  max-width: 100vw;
+}

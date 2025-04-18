@@ -1,14 +1,10 @@
-import React, { useState, ChangeEvent } from 'react';
-import Header from '../../components/admin_header';
-import AdminMenu from '../../components/admin_menu';
-import '../admin/units.css';
-import AddUnitButtonIcon from '../../assets/icons/add-unit-button.png';
-import AddUnit from '../../components/add-unit';  // Import the AddUnit component
-import EditUnit from '../../components/edit-unit'; // Import the EditUnit component
+import React, { useState, ChangeEvent, useEffect } from 'react';
+import Header from '../../components/frontdesk_header';
+import AdminMenu from '../../components/frontdesk_menu';
+import './frontdeskunits.css';
 import supabase from '../../supabaseClient';
-import { useEffect } from 'react';
 
-interface FrontdeskUnit {
+interface Unit {
   unitID: number;
   number: string;
   price: number;
@@ -18,14 +14,10 @@ interface FrontdeskUnit {
 
 const FrontdeskUnits: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
-  const [units, setUnits] = useState<FrontdeskUnit[]>([]);
+  const [units, setUnits] = useState<Unit[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [search, setSearch] = useState('');
-  const [isDropdownOpen, setIsDropdownOpen] = useState<number | null>(null);
-  const [isAddUnitFormVisible, setIsAddUnitFormVisible] = useState(false); // Manage the visibility of AddUnit form
-  const [isEditUnitFormVisible, setIsEditUnitFormVisible] = useState(false); // Manage visibility of EditUnit form
-  const [unitToEdit, setUnitToEdit] = useState<FrontdeskUnit | null>(null); // Store the unit being edited
 
   const fetchUnits = async () => {
     setLoading(true);
@@ -51,7 +43,7 @@ const FrontdeskUnits: React.FC = () => {
 
   useEffect(() => {
     fetchUnits();
-  }, [])
+  }, []);
 
   const handleSearchChange = (e: ChangeEvent<HTMLInputElement>) => {
     setSearch(e.target.value);
@@ -60,50 +52,6 @@ const FrontdeskUnits: React.FC = () => {
   const filteredUnits = units.filter((unit) =>
     unit.number.toLowerCase().includes(search.toLowerCase())
   );
-
-  const toggleDropdown = (unitId: number) => {
-    if (isDropdownOpen === unitId) {
-      setIsDropdownOpen(null);
-    } else {
-      setIsDropdownOpen(unitId);
-    }
-  };
-
-  const handleUpdate = (unitId: number) => {
-    const unitToEdit = units.find((unit) => unit.unitID === unitId);
-    if (unitToEdit) {
-      setUnitToEdit(unitToEdit); // Set the unit to edit
-      setIsEditUnitFormVisible(true); // Show the EditUnit form
-    }
-  };
-
-  const handleDelete = async (unitID: number) => {
-    const confirmDelete = window.confirm('Are you sure you want to delete this unit?')
-    if (!confirmDelete) return;
-
-    const { error } = await supabase
-    .from('Units')
-    .delete()
-    .eq('UnitID', unitID)
-
-    if (error) {
-      console.error('Error deleting unit:', error.message);
-      setError('Failed to delete unit.');
-    } else {
-      fetchUnits();
-    }
-  };
-
-  // Toggle Add Unit Form visibility
-  const toggleAddUnitForm = () => {
-    setIsAddUnitFormVisible(!isAddUnitFormVisible);
-  };
-
-  // Close the EditUnit form
-  const closeEditUnitForm = () => {
-    setIsEditUnitFormVisible(false);
-    setUnitToEdit(null); // Reset the unit being edited
-  };
 
   return (
     <div className="page-container">
@@ -116,32 +64,16 @@ const FrontdeskUnits: React.FC = () => {
           <div className="white-container">
             <div className="header-section">
               <h1>Manage Units</h1>
-              <div className="search-button-container">
-                <button
-                  className="add-unit-btn"
-                  onClick={toggleAddUnitForm} // Toggle visibility of Add Unit form
-                >
-                  Add Unit
-                  <img
-                    src={AddUnitButtonIcon}
-                    alt="Add Unit"
-                    className="add-unit-button-icon"
-                  />
-                </button>
+              <div className="search-container">
                 <input
                   type="text"
                   placeholder="Search Here"
                   value={search}
                   onChange={handleSearchChange}
+                  className="search-input"
                 />
               </div>
             </div>
-
-            {/* Conditionally render AddUnit and EditUnit components */}
-            {isAddUnitFormVisible && <AddUnit closeForm={toggleAddUnitForm} refreshUnits={fetchUnits}/>}
-            {isEditUnitFormVisible && unitToEdit && (
-              <EditUnit unit = {unitToEdit} closeForm={closeEditUnitForm} refreshUnits={fetchUnits}/>
-            )}
 
             <div className="unit-list">
               {loading ? (
@@ -154,29 +86,7 @@ const FrontdeskUnits: React.FC = () => {
                 filteredUnits.map((unit) => (
                   <div className="unit-card" key={unit.unitID}>
                     <div className="unit-thumbnail">
-                      <div
-                        className="dots-button"
-                        onClick={() => toggleDropdown(unit.unitID)}
-                      >
-                        &#x2022;&#x2022;&#x2022; {/* Ellipsis icon */}
-                      </div>
-
-                      <div
-                        className={`dropdown-menu ${isDropdownOpen === unit.unitID ? 'open' : ''}`}
-                      >
-                        <div
-                          className="dropdown-option"
-                          onClick={() => handleUpdate(unit.unitID)}
-                        >
-                          Edit
-                        </div>
-                        <div
-                          className="dropdown-option"
-                          onClick={() => handleDelete(unit.unitID)}
-                        >
-                          Delete
-                        </div>
-                      </div>
+                      {/* Placeholder for unit image */}
                     </div>
 
                     <div className="unit-details">

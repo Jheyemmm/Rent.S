@@ -1,108 +1,105 @@
-.sidebar {
-    font-family: 'Poppins', sans-serif;
-    font-weight: 400;
-    letter-spacing: 0.5px;
-    line-height: 1.6;
-    position: fixed;
-    top: 0;
-    left: -250px;
-    width: 250px;
-    height: 100%;
-    background-color: #ffffff;
-    color: #A2A3A5;
-    transition: left 0.3s ease;
-    padding-top: 20px;
-    box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
-    z-index: 1000;
-    overflow-x: hidden;
-    overflow-y: auto;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-}
+.frontdesk_sidebar {     
+    font-family: 'Poppins', sans-serif;     
+    font-weight: 400;     
+    letter-spacing: 0.5px;     
+    line-height: 1.6;     
+    position: fixed;     
+    top: 0;     
+    left: -250px;     
+    width: 250px;     
+    height: 100%;     
+    background-color: #ffffff;     
+    color: #A2A3A5;     
+    transition: left 0.3s ease;     
+    padding-top: 20px;     
+    box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);     
+    z-index: 1000;     
+    overflow-x: hidden;     
+    overflow-y: auto;     
+    display: flex;     
+    flex-direction: column;     
+    align-items: center; 
+}  
 
-.sidebar.open {
-    left: 0;
-}
+.frontdesk_sidebar.open {     
+    left: 0; 
+}  
 
-.sidebar-logo {
-    text-align: center;
-    margin-bottom: 20px;
-}
+.frontdesklogo-container {     
+    text-align: center;     
+    margin-bottom: 20px; 
+}  
 
-.sidebar-logo .logo {
-    width: 100%;
-    max-width: 220px;
-    margin: 0 auto;
-}
+.frontdesklogo-container img {     
+    width: 100%;     
+    max-width: 220px;     
+    margin: 0 auto; 
+}  
 
-.sidebar ul {
-    padding: 0;
-    margin: 0;
-    width: 100%;
-}
+.frontdesk_sidebar ul {     
+    padding: 0;     
+    margin: 0;     
+    width: 100%; 
+}  
 
-.sidebar li {
-    margin: 5px 0;
-    width: 100%;
-    display: flex;
-    justify-content: center;
-}
+.frontdesk_sidebar li {     
+    margin: 5px 0;     
+    width: 100%;     
+    display: flex;     
+    justify-content: center; 
+}  
 
-.sidebar a,
-.menu-btn {
-    width: 90%;
-    font-family: 'Poppins', sans-serif;
-    font-weight: 400;
-    letter-spacing: 0.5px;
-    line-height: 1.6;
-    color: #A2A3A5;
-    text-decoration: none;
-    font-size: 16px;
-    background: none;
-    border: none;
-    cursor: pointer;
-    text-align: left;
-    display: flex;
-    align-items: center;
-    padding: 12px 15px;
-    border-radius: 5px;
-    outline: none;
-    box-sizing: border-box;
-    margin-bottom: 10px;
-    transition: background-color 0.2s ease, width 0.2s ease;
-}
+.frontdesk_sidebar a, .menu-btn {     
+    width: 90%;     
+    font-family: 'Poppins', sans-serif;     
+    font-weight: 400;     
+    letter-spacing: 0.5px;     
+    line-height: 1.6;     
+    color: #A2A3A5;     
+    text-decoration: none;     
+    font-size: 16px;     
+    background: none;     
+    border: none;     
+    cursor: pointer;     
+    text-align: left;     
+    display: flex;     
+    align-items: center;     
+    padding: 12px 15px;     
+    border-radius: 5px;     
+    outline: none;     
+    box-sizing: border-box;     
+    margin-bottom: 10px;     
+    transition: background-color 0.2s ease, width 0.2s ease; 
+}  
 
-.sidebar a.active,
-.menu-btn.active {
-    width: 90%;
-    color: green;
-    background-color: #E5F2F1;
-}
+.frontdesk_sidebar a.active, .menu-btn.active {     
+    width: 90%;     
+    color: green;     
+    background-color: #E5F2F1; 
+}  
 
-.sidebar a:hover,
-.menu-btn:hover {
-    width: 90%;
-    background-color: #f0f0f0;
-    color: #000;
-}
+.frontdesk_sidebar a:hover, .menu-btn:hover {     
+    width: 90%;     
+    background-color: #f0f0f0;     
+    color: #000; 
+}  
 
-.icon {
-    margin-right: 10px;
-    width: 24px;
-    height: 24px;
-}
+.icon {     
+    margin-right: 10px;     
+    width: 24px;     
+    height: 24px; 
+}  
 
-.sidebar .logout-container {
-    width: 100%;
-    display: flex;
-    justify-content: center;
-    margin-top: auto;
-    padding: 0 15px 20px;
-    box-sizing: border-box;
-}
+.frontdesk_sidebar .logout-container {     
+    width: 100%;     
+    display: flex;     
+    justify-content: center;     
+    margin-top: auto;     
+    padding: 0 15px 20px;     
+    box-sizing: border-box; 
+}  
 
-.sidebar .link-logout {
+.frontdesk_sidebar .link-logout {     
     display: flex;
     align-items: center;
     justify-content: center;
@@ -110,28 +107,28 @@
     padding: 12px 80%;
     background: none;
     margin-right: 45%;
-    margin-top: 2vh;
-}
+    margin-top: 30vh;
+}  
 
-.sidebar .link-logout:hover {
-    width: 90%;
-    background-color: #f0f0f0;
-    color: #000;
-}
+.frontdesk_sidebar .link-logout:hover {     
+    width: 90%;     
+    background-color: #f0f0f0;     
+    color: #000; 
+}  
 
-.sidebar .icon-logout {
-    width: 24px;
-    height: 24px;
-    margin-right: 12px;
-}
+.frontdesk_sidebar .icon-logout {     
+    width: 24px;     
+    height: 24px;     
+    margin-right: 12px; 
+}  
 
-.menu-toggle {
-    position: absolute;
-    top: 20px;
-    left: 20px;
-    background: none;
-    border: none;
-    font-size: 24px;
-    cursor: pointer;
-    outline: none;
+.menu-toggle {     
+    position: absolute;     
+    top: 20px;     
+    left: 20px;     
+    background: none;     
+    border: none;     
+    font-size: 24px;     
+    cursor: pointer;     
+    outline: none; 
 }

@@ -1,0 +1,178 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Poppins', sans-serif;
+}
+
+.page-container {
+  display: flex;
+  flex-direction: column;
+}
+
+.main-content-container {
+  display: flex;
+  flex: 1;
+  margin-top: 80px;
+}
+
+.admin-menu {
+  width: 250px;
+  height: calc(100vh - 80px);
+  position: fixed;
+  left: 0;
+  background: #fff;
+  box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+}
+
+.content-wrapper {
+  flex: 1;
+  margin-left: 250px;
+  padding: 2rem;
+  background: #f5f8fc;
+  height: calc(100vh - 80px);
+}
+
+.white-container {
+  height: 100%;
+  background: #fff;
+  border-radius: 20px;
+  padding: 3rem;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+  margin-top: -10px;
+  display: flex;
+  flex-direction: column;
+}
+
+.header-section {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+}
+
+/* New search container styling */
+.search-container {
+  position: relative;
+}
+
+.search-input {
+  padding: 0.6rem 1rem;
+  width: 250px;
+  border: none;
+  border-radius: 30px;
+  background-color: #edf7f2;
+  font-size: 14px;
+  color: #555;
+  outline: none;
+  text-align: center;
+}
+
+.search-input::placeholder {
+  color: #888;
+}
+
+.unit-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 1.5rem;
+  overflow-y: auto;
+  max-height: calc(100% - 5rem); /* Takes remaining height after header */
+  padding-right: 5px; /* Adds a bit of space for the scrollbar */
+}
+
+.unit-card {
+  height: 40vh;
+  background: #fff;
+  border-radius: 10px;
+  padding: 1rem;
+  box-shadow: 0 10px 10px rgba(22, 21, 21, 0.08);
+}
+
+.unit-thumbnail {
+  background: #e0d9f2;
+  height: 15vh;
+  border-radius: 8px;
+  margin-bottom: 0.5rem;
+  position: relative;
+}
+
+.unit-details {
+  display: flex;
+  flex-direction: column;
+}
+
+.unit-header {
+  display: flex;
+  justify-content: space-between;
+  font-size: 20px;
+  margin-bottom: 4px;
+  margin-top: 10px;
+}
+
+.unit-status {
+  margin-top: 0.5rem;
+  font-size: 12px;
+  padding: 2px 8px;
+  border-radius: 20px;
+  text-align: center;
+  width: fit-content;
+}
+
+.unit-status.available {
+  background-color: #c6f1dc;
+  color: #2f8f5b;
+}
+
+.unit-status.occupied {
+  background-color: #f8d7da;
+  color: #842029;
+}
+
+/* Custom scrollbar styling */
+.unit-list::-webkit-scrollbar {
+  width: 8px;
+}
+
+.unit-list::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 10px;
+}
+
+.unit-list::-webkit-scrollbar-thumb {
+  background: #c1c1c1;
+  border-radius: 10px;
+}
+
+.unit-list::-webkit-scrollbar-thumb:hover {
+  background: #a8a8a8;
+}
+
+@media (max-width: 768px) {
+  .main-content-container {
+    flex-direction: column;
+    margin-top: 60px;
+  }
+
+  .admin-menu {
+    display: none;
+  }
+
+  .content-wrapper {
+    margin-left: 0;
+    padding: 1rem;
+    height: calc(100vh - 60px);
+  }
+
+  .white-container {
+    padding: 1rem;
+  }
+  
+  .unit-list {
+    max-height: calc(100% - 4rem);
+  }
+  
+  .search-input {
+    width: 180px;
+  }
+}

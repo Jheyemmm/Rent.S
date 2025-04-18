@@ -15,12 +15,12 @@ import coloredSettingsIcon from '../assets/icons/colored_settings.png';
 import logoutIcon from '../assets/icons/logout.png';
 import logo from '../assets/icons/Logo.png';
 
-interface MenuComponentProps {
+interface FrontdeskMenuComponentProps {
     isOpen: boolean;
     setIsOpen: (open: boolean) => void;
 }
 
-const MenuComponent = forwardRef<HTMLDivElement, MenuComponentProps>(({ isOpen, setIsOpen }, ref) => {
+const FrontdeskMenuComponent = forwardRef<HTMLDivElement, FrontdeskMenuComponentProps>(({ isOpen, setIsOpen }, ref) => {
     const location = useLocation();
     const dashboardActive = location.pathname === "/dashboard";
     const tenantActive = location.pathname === "/add-tenant" || location.pathname === "/view-tenants";
@@ -30,35 +30,35 @@ const MenuComponent = forwardRef<HTMLDivElement, MenuComponentProps>(({ isOpen, 
 
     return (
         <div>
-            <div ref={ref} className="admin_sidebar open">
-                <div className="logo-container">
+            <div ref={ref} className="frontdesk_sidebar open">
+                <div className="frontdesklogo-container">
                     <img src={logo} alt="Logo" />
                 </div>
 
                 <ul>
                     <li>
-                        <Link to="/dashboard" className={dashboardActive ? "active" : ""}>
+                        <Link to="/frontdesk-dashboard" className={dashboardActive ? "active" : ""}>
                             <img src={dashboardActive ? coloredDashboardIcon : dashboardIcon} className="icon" alt="Dashboard" />
                             Dashboard
                         </Link>
                     </li>
 
                     <li>
-                        <Link to="/viewtenant" className={tenantActive ? "active" : ""}>
+                        <Link to="/frontdesk-viewtenant" className={tenantActive ? "active" : ""}>
                             <img src={tenantActive ? coloredTenantsIcon : tenantsIcon} className="icon" alt="Tenant" />
                             Tenant
                         </Link>
                     </li>
 
                     <li>
-                        <Link to="/units" className={unitsActive ? "active" : ""}>
+                        <Link to="/frontdesk-units" className={unitsActive ? "active" : ""}>
                             <img src={unitsActive ? coloredUnitsIcon : unitsIcon} className="icon" alt="Units" />
                             Units
                         </Link>
                     </li>
 
                     <li>
-                        <Link to="/add-payment" className={paymentsActive ? "active" : ""}>
+                        <Link to="/frontdesk-payment" className={paymentsActive ? "active" : ""}>
                             <img src={paymentsActive ? coloredPaymentsIcon : paymentsIcon} className="icon" alt="Payments" />
                             Payments
                         </Link>
@@ -66,7 +66,7 @@ const MenuComponent = forwardRef<HTMLDivElement, MenuComponentProps>(({ isOpen, 
                     
 
                     <li>
-                        <Link to="/settings" className={settingsActive ? "active" : ""}>
+                        <Link to="/frontdesk-settings" className={settingsActive ? "active" : ""}>
                             <img src={settingsActive ? coloredSettingsIcon : settingsIcon} className="icon" alt="Settings" />
                             Settings
                         </Link>
@@ -86,4 +86,4 @@ const MenuComponent = forwardRef<HTMLDivElement, MenuComponentProps>(({ isOpen, 
     );
 });
 
-export default MenuComponent;
+export default FrontdeskMenuComponent;

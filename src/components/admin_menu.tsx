@@ -40,7 +40,7 @@ const AdminMenuComponent = forwardRef<HTMLDivElement, MenuComponentProps>(({ isO
 
                 <ul>
                     <li>
-                        <Link to="/dashboard" className={dashboardActive ? "active" : ""}>
+                        <Link to="/admin-dashboard" className={dashboardActive ? "active" : ""}>
                             <img src={dashboardActive ? coloredDashboardIcon : dashboardIcon} className="icon" alt="Dashboard" />
                             Dashboard
                         </Link>

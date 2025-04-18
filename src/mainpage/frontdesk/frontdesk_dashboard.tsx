@@ -1,7 +1,7 @@
 import React from "react";
 import Header from "../../components/frontdesk_header";
 import AdminMenuComponent from "../../components/frontdesk_menu";
-import "../admin/dashboard.css";
+import "./frontdeskdashboard.css";
 import RentCollected_Icon from "../../assets/icons/rent_collected.png";
 import OverdueIcon from "../../assets/icons/overdue.png";
 import Upcoming_Icon from "../../assets/icons/upcoming_icon.png";
