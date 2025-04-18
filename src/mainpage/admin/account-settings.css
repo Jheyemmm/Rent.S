@@ -5,12 +5,12 @@
 }
 
 h1 {
-  font-size: 2rem;
+  font-size: 32px;
   margin-bottom: 1rem;
   font-weight:bold;
 }
 h3 {
-  font-size: 1.5rem;
+  font-size: 24px;
   margin-bottom: 1rem;
   font-weight: normal;
   margin-left: 10px;
@@ -59,7 +59,16 @@ h3 {
     width: 100px;
     z-index: 5;
   }
-  
+  .accountsettings-container{
+    height: 100%;
+    background: #fff;
+    border-radius: 20px;
+    padding: 3rem;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+    margin-top: 20px;
+    display: flex;
+    flex-direction: column;
+  }
   .dropdown-menu.open {
     display: flex;
   }

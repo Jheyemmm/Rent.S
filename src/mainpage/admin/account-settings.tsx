@@ -49,8 +49,8 @@ const AccountSettings: React.FC = () => {
         <AdminMenu isOpen={isOpen} setIsOpen={setIsOpen} />
 
         <div className="content-wrapper">
-          <div className="white-container">
-            <h1>Settings</h1>
+          <div className="accountsettings-container">
+            <h1>Account Settings</h1>
             <h3>List of Users</h3>
 
             <table className="user-table">
