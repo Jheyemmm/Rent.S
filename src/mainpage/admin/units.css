@@ -1,4 +1,3 @@
-
 * {
   margin: 0;
   padding: 0;
@@ -31,15 +30,18 @@
   margin-left: 250px;
   padding: 2rem;
   background: #f5f8fc;
+  height: calc(100vh - 80px);
 }
 
 .white-container {
-  height: 100vh;
+  height: 100%;
   background: #fff;
   border-radius: 20px;
   padding: 3rem;
   box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
   margin-top: -10px;
+  display: flex;
+  flex-direction: column;
 }
 
 .header-section {
@@ -69,7 +71,6 @@
   gap: 0.5rem; /* Adds spacing between the text and the icon */
 }
 
-
 .search-button-container input {
   padding: 0.1em 3rem;
   border: 1px solid #ccc;
@@ -81,6 +82,9 @@
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
   gap: 1.5rem;
+  overflow-y: auto;
+  max-height: calc(100% - 5rem); /* Takes remaining height after header */
+  padding-right: 5px; /* Adds a bit of space for the scrollbar */
 }
 
 .unit-card {
@@ -119,6 +123,7 @@
   padding: 0.5rem;
   gap: 0.5rem;
   width: 100px;
+  z-index: 10; /* Ensure dropdowns appear above other elements */
 }
 
 .dropdown-menu.open {
@@ -168,6 +173,25 @@
   color: #842029;
 }
 
+/* Custom scrollbar styling */
+.unit-list::-webkit-scrollbar {
+  width: 8px;
+}
+
+.unit-list::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 10px;
+}
+
+.unit-list::-webkit-scrollbar-thumb {
+  background: #c1c1c1;
+  border-radius: 10px;
+}
+
+.unit-list::-webkit-scrollbar-thumb:hover {
+  background: #a8a8a8;
+}
+
 @media (max-width: 768px) {
   .main-content-container {
     flex-direction: column;
@@ -181,9 +205,14 @@
   .content-wrapper {
     margin-left: 0;
     padding: 1rem;
+    height: calc(100vh - 60px);
   }
 
   .white-container {
     padding: 1rem;
+  }
+  
+  .unit-list {
+    max-height: calc(100% - 4rem);
   }
 }

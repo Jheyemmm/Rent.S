@@ -46,7 +46,7 @@ const AdminMenuComponent = forwardRef<HTMLDivElement, MenuComponentProps>(({ isO
                         </Link>
                     </li>
                     <li>
-                        <Link to="/units" className={unitsActive ? "active" : ""}>
+                        <Link to="/admin-units" className={unitsActive ? "active" : ""}>
                             <img src={unitsActive ? coloredUnitsIcon : unitsIcon} className="icon" alt="Units" />
                             Units
                         </Link>
