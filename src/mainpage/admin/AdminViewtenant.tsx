@@ -1,12 +1,12 @@
 import React, { useState, useEffect, useRef } from 'react';
-import Header from '../../components/frontdesk_header';
-import MenuComponent from '../../components/frontdesk_menu';
+import Header from '../../components/admin_header';
+import MenuComponent from '../../components/admin_menu';
 import { AddTenantModal } from '../../components/Addtenant';
 import { MoveOutModal } from '../../components/moveout';
-import './FrontdeskViewtenant.css';
+import './AdminViewtenant.css';
 
 
-const FrontdeskViewTenant: React.FC = () => {
+const AdminViewTenant: React.FC = () => {
   const [searchValue, setSearchValue] = useState('');
   const [searchFocused, setSearchFocused] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
@@ -133,4 +133,4 @@ const FrontdeskViewTenant: React.FC = () => {
   );
 };
 
-export default FrontdeskViewTenant;
+export default AdminViewTenant;

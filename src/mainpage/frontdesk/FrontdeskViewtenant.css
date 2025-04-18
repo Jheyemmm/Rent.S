@@ -1,0 +1,263 @@
+/* ViewTenant.css */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap');
+
+* {
+  font-family: 'Poppins', sans-serif;
+  box-sizing: border-box;
+}
+
+body {
+  background-color: #f5f5f5;
+  margin: -2px;
+}
+
+/* Dashboard Layout Styles */
+.dashboard-container {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+.dashboard-content {
+  display: flex;
+  flex: 1;
+  position: relative;
+}
+
+.dashboard-main {
+  flex: 1;
+  padding: 20px;
+  margin-left: 250px;
+  display: flex;
+  flex-direction: column;
+  min-height: 100%;
+}
+
+/* Sidebar Styles */
+.menu-component {
+  position: fixed;
+  left: 0;
+  top: 0;
+  height: 100vh;
+  width: 250px;
+  z-index: 100;
+  transform: translateX(-100%);
+  transition: transform 0.3s ease;
+}
+
+.menu-component.open {
+  transform: translateX(0);
+}
+
+/* Tenant Container */
+.tenant-container {
+  width: 100%;
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 25px;
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  flex: 1;
+  position: relative;
+  z-index: 1;
+}
+
+/* Improved Header Layout */
+.tenant-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  margin-bottom: 20px;
+  gap: 20px;
+}
+
+.tenant-header h1 {
+  font-size: 32px;
+  font-weight: 420;
+  color: black;
+  margin: 0;
+  white-space: nowrap;
+  margin-left: 20px; /* Adjust value as needed */
+}
+
+.header-right-section {
+  display: flex;
+  align-items: center;
+  gap: 15px; /* Control spacing between button and search */
+  margin-left: auto;
+}
+
+/* Add Button Styles */
+.add-tenants-btn {
+  background-color: #E5F2F1;
+  color: black;
+  border: 1px solid #C8CBD2;
+  padding: 8px 16px;
+  border-radius: 20px;
+  font-size: 14px;
+  font-weight: 300;
+  cursor: pointer;
+  white-space: nowrap;
+  display: flex;
+  align-items: center;
+}
+
+.add-tenants-btn:hover {
+  background-color: #4CBD8D;
+}
+
+.plus-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-left: 8px;
+  font-weight: bold;
+  color: white;
+  background-color: #4CBD8D;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  font-size: 14px;
+  line-height: 1;
+}
+
+/* Enhanced Search Bar */
+.search-container {
+  position: relative;
+  width: 220px; /* Adjusted width */
+}
+
+.search-container input {
+  width: 100%;
+  padding: 10px 35px 10px 15px;
+  border: 1px solid #C8CBD2;
+  border-radius: 20px;
+  background-color: #E5F2F1;
+  color: #333;
+  font-size: 14px;
+  outline: none;
+  transition: all 0.3s;
+}
+
+.search-container input:focus {
+  border-color: #4CBD8D;
+  box-shadow: 0 0 0 2px rgba(76, 189, 141, 0.2);
+}
+
+.search-container input::placeholder {
+  color: #C8CBD2;
+}
+
+.search-container .search-icon {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #7D7D7D;
+  font-size: 16px;
+  pointer-events: none;
+}
+
+/* Table Styles */
+.tenant-table-container {
+  overflow-x: auto;
+  margin-top: 20px;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: fixed;
+}
+
+th, td {
+  padding: 12px 10px;
+  font-size: 12px;
+  text-align: center;
+  border-bottom: 1px solid #eee;
+}
+
+th {
+  background: #f5f5f5;
+  font-weight: 600;
+  color: #555;
+  position: sticky;
+  top: 0;
+}
+
+tr:hover {
+  background-color: #f9f9f9;
+}
+
+.move-out-btn {
+  background: none;
+  border: 1px solid #e74c3c;
+  color: #e74c3c;
+  padding: 6px 12px;
+  border-radius: 15px;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 500;
+  transition: all 0.2s;
+}
+
+.move-out-btn:hover {
+  background-color: #e74c3c;
+  color: white;
+}
+
+/* Responsive Styles */
+@media (max-width: 768px) {
+  .dashboard-main {
+    margin-left: 0;
+    padding: 15px;
+  }
+  
+  .tenant-header {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 15px;
+  }
+  
+  .header-right-section {
+    width: 100%;
+    justify-content: space-between;
+  }
+  
+  .search-container {
+    width: 100%;
+  }
+  
+  table, thead, tbody, th, td, tr {
+    display: block;
+  }
+  
+  td {
+    text-align: right;
+    padding-left: 50%;
+    position: relative;
+  }
+  
+  td::before {  
+    content: attr(data-label);
+    position: absolute;
+    left: 10px;
+    font-weight: 600;
+    text-align: left;
+  }
+}
+
+/* Manual Adjustment Classes */
+.header-adjust-right {
+  margin-right: -10px; /* Push right section closer to edge */
+}
+
+.header-adjust-gap {
+  gap: 25px; /* Increase space between button and search */
+}
+
+.search-adjust-width {
+  width: 250px; /* Wider search bar */
+}

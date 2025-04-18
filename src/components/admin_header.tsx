@@ -11,9 +11,9 @@ const AdminHeader: React.FC = () => {
 
     return (
         <div>
-            <div className="header custom-header-color">
-                <div className="header-container">
-                    <div className="header-right">
+            <div className="admin-header">
+                <div className="adminheader-container">
+                    <div className="adminheader-right">
                         <img src={notification} alt="Notification" className="icon-bell" />
                         <div className="user-info">
                             <span className="user-name">John</span>

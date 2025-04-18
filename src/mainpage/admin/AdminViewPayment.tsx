@@ -1,5 +1,7 @@
 import React, { useState, useRef } from 'react';
-import MenuComponent from '../../components/frontdesk_menu';
+
+import Header from "../../components/admin_header";
+import MenuComponent from '../../components/admin_menu';
 import AddPaymentModal from '../../components/addpayment';
 import { EditPaymentModal } from '../../components/EditPaymentModal';
 import './AdminViewPayment.css';
@@ -99,6 +101,7 @@ const AdminViewPayment: React.FC = () => {
 
   return (
     <div className="admin-dashboard-content">
+      <Header />
       <MenuComponent ref={sidebarRef} isOpen={true} setIsOpen={() => {}} />
       <main className="admin-dashboard-main">
         <div className="admin-payment-container">

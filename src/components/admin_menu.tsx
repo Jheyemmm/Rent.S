@@ -53,7 +53,7 @@ const AdminMenuComponent = forwardRef<HTMLDivElement, MenuComponentProps>(({ isO
                     </li>
 
                     <li>
-                        <Link to="/add-tenant" className={tenantActive ? "active" : ""}>
+                        <Link to="/adminViewtenant" className={tenantActive ? "active" : ""}>
                             <img src={tenantActive ? coloredTenantsIcon : tenantsIcon} className="icon" alt="Tenant" />
                             Tenant
                         </Link>
@@ -61,7 +61,7 @@ const AdminMenuComponent = forwardRef<HTMLDivElement, MenuComponentProps>(({ isO
 
 
                     <li>
-                        <Link to="/add-payment" className={paymentsActive ? "active" : ""}>
+                        <Link to="/adminViewPayment" className={paymentsActive ? "active" : ""}>
                             <img src={paymentsActive ? coloredPaymentsIcon : paymentsIcon} className="icon" alt="Payments" />
                             Payments
                         </Link>
