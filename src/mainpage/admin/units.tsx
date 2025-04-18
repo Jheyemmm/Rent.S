@@ -155,7 +155,7 @@ const Units: React.FC = () => {
                   <div className="unit-card" key={unit.unitID}>
                     <div className="unit-thumbnail">
                       <div
-                        className="dots-button"
+                        className="unit-dots-button"
                         onClick={() => toggleDropdown(unit.unitID)}
                       >
                         &#x2022;&#x2022;&#x2022; {/* Ellipsis icon */}

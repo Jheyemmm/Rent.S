@@ -191,7 +191,6 @@ body, html {
   margin-right: 12px;
 }
 
-/* Specific icon background colors */
 .document-icon {
   background-color: #e5f7ed;
 }
@@ -211,7 +210,6 @@ body, html {
   color: #e63946;
 }
 
-/* Units card specific layout */
 .units-card {
   display: flex;
   align-items: center;
@@ -219,7 +217,6 @@ body, html {
   width: 100%;
 }
 
-/* Circle Progress */
 .circle-progress {
   width: 65px;
   height: 65px;
@@ -245,7 +242,6 @@ body, html {
   transform: rotate(45deg);
 }
 
-/* Dashboard Bottom Section */
 .dashboard-bottom {
   display: grid;
   grid-template-columns: 1.5fr 1fr;
@@ -254,7 +250,6 @@ body, html {
   box-sizing: border-box;
 }
 
-/* Transactions Section */
 .transactions {
   background-color: white;
   border-radius: 12px;
@@ -313,7 +308,6 @@ body, html {
   white-space: nowrap;
 }
 
-/* Overdue Tenants Card */
 .overdue-tenants-card {
   background-color: white;
   border-radius: 12px;
@@ -330,7 +324,6 @@ body, html {
   color: #222;
 }
 
-/* Add responsiveness for smaller screens */
 @media (max-width: 992px) {
   .top-section,
   .dashboard-bottom {
@@ -349,7 +342,6 @@ body, html {
   }
 }
 
-/* Fix for main content container */
 .main-content-container {
   width: 100%;
   display: flex;

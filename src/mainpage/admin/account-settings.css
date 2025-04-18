@@ -1,85 +1,80 @@
-@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
-
-* {
-  font-family: 'Poppins', sans-serif;
+.accountsettings-container{
+  height: 100%;
+  background: #fff;
+  border-radius: 20px;
+  padding: 3rem;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+  margin-top: 20px;
+  display: flex;
+  flex-direction: column;
+}
+.dots-button{
+  position: static;
+  cursor: pointer;
+  font-size: 10px;
+  color: #000;
 }
 
-h1 {
-  font-size: 32px;
-  margin-bottom: 1rem;
-  font-weight:bold;
-}
-h3 {
-  font-size: 24px;
-  margin-bottom: 1rem;
-  font-weight: normal;
-  margin-left: 10px;
-}
 .user-table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-top: 2rem;
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 2rem;
+  table-layout: fixed; /* This is important for controlling column widths */
+}
+
+/* Define widths for each column */
+.user-table th:nth-child(1), 
+.user-table td:nth-child(1) { /* Fullname */
+  width: 20%;
+}
+
+.user-table th:nth-child(2), 
+.user-table td:nth-child(2) { /* Email */
+  width: 25%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.user-table th:nth-child(3), 
+.user-table td:nth-child(3) { /* Username */
+  width: 15%;
+}
+
+.user-table th:nth-child(4), 
+.user-table td:nth-child(4) { /* Role */
+  width: 15%;
+}
+
+.user-table th:nth-child(5), 
+.user-table td:nth-child(5) { /* Status */
+  width: 15%;
+}
+
+.user-table th:nth-child(6), 
+.user-table td:nth-child(6) { /* Actions */
+  width: 10%;
+}
+
+/* Add tooltips for truncated content on hover */
+.user-table td {
+  position: relative;
+}
+
+/* For better mobile responsiveness */
+@media (max-width: 768px) {
+  .user-table {
+    font-size: 14px;
   }
   
-  .user-table th{
-    color: #333;
-    padding: 12px;
-    text-align: left;
-    font-weight: bold;
+  .accountsettings-container {
+    padding: 1.5rem;
   }
-  .user-table td {
-    text-align: left;
-    padding: 12px;
-    border-bottom: 1px solid #ddd;
-  }
-  
-  .dropdown-cell {
-    position: relative;
-    width: 50px;
-  }
-  
-  .dots-button {
-    cursor: pointer;
-    font-size: 20px;
-    text-align: center;
-    padding: 5px;
-  }
-  
-  .dropdown-menu {
-    position: absolute;
-    top: 30px;
-    right: 0;
-    background-color: white;
-    border: 1px solid #ddd;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-    border-radius: 6px;
-    padding: 0.5rem;
-    display: none;
-    flex-direction: column;
-    width: 100px;
-    z-index: 5;
-  }
-  .accountsettings-container{
-    height: 100%;
-    background: #fff;
-    border-radius: 20px;
-    padding: 3rem;
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
-    margin-top: 20px;
-    display: flex;
-    flex-direction: column;
-  }
-  .dropdown-menu.open {
-    display: flex;
-  }
-  
-  .dropdown-option {
-    cursor: pointer;
-    padding: 0.5rem;
-    transition: background 0.2s ease;
-  }
-  
-  .dropdown-option:hover {
-    background-color: #f0f0f0;
-  }
-  
+}
+th {
+  background: #E5F2F1;
+  font-weight: 600;
+  color: #555;
+  position: sticky;
+  top: 0;
+}
