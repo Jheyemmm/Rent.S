@@ -1,17 +1,13 @@
 import React, { useState, useRef } from 'react';
-
-import Header from "../../components/header";
 import MenuComponent from '../../components/admin_menu';
+import Header from '../../components/header';
 import AddPaymentModal from '../../components/addpayment';
-import { EditPaymentModal } from '../../components/EditPaymentModal';
 import './AdminViewPayment.css';
 
-const AdminViewPayment: React.FC = () => {
+const AdminPayments: React.FC = () => {
   const [searchValue, setSearchValue] = useState('');
   const [searchFocused, setSearchFocused] = useState(false);
   const [showModal, setShowModal] = useState(false);
-  const [showEditModal, setShowEditModal] = useState(false);
-  const [editingTransaction, setEditingTransaction] = useState<any>(null);
   const [transactions, setTransactions] = useState([
     {
       id: 1,
@@ -55,8 +51,10 @@ const AdminViewPayment: React.FC = () => {
     }
   ]);
   const sidebarRef = useRef<HTMLDivElement>(null);
-  
+
   const handleAddPayment = (paymentData: any) => {
+    console.log('Submitted payment:', paymentData);
+    // Add the new payment to transactions
     setTransactions(prev => [
       {
         id: prev.length + 1,
@@ -71,54 +69,31 @@ const AdminViewPayment: React.FC = () => {
     setShowModal(false);
   };
 
-  const handleEdit = (id: number) => {
-    const transactionToEdit = transactions.find(t => t.id === id);
-    if (transactionToEdit) {
-      setEditingTransaction(transactionToEdit);
-      setShowEditModal(true);
-    }
-  };
-
-  const handleEditSubmit = (paymentData: any) => {
-    setTransactions(prev => prev.map(t => 
-      t.id === editingTransaction.id 
-        ? { 
-            ...t, 
-            name: paymentData.name,
-            unit: paymentData.unit,
-            amount: `$${parseFloat(paymentData.amount).toFixed(2)}`,
-            date: paymentData.date
-          } 
-        : t
-    ));
-    setShowEditModal(false);
-  };
-
   const filteredTransactions = transactions.filter(transaction =>
     transaction.name.toLowerCase().includes(searchValue.toLowerCase()) ||
     transaction.unit.toLowerCase().includes(searchValue.toLowerCase())
   );
 
   return (
-    <div className="admin-payment-content">
+    <div className="dashboard-container">
       <Header />
-      <MenuComponent ref={sidebarRef} isOpen={true} setIsOpen={() => {}} />
-      <main className="admin-payment-main">
-        <div className="admin-payment-container">
-          <div className="admin-payment-header">
-            <h1>Payments</h1>
+      <div className="dashboard-content">
+        <MenuComponent ref={sidebarRef} isOpen={true} setIsOpen={() => {}} />
+        <main className="dashboard-main">
+          <div className="payment-container">
+            <div className="payment-header">
+              <h1>List of Transactions</h1>
 
-            <div className="admin-header-right-section">
-              <div className="admin-header-actions">
+              <div className="header-right-section">
                 <button 
-                  className="admin-add-payment-btn"
+                  className="add-payment-btn"
                   onClick={() => setShowModal(true)}
                 >
                   Add new payment
-                  <span className="admin-plus-icon">+</span>
+                  <span className="plus-icon">+</span>
                 </button>
 
-                <div className="admin-payment-search-container">
+                <div className="payment-search-container">
                   <input
                     type="text"
                     value={searchValue}
@@ -127,71 +102,54 @@ const AdminViewPayment: React.FC = () => {
                     onBlur={() => setSearchFocused(false)}
                     placeholder={!searchFocused && searchValue === '' ? "Search Here" : ""}
                   />
-                  <i className="fas fa-search admin-search-icon"></i>
+                  <i className="fas fa-search search-icon"></i>
                 </div>
               </div>
             </div>
-          </div>
 
-          <div className="admin-payment-table-container">
-            <table className="admin-payment-table">
-              <thead>
-                <tr>
-                  <th>Name</th>
-                  <th>Unit number</th>
-                  <th>Amount</th>
-                  <th>Proof of payment</th>
-                  <th>Date</th>
-                  <th> </th>
-                </tr>
-              </thead>
-              <tbody>
-                {filteredTransactions.map((transaction) => (
-                  <tr key={transaction.id}>
-                    <td>{transaction.name}</td>
-                    <td>{transaction.unit}</td>
-                    <td>{transaction.amount}</td>
-                    <td>
-                      <a href="#" onClick={(e) => { 
-                        e.preventDefault(); 
-                        alert(`Viewing ${transaction.receipt}`); 
-                      }}>
-                        View Receipt
-                      </a>
-                    </td>
-                    <td>{transaction.date}</td>
-                    <td>
-                      <button 
-                        className="admin-edit-btn"
-                        onClick={() => handleEdit(transaction.id)}
-                      >
-                        Edit
-                      </button>
-                    </td>
+            <div className="payment-table-container">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Name</th>
+                    <th>Unit number</th>
+                    <th>Amount</th>
+                    <th>Proof of payment</th>
+                    <th>Date</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
+                </thead>
+                <tbody>
+                  {filteredTransactions.map((transaction) => (
+                    <tr key={transaction.id}>
+                      <td>{transaction.name}</td>
+                      <td>{transaction.unit}</td>
+                      <td>{transaction.amount}</td>
+                      <td>
+                        <a href="#" onClick={(e) => { 
+                          e.preventDefault(); 
+                          alert(`Viewing ${transaction.receipt}`); 
+                        }}>
+                          View Receipt
+                        </a>
+                      </td>
+                      <td>{transaction.date}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           </div>
-        </div>
 
-        {showModal && (
-          <AddPaymentModal
-            onClose={() => setShowModal(false)}
-            onSubmit={handleAddPayment}
-          />
-        )}
-
-        {showEditModal && editingTransaction && (
-          <EditPaymentModal
-            onClose={() => setShowEditModal(false)}
-            onSubmit={handleEditSubmit}
-            transaction={editingTransaction}
-          />
-        )}
-      </main>
+          {showModal && (
+            <AddPaymentModal
+              onClose={() => setShowModal(false)}
+              onSubmit={handleAddPayment}
+            />
+          )}
+        </main>
+      </div>
     </div>
   );
 };
 
-export default AdminViewPayment;
+export default AdminPayments;

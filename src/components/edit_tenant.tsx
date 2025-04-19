@@ -2,47 +2,75 @@ import React, { useEffect, useState } from 'react';
 import './Addtenant.css';
 import supabase from '../supabaseClient';
 
-interface AddTenantModalProps {
+interface EditTenantModalProps {
   onClose: () => void;
-  onTenantAdded: () => Promise<void>;
+  tenantData?: any; // Add this prop to receive tenant data
+  onTenantUpdated: () => Promise<void>; // Add this prop for callback after update
 }
 
 interface Unit {
   UnitID: number;
   UnitNumber: string;
   Price: number;
-  UnitStatus: 'Available' | string;
+  UnitStatus: 'Available' | 'Occupied' | string;
 }
 
-export const AddTenantModal: React.FC<AddTenantModalProps> = ({ onClose }) => {
-  const [firstName, setFirstName] = useState('');
-  const [lastName, setLastName] = useState('');
+export const EditTenantModal: React.FC<EditTenantModalProps> = ({ onClose, tenantData, onTenantUpdated }) => {
+  const [firstName, setFirstName] = useState(tenantData ? tenantData.firstName : '');
+  const [lastName, setLastName] = useState(tenantData ? tenantData.lastName : '');
   const [phone, setPhone] = useState('');
   const [email, setEmail] = useState('');
-  const [unitID, setUnitID] = useState('');
+  const [unitID, setUnitID] = useState(tenantData ? tenantData.unit.toString() : '');
   const [moveInDate, setMoveInDate] = useState('');
-  const [balance, setBalance] = useState('');
+  const [balance, setBalance] = useState(tenantData ? tenantData.balance.toString() : '');
   const [units, setUnits] = useState<{ UnitID: number; UnitNumber: string; Price: number; UnitStatus: string }[]>([]);
-  const [selectedPrice, setPrice] = useState<number | null>(null);
+  const [selectedPrice, setPrice] = useState<number | null>(tenantData ? Number(tenantData.monthlyRent) : null);
   const [error, setError] = useState<string | null>(null);
+  const [tenantID, setTenantID] = useState(tenantData ? tenantData.tenantID : null);
   
   useEffect(() => {
     const fetchUnits = async () => {
+      // For edit, we need both available units and the current tenant's unit
       const { data, error } = await supabase
         .from('Units')
-        .select('UnitID, UnitNumber, Price, UnitStatus')
-        .eq('UnitStatus', 'Available');
+        .select('UnitID, UnitNumber, Price, UnitStatus');
 
       if (!error && data) {
-        const availableUnits = data.filter((unit: Unit) => unit.UnitStatus === 'Available');
-        setUnits(availableUnits);
+        // Include current tenant's unit even if occupied
+        const relevantUnits = data.filter((unit: Unit) => 
+          unit.UnitStatus === 'Available' || (tenantData && unit.UnitID === tenantData.unit)
+        );
+        setUnits(relevantUnits);
       } else {
         setError('Failed to fetch units.')
       }
     };
 
+    // Fetch tenant details if this is an edit operation
+    const fetchTenantDetails = async () => {
+      if (tenantData && tenantData.tenantID) {
+        const { data, error } = await supabase
+          .from('Tenants')
+          .select('TenantFirstName, TenantLastName, ContactNumber, TenantEmail, MoveInDate')
+          .eq('TenantID', tenantData.tenantID)
+          .single();
+        
+        if (!error && data) {
+          setPhone(data.ContactNumber || '');
+          setEmail(data.TenantEmail || '');
+          // Format date for input element
+          if (data.MoveInDate) {
+            const dateObj = new Date(data.MoveInDate);
+            const formattedDate = dateObj.toISOString().split('T')[0];
+            setMoveInDate(formattedDate);
+          }
+        }
+      }
+    };
+
     fetchUnits();
-  }, []);
+    fetchTenantDetails();
+  }, [tenantData]);
 
   const handleUnitChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const selectedUnitID = parseInt(e.target.value);
@@ -59,41 +87,60 @@ export const AddTenantModal: React.FC<AddTenantModalProps> = ({ onClose }) => {
       } = await supabase.auth.getUser();
 
       if (userError || !user) {
-        setError('You must be logged in to add a tenant.')
+        setError('You must be logged in to update a tenant.')
         return;
       }
 
-      const { error: insertError } = await supabase
+      // Update tenant information
+      const { error: updateError } = await supabase
       .from('Tenants')
-      .insert({
+      .update({
         TenantFirstName: firstName.trim(),
         TenantLastName: lastName.trim(),
         ContactNumber: phone.trim(),
         TenantEmail: email.trim(),
         UnitID: parseInt(unitID),
         MoveInDate: moveInDate,
-        Balance: selectedPrice,
-        MoveInUserID: user.id,
-      });
+        Balance: balance,
+      })
+      .eq('TenantID', tenantID);
 
-      if (insertError) {
-        setError(insertError.message);
+      if (updateError) {
+        setError(updateError.message);
         return;
       }
   
-      // Step 2: Update unit status to 'Occupied'
-      const { error: updateError } = await supabase
-        .from('Units')
-        .update({ UnitStatus: 'Occupied' })
-        .eq('UnitID', parseInt(unitID));
-  
-      if (updateError) {
-        setError('Tenant added, but failed to update unit status: ' + updateError.message);
-        return;
+      // Update unit status if unit has changed
+      if (tenantData && tenantData.unit !== parseInt(unitID)) {
+        // Set previous unit to Available
+        const { error: prevUnitError } = await supabase
+          .from('Units')
+          .update({ UnitStatus: 'Available' })
+          .eq('UnitID', tenantData.unit);
+          
+        if (prevUnitError) {
+          setError('Tenant updated, but failed to update previous unit status.');
+          return;
+        }
+        
+        // Set new unit to Occupied
+        const { error: newUnitError } = await supabase
+          .from('Units')
+          .update({ UnitStatus: 'Occupied' })
+          .eq('UnitID', parseInt(unitID));
+          
+        if (newUnitError) {
+          setError('Tenant updated, but failed to update new unit status.');
+          return;
+        }
       }
   
       setError(null); // clear any previous error
-      alert('Tenant added successfully!');
+      alert('Tenant updated successfully!');
+      
+      // Call the onTenantUpdated callback to refresh the tenant list
+      await onTenantUpdated();
+      
       onClose(); // close modal on success
 
     } catch (err) {
@@ -110,7 +157,7 @@ export const AddTenantModal: React.FC<AddTenantModalProps> = ({ onClose }) => {
         </button>
         
         <div className="addtenant-form-container">
-          <h1 className="addtenant-form-title">Add Tenant</h1>
+          <h1 className="addtenant-form-title">Edit Tenant</h1>
 
           {error && <p className="addtenant-error">{error}</p>}
 
@@ -185,7 +232,7 @@ export const AddTenantModal: React.FC<AddTenantModalProps> = ({ onClose }) => {
                 <label>Move in date</label>
                 <input 
                 type="date" 
-                value = {moveInDate}
+                value={moveInDate}
                 onChange={(e) => setMoveInDate(e.target.value)}
                 />
               </div>
@@ -200,7 +247,14 @@ export const AddTenantModal: React.FC<AddTenantModalProps> = ({ onClose }) => {
                 />
               </div>
 
-              <div className="addtenant-form-group"></div>
+              <div className="addtenant-form-group">
+                <label>Balance</label>
+                <input 
+                type="number" 
+                value={balance}
+                onChange={(e) => setBalance(e.target.value)}
+                />
+              </div>
             </div>
           </div>
 
@@ -216,6 +270,7 @@ export const AddTenantModal: React.FC<AddTenantModalProps> = ({ onClose }) => {
               setUnitID('');
               setPrice(null);
               setMoveInDate('');
+              setBalance('');
             }}
             >Clear</button>
 
@@ -223,7 +278,7 @@ export const AddTenantModal: React.FC<AddTenantModalProps> = ({ onClose }) => {
             type="button"
             className="addtenant-submit-btn"
             onClick={handleSubmit}
-            >Submit</button>
+            >Update</button>
           </div>
         </div>
       </div>

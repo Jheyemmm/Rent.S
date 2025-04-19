@@ -81,15 +81,24 @@ body {
   white-space: nowrap;
   margin-left: 20px; /* Adjust value as needed */
 }
+.tenant-archive-btn{
+  background-color: #E5F2F1;
+  color: black;
+  border: 1px solid #C8CBD2;
+  padding: 8px 16px;
+  border-radius: 20px;
+  font-size: 14px;
+  font-weight: 300;
+  cursor: pointer;
+}
 
 .header-right-section {
   display: flex;
   align-items: center;
-  gap: 15px; /* Control spacing between button and search */
+  gap: 15px; 
   margin-left: auto;
 }
 
-/* Add Button Styles */
 .add-tenants-btn {
   background-color: #E5F2F1;
   color: black;
@@ -190,19 +199,47 @@ th {
 tr:hover {
   background-color: #f9f9f9;
 }
+.tenant-edit-btn,
+.move-out-btn {
+  background: none;
+  border: 1px solid #FB6B6B;
+  color: #FB6B6B;
+  font-family: 'Outfit', sans-serif;
+  font-size: 12px;
+  font-weight: 500;
+  line-height: normal;
+  padding: 6px 12px;
+  white-space: nowrap; 
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.2s;
+  flex-shrink: 0;
+  
+}
+
+.tenant-edit-btn {
+  background: white;
+  color: #6D85E8;
+  border: 1px solid #6D85E8;
+  margin-right: 4px;
+}
 
 .move-out-btn {
   background: none;
   border: 1px solid #e74c3c;
   color: #e74c3c;
-  padding: 6px 12px;
-  border-radius: 15px;
-  cursor: pointer;
-  font-size: 13px;
-  font-weight: 500;
-  transition: all 0.2s;
 }
 
+.button-group {
+  display: flex;
+  align-items: center;
+}
+
+
+.tenant-edit-btn:hover {
+  background-color: #6D85E8;
+  color: white;
+}
 .move-out-btn:hover {
   background-color: #e74c3c;
   color: white;

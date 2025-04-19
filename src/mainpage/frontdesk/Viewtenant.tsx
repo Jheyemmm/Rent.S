@@ -160,7 +160,7 @@ const FrontdeskViewTenant: React.FC = () => {
           </div>
         </main>
       </div>
-      {showAddModal && <AddTenantModal onClose={() => setShowAddModal(false)} />}
+      {showAddModal && <AddTenantModal onClose={() => setShowAddModal(false)} onTenantAdded={fetchTenants} />}
       {showMoveOutModal && selectedTenant && (
         <MoveOutModal 
           onClose={() => setShowMoveOutModal(false)}
