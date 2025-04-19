@@ -1,10 +1,12 @@
-import React, { useState, useEffect, useRef, ChangeEvent } from 'react';
-import Header from '../../components/header';
-import MenuComponent from '../../components/admin_menu';
-import { AddTenantModal } from '../../components/Addtenant';
-import { MoveOutModal } from '../../components/moveout';
-import './AdminViewtenant.css';
-import supabase from '../../supabaseClient';
+import React, { useState, useEffect, useRef, ChangeEvent } from "react";
+import { useNavigate } from "react-router-dom"; // Import useNavigate
+import Header from "../../components/header";
+import MenuComponent from "../../components/admin_menu";
+import { AddTenantModal } from "../../components/Addtenant";
+import { MoveOutModal } from "../../components/moveout";
+import { EditTenantModal } from "../../components/edit_tenant";
+import "./AdminViewtenant.css";
+import supabase from "../../supabaseClient";
 
 interface Tenant {
   tenantID: number;
@@ -18,34 +20,43 @@ interface Tenant {
 }
 
 const AdminViewTenant: React.FC = () => {
+  const navigate = useNavigate(); // Initialize useNavigate
   const [tenants, setTenants] = useState<Tenant[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [searchValue, setSearchValue] = useState('');
+  const [searchValue, setSearchValue] = useState("");
   const [searchFocused, setSearchFocused] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
   const [showAddModal, setShowAddModal] = useState(false);
   const [showMoveOutModal, setShowMoveOutModal] = useState(false);
   const [selectedTenant, setSelectedTenant] = useState<any>(null);
   const sidebarRef = useRef<HTMLDivElement>(null);
-  const [search, setSearch] = useState('');
+  const [search, setSearch] = useState("");
+  const [showEditModal, setShowEditModal] = useState(false);
 
   const fetchTenants = async () => {
     setLoading(true);
 
     const { data, error } = await supabase
-    .from('Tenants')
-    .select('TenantID, TenantFirstName, TenantLastName, UnitID, MoveInDate, Balance, Units ( Price ), Payments (PaymentDate)');
+      .from("Tenants")
+      .select(
+        "TenantID, TenantFirstName, TenantLastName, UnitID, MoveInDate, Balance, Units ( Price ), Payments (PaymentDate)"
+      )
+      .is("MoveOutDate", null); // Only get active tenants (who haven't moved out)
 
     if (error) {
-      console.error('Error fetching tenants:', error.message);
-      setError('Failed to load tenants.');
+      console.error("Error fetching tenants:", error.message);
+      setError("Failed to load tenants.");
     } else {
       const formattedTenants = data.map((tenant: any) => {
         // Sort payments by date to get the latest one
-        const sortedPayments = tenant.Payments?.sort((a: any, b: any) => new Date(b.PaymentDate).getTime() - new Date(a.PaymentDate).getTime());
-        const lastPayment = sortedPayments?.[0]?.PaymentDate || '-';
-  
+        const sortedPayments = tenant.Payments?.sort(
+          (a: any, b: any) =>
+            new Date(b.PaymentDate).getTime() -
+            new Date(a.PaymentDate).getTime()
+        );
+        const lastPayment = sortedPayments?.[0]?.PaymentDate || "-";
+
         return {
           tenantID: tenant.TenantID,
           firstName: tenant.TenantFirstName,
@@ -53,8 +64,11 @@ const AdminViewTenant: React.FC = () => {
           moveIn: new Date(tenant.MoveInDate).toLocaleDateString(),
           unit: tenant.UnitID,
           balance: tenant.Balance,
-          monthlyRent: tenant.Units?.Price ?? '-',
-          lastPayment,
+          monthlyRent: tenant.Units?.Price ?? "-",
+          lastPayment:
+            lastPayment !== "-"
+              ? new Date(lastPayment).toLocaleDateString()
+              : "-",
         };
       });
       setTenants(formattedTenants);
@@ -63,15 +77,17 @@ const AdminViewTenant: React.FC = () => {
   };
 
   useEffect(() => {
-      fetchTenants();
-    }, [])
+    fetchTenants();
+  }, []);
 
   const handleSearchChange = (e: ChangeEvent<HTMLInputElement>) => {
-      setSearch(e.target.value);
+    setSearch(e.target.value);
   };
 
-  const filteredTenants = tenants.filter((tenant) =>
-    tenant.lastName.toLowerCase().includes(search.toLowerCase())
+  const filteredTenants = tenants.filter(
+    (tenant) =>
+      tenant.lastName.toLowerCase().includes(search.toLowerCase()) ||
+      tenant.firstName.toLowerCase().includes(search.toLowerCase())
   );
 
   const handleMoveOutClick = (tenant: any) => {
@@ -79,26 +95,60 @@ const AdminViewTenant: React.FC = () => {
     setShowMoveOutModal(true);
   };
 
-  const handleMoveOutSubmit = (formData: any) => {
-    console.log('Move out submitted:', formData);
-    // Add your move-out logic here
-    setShowMoveOutModal(false);
+  const handleEditClick = (tenant: any) => {
+    setSelectedTenant(tenant);
+    setShowEditModal(true);
+  };
+
+  const handleMoveOutSubmit = async (formData: any) => {
+    try {
+      // Update tenant record to set move out date and reason
+      const { error } = await supabase
+        .from("Tenants")
+        .update({
+          MoveOutDate: formData.endDate,
+          Balance: formData.unpaidBalance,
+          MoveOutReason: formData.moveOutReason,
+        })
+        .eq("TenantID", selectedTenant.tenantID);
+
+      if (error) throw error;
+
+      // Refresh the tenant list
+      fetchTenants();
+      setShowMoveOutModal(false);
+    } catch (error: any) {
+      console.error("Error processing move out:", error.message);
+      // You might want to show an error notification to the user
+    }
+  };
+
+  const navigateToTenantHistory = () => {
+    // Updated to use React Router for better navigation
+    navigate("/TenantArchive");
+    
+    // Alternative if React Router doesn't work:
+    // window.location.href = "/admin/TenantArchive";
   };
 
   return (
-    
     <div className="dashboard-container">
       <Header />
       <div className="dashboard-content">
         <MenuComponent ref={sidebarRef} isOpen={isOpen} setIsOpen={setIsOpen} />
-        
+
         <main className="dashboard-main">
           <div className="tenant-container">
             <div className="tenant-header">
               <h1>All Tenants</h1>
-              
+              <button
+                className="tenant-archive-btn"
+                onClick={navigateToTenantHistory}
+              >
+                Tenant History
+              </button>
               <div className="header-right-section">
-                <button 
+                <button
                   className="add-tenants-btn"
                   onClick={() => setShowAddModal(true)}
                 >
@@ -109,11 +159,13 @@ const AdminViewTenant: React.FC = () => {
                 <div className="search-container">
                   <input
                     type="text"
-                    value={searchValue}
-                    onChange={(e) => setSearchValue(e.target.value)}
+                    value={search}
+                    onChange={handleSearchChange}
                     onFocus={() => setSearchFocused(true)}
                     onBlur={() => setSearchFocused(false)}
-                    placeholder={!searchFocused && searchValue === '' ? "Search Here" : ""}
+                    placeholder={
+                      !searchFocused && search === "" ? "Search Here" : ""
+                    }
                   />
                   <i className="fas fa-search search-icon"></i>
                 </div>
@@ -121,48 +173,73 @@ const AdminViewTenant: React.FC = () => {
             </div>
 
             <div className="tenant-table-container">
-              <table>
-                <thead>
-                  <tr>
-                    <th>Firstname</th>
-                    <th>Lastname</th>
-                    <th>Move-in Date</th>
-                    <th>Unit</th>
-                    <th>Monthly Rent</th>
-                    <th>Outstanding balance</th>
-                    <th>Last payment</th> 
-                    <th>Action</th>
-                  </tr>   
-                </thead>
-                <tbody>
-                  {tenants.map((tenant, index) => (
-                    <tr key={index}>
-                      <td>{tenant.firstName}</td>
-                      <td>{tenant.lastName}</td>
-                      <td>{tenant.moveIn}</td>
-                      <td>{tenant.unit}</td>
-                      <td>{tenant.monthlyRent}</td>
-                      <td>{tenant.balance}</td>
-                      <td>{tenant.lastPayment}</td>
-                      <td>
-                        <button 
-                          className="move-out-btn" 
-                          onClick={() => handleMoveOutClick(tenant)}
-                        >
-                          Move out
-                        </button>
-                      </td>
+              {loading ? (
+                <div className="loading-spinner">Loading...</div>
+              ) : error ? (
+                <div className="error-message">{error}</div>
+              ) : (
+                <table>
+                  <thead>
+                    <tr>
+                      <th>Firstname</th>
+                      <th>Lastname</th>
+                      <th>Move-in Date</th>
+                      <th>Unit</th>
+                      <th>Monthly Rent</th>
+                      <th>Outstanding balance</th>
+                      <th>Last payment</th>
+                      <th>Action</th>
                     </tr>
-                  ))}
-                </tbody>
-              </table>
+                  </thead>
+                  <tbody>
+                    {filteredTenants.length === 0 ? (
+                      <tr>
+                        <td colSpan={8} className="no-tenants-message">
+                          No active tenants found.
+                        </td>
+                      </tr>
+                    ) : (
+                      filteredTenants.map((tenant, index) => (
+                        <tr key={index}>
+                          <td>{tenant.firstName}</td>
+                          <td>{tenant.lastName}</td>
+                          <td>{tenant.moveIn}</td>
+                          <td>{tenant.unit}</td>
+                          <td>{tenant.monthlyRent}</td>
+                          <td>{tenant.balance}</td>
+                          <td>{tenant.lastPayment}</td>
+                          <td>
+                            <button
+                              className="tenant-edit-btn"
+                              onClick={() => handleEditClick(tenant)}
+                            >
+                              Edit
+                            </button>
+                            <button
+                              className="move-out-btn"
+                              onClick={() => handleMoveOutClick(tenant)}
+                            >
+                              Move out
+                            </button>
+                          </td>
+                        </tr>
+                      ))
+                    )}
+                  </tbody>
+                </table>
+              )}
             </div>
           </div>
         </main>
       </div>
-      {showAddModal && <AddTenantModal onClose={() => setShowAddModal(false)} />}
+      {showAddModal && (
+        <AddTenantModal
+          onClose={() => setShowAddModal(false)}
+          onTenantAdded={fetchTenants}
+        />
+      )}
       {showMoveOutModal && selectedTenant && (
-        <MoveOutModal 
+        <MoveOutModal
           onClose={() => setShowMoveOutModal(false)}
           onSubmit={handleMoveOutSubmit}
           initialData={{
@@ -170,17 +247,25 @@ const AdminViewTenant: React.FC = () => {
             lastName: selectedTenant.lastName,
             unit: selectedTenant.unit,
             unpaidBalance: selectedTenant.balance,
-            startDate: selectedTenant.moveInDate,
-            endDate: new Date().toLocaleDateString('en-US', {
-              month: '2-digit',
-              day: '2-digit',
-              year: '2-digit'
-            }).replace(/\//g, '/')
+            startDate: selectedTenant.moveIn,
+            endDate: new Date()
+              .toLocaleDateString("en-US", {
+                month: "2-digit",
+                day: "2-digit",
+                year: "2-digit",
+              })
+              .replace(/\//g, "/"),
           }}
         />
       )}
+      {showEditModal && selectedTenant && (
+        <EditTenantModal
+          onClose={() => setShowEditModal(false)}
+          tenantData={selectedTenant}
+          onTenantUpdated={fetchTenants} // Using the correct prop name
+        />
+      )}
     </div>
-
   );
 };
 
