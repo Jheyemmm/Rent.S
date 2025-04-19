@@ -1,12 +1,26 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, ChangeEvent } from 'react';
 import Header from '../../components/header';
 import MenuComponent from '../../components/frontdesk_menu';
 import { AddTenantModal } from '../../components/Addtenant';
 import { MoveOutModal } from '../../components/moveout';
 import './FrontdeskViewtenant.css';
+import supabase from '../../supabaseClient';
 
+interface Tenant {
+  tenantID: number;
+  firstName: string;
+  lastName: string;
+  moveIn: string;
+  unit: number;
+  balance: number;
+  monthlyRent: number | string;
+  lastPayment: string;
+}
 
 const FrontdeskViewTenant: React.FC = () => {
+  const [tenants, setTenants] = useState<Tenant[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [searchValue, setSearchValue] = useState('');
   const [searchFocused, setSearchFocused] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
@@ -14,14 +28,51 @@ const FrontdeskViewTenant: React.FC = () => {
   const [showMoveOutModal, setShowMoveOutModal] = useState(false);
   const [selectedTenant, setSelectedTenant] = useState<any>(null);
   const sidebarRef = useRef<HTMLDivElement>(null);
+  const [search, setSearch] = useState('');
 
-  // Tenant data
-  const tenants = [
-    { firstName: 'John', lastName: 'Simth', moveInDate: '09/25/24', unit: '201', rent: 'P18,000', balance: 'P18,000', lastPayment: 'N/A' },
-    { firstName: 'Nick', lastName: 'Gghani', moveInDate: '08/25/24', unit: '202', rent: 'P18,000', balance: 'P10,000', lastPayment: '09/30/24' },
-    { firstName: 'Nick', lastName: 'Gghani', moveInDate: '08/25/24', unit: '203', rent: 'P18,000', balance: 'P10,000', lastPayment: '09/30/24' },
-    { firstName: 'Nick', lastName: 'Gghani', moveInDate: '08/25/24', unit: '204', rent: 'P18,000', balance: 'P0.00', lastPayment: '09/30/24' }
-  ];
+  const fetchTenants = async () => {
+    setLoading(true);
+
+    const { data, error } = await supabase
+    .from('Tenants')
+    .select('TenantID, TenantFirstName, TenantLastName, UnitID, MoveInDate, Balance, Units ( Price ), Payments (PaymentDate)');
+
+    if (error) {
+      console.error('Error fetching tenants:', error.message);
+      setError('Failed to load tenants.');
+    } else {
+      const formattedTenants = data.map((tenant: any) => {
+        // Sort payments by date to get the latest one
+        const sortedPayments = tenant.Payments?.sort((a: any, b: any) => new Date(b.PaymentDate).getTime() - new Date(a.PaymentDate).getTime());
+        const lastPayment = sortedPayments?.[0]?.PaymentDate || '-';
+  
+        return {
+          tenantID: tenant.TenantID,
+          firstName: tenant.TenantFirstName,
+          lastName: tenant.TenantLastName,
+          moveIn: new Date(tenant.MoveInDate).toLocaleDateString(),
+          unit: tenant.UnitID,
+          balance: tenant.Balance,
+          monthlyRent: tenant.Units?.Price ?? '-',
+          lastPayment,
+        };
+      });
+      setTenants(formattedTenants);
+    }
+    setLoading(false);
+  };
+
+  useEffect(() => {
+      fetchTenants();
+    }, [])
+
+  const handleSearchChange = (e: ChangeEvent<HTMLInputElement>) => {
+      setSearch(e.target.value);
+  };
+
+  const filteredTenants = tenants.filter((tenant) =>
+    tenant.lastName.toLowerCase().includes(search.toLowerCase())
+  );
 
   const handleMoveOutClick = (tenant: any) => {
     setSelectedTenant(tenant);
@@ -79,7 +130,7 @@ const FrontdeskViewTenant: React.FC = () => {
                     <th>Unit</th>
                     <th>Monthly Rent</th>
                     <th>Outstanding balance</th>
-                    <th>Last payment</th>
+                    <th>Last payment</th> 
                     <th>Action</th>
                   </tr>   
                 </thead>
@@ -88,9 +139,9 @@ const FrontdeskViewTenant: React.FC = () => {
                     <tr key={index}>
                       <td>{tenant.firstName}</td>
                       <td>{tenant.lastName}</td>
-                      <td>{tenant.moveInDate}</td>
+                      <td>{tenant.moveIn}</td>
                       <td>{tenant.unit}</td>
-                      <td>{tenant.rent}</td>
+                      <td>{tenant.monthlyRent}</td>
                       <td>{tenant.balance}</td>
                       <td>{tenant.lastPayment}</td>
                       <td>
