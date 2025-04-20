@@ -1,9 +1,22 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import './addpayment.css';
+import supabase from '../supabaseClient';
 
 interface AddPaymentModalProps {
   onClose: () => void;
   onSubmit: (paymentData: any) => void;
+}
+
+interface Unit {
+  UnitID: number;
+  UnitNumber: string;
+  Price: number;
+  Tenants?: {
+    TenantID: number;
+    TenantFirstName: string;
+    TenantLastName: string;
+    MoveInDate: string;
+  }
 }
 
 const AddPaymentModal: React.FC<AddPaymentModalProps> = ({ onClose, onSubmit }) => {
@@ -11,22 +24,115 @@ const AddPaymentModal: React.FC<AddPaymentModalProps> = ({ onClose, onSubmit }) 
     const [paymentDate, setPaymentDate] = useState('');
     const [proofFile, setProofFile] = useState<File | null>(null);
     const [selectedUnit, setSelectedUnit] = useState('');
+    const [units, setUnits] = useState<Unit[]>([]);
+    const [error, setError] = useState<string | null>(null);
   
-    const units = [
-      { number: '201', tenant: 'John Smith' },
-      { number: '203', tenant: 'Sherlock Holmes' },
-      { number: '205', tenant: 'Trafalgar Law' }
-    ];
-  
-    const handleSubmit = (e: React.FormEvent) => {
-      e.preventDefault();
-      onSubmit({
-        unit: selectedUnit,
-        amount,
-        paymentDate,
-        proofFile
-      });
+    useEffect(() => {
+      const fetchUnits = async () => {
+        const { data, error } = await supabase
+        .from('Units')
+        .select('UnitID, UnitNumber, Price, UnitStatus, Tenants (TenantID, TenantFirstName, TenantLastName, MoveInDate)')
+        .eq('UnitStatus', 'Occupied'); // filter occupied units
+
+        if (error) {
+          console.error(error);
+          setError('Failed to fetch units.');
+        } else {
+          console.log('Fetched occupied units with tenants:', data);
+          setUnits(data.map((unit: any) => ({
+            UnitID: unit.UnitID,
+            UnitNumber: unit.UnitNumber,
+            Price: unit.Price,
+            Tenants: Array.isArray(unit.Tenants) ? unit.Tenants[0] : unit.Tenants ?? undefined
+          })));
+        }
+      };
+
+      fetchUnits();
+    }, []);
+
+    const selectedUnitDetails = units.find((unit) => unit.UnitID.toString() === selectedUnit);
+
+    const [totalPaid, setTotalPaid] = useState(0);
+
+  useEffect(() => {
+    const fetchTotalPaid = async () => {
+      if (!selectedUnit) return;
+
+      const { data, error } = await supabase
+        .from('Payments')
+        .select('PaymentAmount')
+        .eq('UnitID', selectedUnit);
+
+      if (!error && data) {
+        const total = data.reduce((sum, p) => sum + p.PaymentAmount, 0);
+        setTotalPaid(total);
+      }
     };
+
+    fetchTotalPaid();
+  }, [selectedUnit]);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    console.log("Submit button clicked");
+    e.preventDefault();
+    console.log("Form submission triggered");
+  
+    const unit = units.find((u) => u.UnitID.toString() === selectedUnit);
+    if (!unit || !unit.Tenants) {
+      setError("Please select a valid unit.");
+      return;
+    }
+
+    if (!proofFile) {
+      setError("Please upload a proof of payment file.");
+      return;
+    }
+
+    const { data: uploadData, error: uploadError } = await supabase
+    .storage
+    .from('payment_proofs')
+    .upload(`proofs/${Date.now()}_${proofFile.name}`, proofFile);
+  
+    if (uploadError || !uploadData) {
+      console.error("Upload error:", uploadError);
+      setError("Failed to upload proof of payment.");
+      return;
+    }
+    
+    const proofUrl = supabase.storage
+      .from('payment_proofs')
+      .getPublicUrl(uploadData.path).data.publicUrl;
+  
+    const parsedAmount = parseFloat(amount);
+      if (isNaN(parsedAmount)) {
+        setError("Please enter a valid payment amount.");
+        return;
+      }
+
+    const paymentData = {
+      UnitID: unit.UnitID,
+      TenantID: unit.Tenants.TenantID,
+      PaymentAmount: parseFloat(amount),
+      PaymentDate: paymentDate,
+      PaymentProof: proofUrl, // you'd need to upload this to Supabase storage first
+      UserID: 123, // replace with logged-in user's ID
+    };
+
+    const { error: insertError } = await supabase
+  .from('Payments')
+  .insert([paymentData]);
+
+if (insertError) {
+  console.error("Insert error:", insertError);
+  setError("Failed to save payment record.");
+  return;
+}
+  
+    onSubmit(paymentData);
+    console.log('Payment saved successfully.');
+  };
+  
   
     return (
 <div className="addpayment-modal-overlay"> {/* Changed from modal-overlay */}
@@ -36,9 +142,9 @@ const AddPaymentModal: React.FC<AddPaymentModalProps> = ({ onClose, onSubmit }) 
             <button className="close-btn" onClick={onClose}>×</button>
           </div>
   
-          <form onSubmit={handleSubmit}>
+  <form>
   <div className="addpayment-modal-columns">
-    {/* LEFT COLUMN - UNIT SELECTION ONLY */}
+    {/* LEFT COLUMN - UNIT SELECTION ONLY */
     <div className="addpayment-left-column">
       <div className="addpayment-form-group">
         <h3>UNIT NUMBER</h3>
@@ -49,8 +155,8 @@ const AddPaymentModal: React.FC<AddPaymentModalProps> = ({ onClose, onSubmit }) 
         >
           <option value="">Select Unit</option>
           {units.map((unit) => (
-            <option key={unit.number} value={unit.number}>
-              Unit {unit.number} - {unit.tenant}
+            <option key={unit.UnitID} value={unit.UnitID}>
+              Unit {unit.UnitNumber}
             </option>
           ))}
         </select>
@@ -58,15 +164,20 @@ const AddPaymentModal: React.FC<AddPaymentModalProps> = ({ onClose, onSubmit }) 
 
       <div className="addpayment-unit-details">
         <h4>DETAILS</h4>
-        <p>Monthly Rental: ₱18,500.00</p>
-        <p>Outstanding Balance: ₱18,500.00</p>
-        <p>Total Paid: ₱0.00</p>
-        <p>Rent Started: 09/25/24</p>
+        <p>Tenant: {selectedUnitDetails?.Tenants?.TenantFirstName} {selectedUnitDetails?.Tenants?.TenantLastName}</p>
+        <p>Monthly Rental: ₱{selectedUnitDetails?.Price?.toLocaleString()}</p>
+        <p>Outstanding Balance: ₱{selectedUnitDetails?.Price ? (selectedUnitDetails.Price - totalPaid).toLocaleString() : '0.00'}</p>
+        <p>Total Paid: ₱{totalPaid.toLocaleString()}</p>
+        <p>Rent Started: {
+            selectedUnitDetails?.Tenants?.MoveInDate
+              ? new Date(selectedUnitDetails.Tenants.MoveInDate).toLocaleDateString()
+              : 'N/A'}
+        </p>
         <p>Payable Months: 1</p>
       </div>
-    </div>
+    </div> }
 
-    {/* RIGHT COLUMN - DATE, AMOUNT & ACTIONS */}
+    {/* RIGHT COLUMN - DATE, AMOUNT & ACTIONS */
     <div className="addpayment-right-column">
       {/* DATE INPUT */}
       <div className="addpayment-date-input-group">
@@ -107,16 +218,15 @@ const AddPaymentModal: React.FC<AddPaymentModalProps> = ({ onClose, onSubmit }) 
         </div>
       </div>
 
-      {/* ACTIONS BUTTONS */}
       <div className="addpayment-modal-actions">
         <button type="button" className="addpayment-cancel-btn" onClick={onClose}>
           Cancel
         </button>
-        <button type="submit" className="addpayment-save-btn">
+        <button type="button" className="addpayment-save-btn" onClick={handleSubmit}>
           Save Payment
         </button>
       </div>
-    </div>
+    </div> }
   </div>
 </form>
         </div>
