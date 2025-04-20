@@ -7,9 +7,10 @@
   }
   
   .tenant-archive-content {
-    margin-left: 260px;
-    padding: 20px;
+    margin-left: 210px;
+    padding: 90px;
     flex: 1;
+    margin-right: -29px;
   }
   
   .tenant-archive-container {
