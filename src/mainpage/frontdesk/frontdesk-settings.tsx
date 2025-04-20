@@ -1,8 +1,8 @@
 import React, { useState, useRef, useEffect } from "react";
 import Header from "../../components/header";
-import MenuComponent from "../../components/admin_menu";
+import MenuComponent from "../../components/frontdesk_menu";
 import supabase from "../../supabaseClient";
-import './admin-settings.css';
+import './frontdesk-settings.css';
 
 interface User {
   UserID: string;
@@ -20,7 +20,7 @@ interface RoleData {
   Role: string;
 }
 
-const AdminSettings: React.FC = () => {
+const FrontdeskSettings: React.FC = () => {
   const sidebarRef = useRef<HTMLDivElement>(null);
   const [isOpen, setIsOpen] = useState(false);
   
@@ -242,4 +242,4 @@ const AdminSettings: React.FC = () => {
   );
 };
 
-export default AdminSettings;
+export default FrontdeskSettings;

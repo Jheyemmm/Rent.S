@@ -10,7 +10,7 @@ import FDViewTenant from "./mainpage/frontdesk/Viewtenant";
 import FDViewPayment from "./mainpage/frontdesk/ViewPayment";
 import AdminViewPayment from "./mainpage/admin/AdminViewPayment";
 import AdminViewTenant from "./mainpage/admin/AdminViewtenant";
-
+import FDSettings from "./mainpage/frontdesk/frontdesk-settings";
 import AccountSettings from "./mainpage/admin/account-settings";
 import TenantArchive from "./mainpage/admin/TenantArchive";
 import AdminSettings from "./mainpage/admin/admin-settings";
@@ -29,10 +29,10 @@ const App: React.FC = () => {
         <Route path="/adminViewtenant" element={<AdminViewTenant/>} />
         <Route path="/admin-settings" element={<AdminSettings/>} />
         <Route path="/frontdesk-units" element={<FDUnits/>} />
-        
         <Route path="/TenantArchive" element={<TenantArchive/>} />
         <Route path="/admin-units" element={<AdminUnits/>} />
         <Route path="/account-settings" element={<AccountSettings />} />
+        <Route path="/frontdesk-settings" element={<FDSettings />} />
       </Routes>
     </Router>
     
