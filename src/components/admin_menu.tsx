@@ -28,7 +28,7 @@ const AdminMenuComponent = forwardRef<HTMLDivElement, MenuComponentProps>(({ isO
     const tenantActive = location.pathname === "/add-tenant" || location.pathname === "/view-tenants";
     const unitsActive = location.pathname === "/add-units" || location.pathname === "/units";
     const paymentsActive = location.pathname === "/add-payment" || location.pathname === "/view-payments";
-    const settingsActive = location.pathname === "/settings";
+    const settingsActive = location.pathname === "/admin-settings";
     const AccountsettingsActive = location.pathname === "/account-settings";
 
     return (
@@ -69,7 +69,7 @@ const AdminMenuComponent = forwardRef<HTMLDivElement, MenuComponentProps>(({ isO
                     
 
                     <li>
-                        <Link to="/settings" className={settingsActive ? "active" : ""}>
+                        <Link to="/admin-settings" className={settingsActive ? "active" : ""}>
                             <img src={settingsActive ? coloredSettingsIcon : settingsIcon} className="icon" alt="Settings" />
                             Settings
                         </Link>
@@ -77,7 +77,7 @@ const AdminMenuComponent = forwardRef<HTMLDivElement, MenuComponentProps>(({ isO
                     <li>
                         <Link to="/account-settings" className={AccountsettingsActive ? "active" : ""}>
                             <img src={AccountsettingsActive ? coloredAccountsettingsIcon : AccountsettingsIcon} className="icon" alt="Settings" />
-                            Account Settings
+                            Accounts
                         </Link>
                     </li>
                     

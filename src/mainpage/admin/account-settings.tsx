@@ -136,7 +136,7 @@ const AccountSettings: React.FC = () => {
 
         <div className="content-wrapper">
           <div className="accountsettings-container">
-            <h1>Account Settings</h1>
+            <h1>Accounts</h1>
             <h3>List of Users</h3>
 
             {loading ? (

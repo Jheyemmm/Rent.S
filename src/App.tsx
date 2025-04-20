@@ -13,6 +13,7 @@ import AdminViewTenant from "./mainpage/admin/AdminViewtenant";
 
 import AccountSettings from "./mainpage/admin/account-settings";
 import TenantArchive from "./mainpage/admin/TenantArchive";
+import AdminSettings from "./mainpage/admin/admin-settings";
 
 const App: React.FC = () => {
   return (
@@ -26,6 +27,7 @@ const App: React.FC = () => {
         <Route path="/frontdesk-payment" element={<FDViewPayment/>} />
         <Route path="/adminViewPayment" element={<AdminViewPayment/>} />
         <Route path="/adminViewtenant" element={<AdminViewTenant/>} />
+        <Route path="/admin-settings" element={<AdminSettings/>} />
         <Route path="/frontdesk-units" element={<FDUnits/>} />
         
         <Route path="/TenantArchive" element={<TenantArchive/>} />

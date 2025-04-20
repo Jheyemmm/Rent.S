@@ -74,6 +74,7 @@ const AddPaymentModal: React.FC<AddPaymentModalProps> = ({ onClose, onSubmit }) 
   }, [selectedUnit]);
 
   const handleSubmit = async (e: React.FormEvent) => {
+    console.log("Submit button clicked");
     e.preventDefault();
     console.log("Form submission triggered");
   
@@ -94,6 +95,7 @@ const AddPaymentModal: React.FC<AddPaymentModalProps> = ({ onClose, onSubmit }) 
     .upload(`proofs/${Date.now()}_${proofFile.name}`, proofFile);
   
     if (uploadError || !uploadData) {
+      console.error("Upload error:", uploadError);
       setError("Failed to upload proof of payment.");
       return;
     }
@@ -116,9 +118,19 @@ const AddPaymentModal: React.FC<AddPaymentModalProps> = ({ onClose, onSubmit }) 
       PaymentProof: proofUrl, // you'd need to upload this to Supabase storage first
       UserID: 123, // replace with logged-in user's ID
     };
+
+    const { error: insertError } = await supabase
+  .from('Payments')
+  .insert([paymentData]);
+
+if (insertError) {
+  console.error("Insert error:", insertError);
+  setError("Failed to save payment record.");
+  return;
+}
   
     onSubmit(paymentData);
-    console.log('Submitted payment data:', paymentData);
+    console.log('Payment saved successfully.');
   };
   
   
@@ -130,9 +142,9 @@ const AddPaymentModal: React.FC<AddPaymentModalProps> = ({ onClose, onSubmit }) 
             <button className="close-btn" onClick={onClose}>×</button>
           </div>
   
-          <form onSubmit={handleSubmit}>
+  <form>
   <div className="addpayment-modal-columns">
-    {/* LEFT COLUMN - UNIT SELECTION ONLY */}
+    {/* LEFT COLUMN - UNIT SELECTION ONLY */
     <div className="addpayment-left-column">
       <div className="addpayment-form-group">
         <h3>UNIT NUMBER</h3>
@@ -163,9 +175,9 @@ const AddPaymentModal: React.FC<AddPaymentModalProps> = ({ onClose, onSubmit }) 
         </p>
         <p>Payable Months: 1</p>
       </div>
-    </div>
+    </div> }
 
-    {/* RIGHT COLUMN - DATE, AMOUNT & ACTIONS */}
+    {/* RIGHT COLUMN - DATE, AMOUNT & ACTIONS */
     <div className="addpayment-right-column">
       {/* DATE INPUT */}
       <div className="addpayment-date-input-group">
@@ -206,16 +218,15 @@ const AddPaymentModal: React.FC<AddPaymentModalProps> = ({ onClose, onSubmit }) 
         </div>
       </div>
 
-      {/* ACTIONS BUTTONS */}
       <div className="addpayment-modal-actions">
         <button type="button" className="addpayment-cancel-btn" onClick={onClose}>
           Cancel
         </button>
-        <button type="submit" className="addpayment-save-btn">
+        <button type="button" className="addpayment-save-btn" onClick={handleSubmit}>
           Save Payment
         </button>
       </div>
-    </div>
+    </div> }
   </div>
 </form>
         </div>
