@@ -9,10 +9,14 @@
 
 /* Header Container */
 .admin-header {
+  position: fixed;
+  top: 0;
+  right: 0;
+  width: calc(110% - 260px); /* Adjust width to account for sidebar (260px is an estimate, modify based on your sidebar width) */
+  z-index: 1000;
   background-color: #A5DEC6;
   padding: 1rem 2rem;
-  position: inherit;
-  margin-right: -40px;
+  height: 70px; /* Set a specific height - adjust based on your design */
 }
 
 .adminheader-container {
@@ -23,14 +27,13 @@
   padding: 0;
 }
 
-/* Right Content - Now Glued to Edge */
+/* Right Content */
 .adminheader-right {
   display: flex;
   align-items: center;
   gap: 15px;
-  padding-right: 35px; /* Removed all right padding */
-  margin-right: 0; /* Removed all right margin */
-  transform: translateX(-5px); /* Micro-adjust to kill last pixel */
+  padding-right: 35px;
+  transform: translateX(30px);
 }
 
 /* Icons */
@@ -63,8 +66,18 @@
   line-height: 1.2;
 }
 
+/* Adjust content container to account for fixed header */
+.content-wrapper {
+  padding-top: 80px; /* Adjust based on your header height */
+  margin-left: 260px; /* Match your sidebar width */
+}
+
 /* Mobile Responsiveness */
 @media (max-width: 768px) {
+  .admin-header {
+    width: 100%; 
+  }
+  
   .adminheader-right {
     gap: 10px;
     padding-right: 10px;
@@ -78,5 +91,9 @@
   .icon-user {
     width: 28px;
     height: 28px;
+  }
+  
+  .content-wrapper {
+    margin-left: 0; /* No sidebar margin on mobile */
   }
 }
