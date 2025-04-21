@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import Header from "../../components/header";
 import MenuComponent from "../../components/admin_menu";
 import "./dashboard.css";
@@ -6,8 +6,36 @@ import RentCollected_Icon from "../../assets/icons/rent_collected.png";
 import OverdueIcon from "../../assets/icons/overdue.png";
 import Upcoming_Icon from "../../assets/icons/upcoming_icon.png";
 import Overdue_Icon from "../../assets/icons/overdue_icon.png";
+import supabase from "../../supabaseClient";
 
 const Dashboard: React.FC = () => {
+  const [availableCount, setAvailableCount] = useState<number>(0);
+  const [occupiedCount, setOccupiedCount] = useState<number>(0);
+
+  useEffect(() => {
+    const fetchUnits = async () => {
+      const { data: available, error: availableError } = await supabase
+        .from("Units")
+        .select("*", { count: "exact" })
+        .eq("UnitStatus", "Available");
+
+      const { data: occupied, error: occupiedError } = await supabase
+        .from("Units")
+        .select("*", { count: "exact" })
+        .eq("UnitStatus", "Occupied");
+
+      if (availableError || occupiedError) {
+        console.error("Error fetching unit counts", availableError || occupiedError);
+        return;
+      }
+
+      setAvailableCount(available?.length || 0);
+      setOccupiedCount(occupied?.length || 0);
+    };
+
+    fetchUnits();
+  }, []);
+
   return (
     <div className="page-container">
       <Header />
