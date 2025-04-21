@@ -56,7 +56,7 @@ const AddUnit: React.FC<AddUnitProps> = ({ closeForm, refreshUnits }) => {
     setLoading(false);
   }
 
-    // console.log('Unit added:', { unitName, unitPrice, unitDetails });
+    console.log('Unit added:', { unitNumber, unitPrice, unitDetails });
     // closeForm(); // Close the form after submission
   };
 

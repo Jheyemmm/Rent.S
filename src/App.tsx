@@ -15,7 +15,7 @@ import AccountSettings from "./mainpage/admin/account-settings";
 import TenantArchive from "./mainpage/admin/TenantArchive";
 import AdminSettings from "./mainpage/admin/admin-settings";
 import ProtectedRoute from "./components/ProtectedRoute";
-import Unauthorized from "./pages/unauthorized"; // You'll need to create this page
+import Unauthorized from "./pages/unauthorized"; 
 
 const App: React.FC = () => {
   return (
@@ -43,8 +43,6 @@ const App: React.FC = () => {
           <Route path="/frontdesk-payment" element={<FDViewPayment />} />
           <Route path="/frontdesk-settings" element={<FDSettings />} />
         </Route>
-        
-        {/* Catch all - redirect to login */}
         <Route path="*" element={<Navigate to="/login" replace />} />
       </Routes>
     </Router>

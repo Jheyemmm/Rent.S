@@ -28,11 +28,11 @@ body, html {
 }
 
 .logo img {
+  margin-left: 90px;
   width: 80%;
   max-width: 400px;
 }
 
-/* Right Section: Login Form */
 .login-form {
   flex: 1;
   background: #EAF7F0;
@@ -41,7 +41,6 @@ body, html {
   justify-content: center;
 }
 
-/* Inner container for the form with reduced width */
 .inner-login {
   width: 100%;
   background: #fff;

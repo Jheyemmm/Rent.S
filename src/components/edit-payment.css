@@ -1,0 +1,304 @@
+/* Main modal styles */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+  }
+  
+  .modal-container {
+    background-color: white;
+    border-radius: 12px;
+    width: 900px;
+    max-width: 90vw;
+    max-height: 90vh;
+    overflow-y: auto;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+    position: relative;
+  }
+  
+  .modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 25px;
+    border-bottom: 1px solid #f0f0f0;
+    position: sticky;
+    top: 0;
+    background: white;
+    z-index: 10;
+  }
+  
+  .modal-title {
+    margin: 0;
+    font-size: 1.4rem;
+    color: #2c3e50;
+    font-weight: 600;
+    text-align: center;
+    width: 100%;
+    letter-spacing: 0.5px;
+  }
+  
+  .modal-close-btn {
+    background: none;
+    border: none;
+    font-size: 1.8rem;
+    cursor: pointer;
+    color: #777;
+    transition: color 0.2s;
+    line-height: 1;
+    padding: 0 0 4px 0;
+    width: 30px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: absolute;
+    right: 25px;
+    top: 20px;
+  }
+  
+  .modal-close-btn:hover {
+    color: #e74c3c;
+    background: #f9f9f9;
+    border-radius: 50%;
+  }
+  
+  /* Layout for two columns */
+  .modal-two-columns {
+    display: flex;
+    padding: 25px;
+    gap: 40px;
+  }
+  
+  .modal-left-column {
+    flex: 1.2;
+    padding-right: 30px;
+    border-right: 1px solid #f0f0f0;
+  }
+  
+  .modal-right-column {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+  
+  /* Form sections */
+  .form-section {
+    margin-bottom: 25px;
+  }
+  
+  .section-label {
+    margin: 0 0 10px 0;
+    color: #34495e;
+    font-size: 0.95rem;
+    font-weight: 600;
+    letter-spacing: 0.3px;
+  }
+  
+  .form-display-field {
+    padding: 12px 15px;
+    background-color: #f9f9f9;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    font-size: 0.95rem;
+    color: #2c3e50;
+  }
+  
+  /* Details section */
+  .details-section {
+    background: #f5f9f8;
+    border-radius: 8px;
+    padding: 20px;
+    margin-top: 25px;
+    border: 1px solid #e0e0e0;
+  }
+  
+  .details-content {
+    margin-top: 8px;
+    font-size: 0.9rem;
+    color: #555;
+  }
+  
+  .details-content p {
+    margin: 10px 0;
+    line-height: 1.5;
+  }
+  
+  /* Input styles */
+  .date-input {
+    width: 100%;
+    padding: 12px 15px;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    font-size: 0.95rem;
+    transition: all 0.2s;
+    background-color: #f9f9f9;
+  }
+  
+  .date-input:focus {
+    border-color: #4CBD8D;
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(76, 189, 141, 0.2);
+    background-color: white;
+  }
+  
+  .amount-input-container {
+    position: relative;
+    display: flex;
+    align-items: center;
+    width: 100%;
+  }
+  
+  .currency-symbol {
+    position: absolute;
+    left: 15px;
+    font-size: 0.95rem;
+    color: #2c3e50;
+  }
+  
+  .amount-input {
+    width: 100%;
+    padding: 12px 15px 12px 32px;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    font-size: 0.95rem;
+    transition: all 0.2s;
+    background-color: #f9f9f9;
+  }
+  
+  .amount-input:focus {
+    border-color: #4CBD8D;
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(76, 189, 141, 0.2);
+    background-color: white;
+  }
+  
+  /* File upload area */
+  .file-upload-area {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  
+  .file-upload-box {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100px;
+    border: 2px dashed #d0e0df;
+    border-radius: 8px;
+    background-color: #f5f9f8;
+    cursor: pointer;
+    padding: 20px;
+    text-align: center;
+    font-size: 0.9rem;
+    color: #555;
+    transition: all 0.2s;
+  }
+  
+  .file-upload-box:hover {
+    border-color: #4CBD8D;
+    background: #edf8f3;
+  }
+  
+  .file-name-display,
+  .current-file-display {
+    font-size: 0.85rem;
+    color: #4CBD8D;
+    word-break: break-all;
+    font-weight: 500;
+    text-align: center;
+  }
+  
+  /* Error message */
+  .error-message {
+    color: #e74c3c;
+    font-size: 0.85rem;
+    margin-top: 12px;
+  }
+  
+  /* Action buttons */
+  .form-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 15px;
+    margin-top: 25px;
+    border-top: 1px solid #f0f0f0;
+    padding-top: 25px;
+  }
+  
+  .cancel-button,
+  .save-button {
+    padding: 10px 25px;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+    min-width: 120px;
+  }
+  
+  .cancel-button {
+    background-color: white;
+    border: 1px solid #e0e0e0;
+    color: #555;
+  }
+  
+  .cancel-button:hover {
+    background-color: #f5f5f5;
+    border-color: #ccc;
+  }
+  
+  .save-button {
+    background-color: #4CBD8D;
+    border: 1px solid #3da87a;
+    color: white;
+  }
+  
+  .save-button:hover {
+    background-color: #3da87a;
+  }
+  
+  .cancel-button:disabled,
+  .save-button:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+  }
+  
+  /* Responsive adjustments */
+  @media (max-width: 768px) {
+    .modal-two-columns {
+      flex-direction: column;
+      gap: 2px;
+      padding: 20px;
+    }
+    
+    .modal-left-column {
+      padding-right: 0;
+      border-right: none;
+      border-bottom: 1px solid #f0f0f0;
+      padding-bottom: 25px;
+    }
+    
+    .modal-right-column {
+      gap: 20px;
+    }
+    
+    .form-actions {
+      justify-content: center;
+    }
+    
+    .cancel-button, 
+    .save-button {
+      width: 100%;
+      padding: 12px;
+    }
+  }

@@ -53,29 +53,48 @@
 
 .search-button-container {
   display: flex;
-  gap: 2rem;
+      align-items: center;
+      gap: 15px;
+      margin-left: auto;
 }
 
 .add-unit-btn {
-  width: 25vh;
-  justify-content: space-between;
-  display: flex;
-  align-items: center;
   background-color: #E5F2F1;
-  color: #000000;
-  border: none;
-  padding: 0rem 1.9rem;
-  border-radius: 40px;
-  font-weight: 500;
-  cursor: pointer;
-  gap: 0.5rem; /* Adds spacing between the text and the icon */
+    color: black;
+    border: 1px solid #C8CBD2;
+    padding: 8px 16px;
+    border-radius: 20px;
+    font-size: 14px;
+    font-weight: 300;
+    cursor: pointer;
+    white-space: nowrap;
+    display: flex;
+    align-items: center;
 }
-
+.plus-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-left: 8px;
+  font-weight: bold;
+  color: white;
+  background-color: #4CBD8D;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  font-size: 14px;
+  line-height: 1;
+}
 .search-button-container input {
-  padding: 0.1em 3rem;
-  border: 1px solid #ccc;
-  border-radius: 40px;
-  background-color: #edf7f2;
+  width: 100%;
+    padding: 10px 35px 10px 15px;
+    border: 1px solid #C8CBD2;
+    border-radius: 20px;
+    background-color: #E5F2F1;
+    color: #333;
+    font-size: 14px;
+    outline: none;
+    transition: all 0.3s;
 }
 
 .unit-list {

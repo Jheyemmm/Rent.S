@@ -1,78 +1,165 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect, ChangeEvent } from 'react';
 import MenuComponent from '../../components/admin_menu';
 import Header from '../../components/header';
 import AddPaymentModal from '../../components/addpayment';
+import EditPaymentModal from '../../components/edit-payment';
 import './AdminViewPayment.css';
+import supabase from '../../supabaseClient';
+
+interface Transaction {
+  id: number;
+  name: string;
+  unit: string;
+  amount: string;
+  receipt: string;
+  receiptFile: string | null;
+  date: string;
+}
 
 const AdminPayments: React.FC = () => {
   const [searchValue, setSearchValue] = useState('');
   const [searchFocused, setSearchFocused] = useState(false);
   const [showModal, setShowModal] = useState(false);
-  const [transactions, setTransactions] = useState([
-    {
-      id: 1,
-      name: 'John Smith',
-      unit: 'Unit 302',
-      amount: '$1,250.00',
-      receipt: 'receipt_302_1015.pdf',
-      date: '2023-10-15'
-    },
-    {
-      id: 2,
-      name: 'Maria Garcia',
-      unit: 'Unit 105',
-      amount: '$1,150.00',
-      receipt: 'receipt_105_1014.pdf',
-      date: '2023-10-14'
-    },
-    {
-      id: 3,
-      name: 'David Kim',
-      unit: 'Unit 412',
-      amount: '$1,350.00',
-      receipt: 'receipt_412_1012.pdf',
-      date: '2023-10-12'
-    },
-    {
-      id: 4,
-      name: 'Sarah Johnson',
-      unit: 'Unit 208',
-      amount: '$1,100.00',
-      receipt: 'receipt_208_1010.pdf',
-      date: '2023-10-10'
-    },
-    {
-      id: 5,
-      name: 'Robert Chen',
-      unit: 'Unit 501',
-      amount: '$1,400.00',
-      receipt: 'receipt_501_1008.pdf',
-      date: '2023-10-08'
-    }
-  ]);
+  const [showEditModal, setShowEditModal] = useState(false);
+  const [selectedTransaction, setSelectedTransaction] = useState<Transaction | null>(null);
+  const [transactions, setTransactions] = useState<Transaction[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const sidebarRef = useRef<HTMLDivElement>(null);
+  const [showImageModal, setShowImageModal] = useState(false);
+  const [selectedImage, setSelectedImage] = useState<string | null>(null);
+  const [imageLoading, setImageLoading] = useState(false);
+  const [imageError, setImageError] = useState<string | null>(null);
 
-  const handleAddPayment = (paymentData: any) => {
+  useEffect(() => {
+    fetchTransactions();
+  }, []);
+
+  const fetchTransactions = async () => {
+    setLoading(true);
+    setError(null);
+
+    try {
+      const { data, error } = await supabase
+        .from('Payments')
+        .select(`
+          PaymentID,
+          PaymentAmount,
+          PaymentDate,
+          PaymentProof,
+          Tenants (TenantID, TenantFirstName, TenantLastName),
+          Units (UnitID, UnitNumber)
+        `)
+        .order('PaymentDate', { ascending: false });
+
+      if (error) {
+        console.error('Error fetching payments:', error);
+        setError('Failed to load payment transactions.');
+        return;
+      }
+
+      const formattedTransactions = data.map((payment: any) => {
+        const receiptFileName = payment.PaymentProof 
+          ? payment.PaymentProof.split('/').pop() 
+          : null;
+
+        return {
+          id: payment.PaymentID,
+          name: payment.Tenants 
+            ? `${payment.Tenants.TenantFirstName} ${payment.Tenants.TenantLastName}`
+            : 'Unknown Tenant',
+          unit: payment.Units 
+            ? `Unit ${payment.Units.UnitNumber}`
+            : `Unit ${payment.UnitID || 'Unknown'}`,
+          amount: `₱${payment.PaymentAmount.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}`,
+          receipt: receiptFileName || 'No Receipt',
+          receiptFile: payment.PaymentProof,
+          date: payment.PaymentDate 
+            ? new Date(payment.PaymentDate).toLocaleDateString()
+            : 'Unknown Date'
+        };
+      });
+
+      setTransactions(formattedTransactions);
+    } catch (err) {
+      console.error('Error in fetchTransactions:', err);
+      setError('An unexpected error occurred while loading payment data.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleAddPayment = async (paymentData: any) => {
     console.log('Submitted payment:', paymentData);
-    // Add the new payment to transactions
-    setTransactions(prev => [
-      {
-        id: prev.length + 1,
-        name: paymentData.name,
-        unit: paymentData.unit,
-        amount: `$${paymentData.amount.toFixed(2)}`,
-        receipt: `receipt_${paymentData.unit.replace('Unit ', '')}_${new Date().toISOString().slice(0, 10).replace(/-/g, '')}.pdf`,
-        date: new Date().toISOString().slice(0, 10)
-      },
-      ...prev
-    ]);
-    setShowModal(false);
+    try {
+      await fetchTransactions();
+      setShowModal(false);
+    } catch (err) {
+      console.error('Error refreshing transactions after add:', err);
+    }
+  };
+
+  const handleEditPayment = async () => {
+    try {
+      await fetchTransactions();
+      setShowEditModal(false);
+      setSelectedTransaction(null);
+    } catch (err) {
+      console.error('Error refreshing transactions after edit:', err);
+    }
+  };
+
+  const handleSearchChange = (e: ChangeEvent<HTMLInputElement>) => {
+    setSearchValue(e.target.value);
   };
 
   const filteredTransactions = transactions.filter(transaction =>
     transaction.name.toLowerCase().includes(searchValue.toLowerCase()) ||
     transaction.unit.toLowerCase().includes(searchValue.toLowerCase())
   );
+
+  const openImageModal = async (receiptFile: string | null) => {
+    if (!receiptFile) {
+      alert('No receipt image available');
+      return;
+    }
+
+    setImageLoading(true);
+    setImageError(null);
+    setShowImageModal(true);
+
+    try {
+      if (receiptFile.startsWith('http://') || receiptFile.startsWith('https://')) {
+        setSelectedImage(receiptFile);
+        return;
+      }
+
+      const fileName = receiptFile.split('/').pop();
+      const storagePath = `proofs/${fileName}`;
+
+      const { publicUrl } = supabase
+        .storage
+        .from('proof-of-payment')
+        .getPublicUrl(storagePath).data;
+
+      if (!publicUrl) {
+        throw new Error('No public URL returned from Supabase');
+      }
+
+      setSelectedImage(publicUrl);
+    } catch (error) {
+      console.error('Error preparing image:', error);
+      setImageError(error instanceof Error ? error.message : 'Unknown error occurred');
+    } finally {
+      setImageLoading(false);
+    }
+  };
+
+  const closeImageModal = () => {
+    setShowImageModal(false);
+    setSelectedImage(null);
+    setImageError(null);
+  };
 
   return (
     <div className="dashboard-container">
@@ -97,7 +184,7 @@ const AdminPayments: React.FC = () => {
                   <input
                     type="text"
                     value={searchValue}
-                    onChange={(e) => setSearchValue(e.target.value)}
+                    onChange={handleSearchChange}
                     onFocus={() => setSearchFocused(true)}
                     onBlur={() => setSearchFocused(false)}
                     placeholder={!searchFocused && searchValue === '' ? "Search Here" : ""}
@@ -108,35 +195,65 @@ const AdminPayments: React.FC = () => {
             </div>
 
             <div className="payment-table-container">
-              <table>
-                <thead>
-                  <tr>
-                    <th>Name</th>
-                    <th>Unit number</th>
-                    <th>Amount</th>
-                    <th>Proof of payment</th>
-                    <th>Date</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {filteredTransactions.map((transaction) => (
-                    <tr key={transaction.id}>
-                      <td>{transaction.name}</td>
-                      <td>{transaction.unit}</td>
-                      <td>{transaction.amount}</td>
-                      <td>
-                        <a href="#" onClick={(e) => { 
-                          e.preventDefault(); 
-                          alert(`Viewing ${transaction.receipt}`); 
-                        }}>
-                          View Receipt
-                        </a>
-                      </td>
-                      <td>{transaction.date}</td>
+              {loading ? (
+                <div className="loading-spinner">Loading...</div>
+              ) : error ? (
+                <div className="error-message">{error}</div>
+              ) : (
+                <table>
+                  <thead>
+                    <tr>
+                      <th>Name</th>
+                      <th>Unit number</th>
+                      <th>Amount</th>
+                      <th>Proof of payment</th>
+                      <th>Date</th>
+                      <th>Action</th>
                     </tr>
-                  ))}
-                </tbody>
-              </table>
+                  </thead>
+                  <tbody>
+                    {filteredTransactions.length === 0 ? (
+                      <tr>
+                        <td colSpan={6} className="no-transactions-message">
+                          No payment transactions found.
+                        </td>
+                      </tr>
+                    ) : (
+                      filteredTransactions.map((transaction) => (
+                        <tr key={transaction.id}>
+                          <td>{transaction.name}</td>
+                          <td>{transaction.unit}</td>
+                          <td>{transaction.amount}</td>
+                          <td>
+                            {transaction.receiptFile ? (
+                              <button 
+                                className="view-receipt-btn"
+                                onClick={() => openImageModal(transaction.receiptFile)}
+                              >
+                                View Receipt
+                              </button>
+                            ) : (
+                              'No Receipt'
+                            )}
+                          </td>
+                          <td>{transaction.date}</td>
+                          <td>
+                            <button
+                              className="adminpayment-edit-btn"
+                              onClick={() => {
+                                setSelectedTransaction(transaction);
+                                setShowEditModal(true);
+                              }}
+                            >
+                              Edit
+                            </button>
+                          </td>
+                        </tr>
+                      ))
+                    )}
+                  </tbody>
+                </table>
+              )}
             </div>
           </div>
 
@@ -145,6 +262,64 @@ const AdminPayments: React.FC = () => {
               onClose={() => setShowModal(false)}
               onSubmit={handleAddPayment}
             />
+          )}
+
+          {showEditModal && selectedTransaction && (
+            <EditPaymentModal
+            transaction={selectedTransaction}
+              onClose={() => {
+                setShowEditModal(false);
+                setSelectedTransaction(null);
+              }}
+              onSubmit={handleEditPayment}
+            />
+          )}
+
+          {showImageModal && (
+            <div className="image-modal-overlay" onClick={closeImageModal}>
+              <div className="image-modal-content" onClick={(e) => e.stopPropagation()}>
+                <div className="image-modal-header">
+                  <h3>Payment Receipt</h3>
+                  <button onClick={closeImageModal} className="close-modal-btn">×</button>
+                </div>
+                <div className="image-modal-body">
+                  {imageLoading && (
+                    <div className="loading-receipt">Loading receipt...</div>
+                  )}
+                  
+                  {!imageLoading && imageError && (
+                    <div className="error-message">
+                      <p>Error loading receipt: {imageError}</p>
+                      <p>Please try again later or contact support.</p>
+                    </div>
+                  )}
+                  
+                  {!imageLoading && !imageError && selectedImage && (
+                    <div className="image-container">
+                      <img 
+                        src={selectedImage} 
+                        alt="Payment Receipt" 
+                        onError={() => {
+                          console.error('Image failed to load:', selectedImage);
+                          setImageError('The image could not be displayed. It may be corrupted or in an unsupported format.');
+                        }}
+                      />
+                      <div className="image-actions">
+                        <a 
+                          href={selectedImage} 
+                          download="receipt" 
+                          target="_blank" 
+                          rel="noopener noreferrer"
+                          className="download-btn"
+                        >
+                          Download Receipt
+                        </a>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
           )}
         </main>
       </div>

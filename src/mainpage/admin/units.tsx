@@ -119,20 +119,19 @@ const Units: React.FC = () => {
               <div className="search-button-container">
                 <button
                   className="add-unit-btn"
-                  onClick={toggleAddUnitForm} // Toggle visibility of Add Unit form
+                  onClick={toggleAddUnitForm} 
                 >
                   Add Unit
-                  <img
-                    src={AddUnitButtonIcon}
-                    alt="Add Unit"
-                    className="add-unit-button-icon"
-                  />
+                  <span className="plus-icon">+</span>
                 </button>
+                
                 <input
                   type="text"
                   placeholder="Search Here"
+                  
                   value={search}
                   onChange={handleSearchChange}
+                  
                 />
               </div>
             </div>
