@@ -224,7 +224,7 @@ body, html {
   min-width: 65px;
   border-radius: 50%;
   background: conic-gradient(
-    var(--fill-color, #20c86e) calc(var(--progress, 0%) * 1%),
+    var(--fill-color, #20c86e) var(--progress, 0%),
     #e5e5e5 0
   );
   border: 8px solid #e5e5e5;
