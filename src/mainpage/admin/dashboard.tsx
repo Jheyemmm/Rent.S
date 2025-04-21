@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import Header from "../../components/header";
 import MenuComponent from "../../components/admin_menu";
 import "./dashboard.css";
@@ -6,8 +6,36 @@ import RentCollected_Icon from "../../assets/icons/rent_collected.png";
 import OverdueIcon from "../../assets/icons/overdue.png";
 import Upcoming_Icon from "../../assets/icons/upcoming_icon.png";
 import Overdue_Icon from "../../assets/icons/overdue_icon.png";
+import supabase from "../../supabaseClient";
 
 const Dashboard: React.FC = () => {
+  const [availableCount, setAvailableCount] = useState<number>(0);
+  const [occupiedCount, setOccupiedCount] = useState<number>(0);
+  const [total, setTotal] = useState<number>(0);
+
+  const availablePercent = total ? (availableCount / total) * 100 : 0;
+  const occupiedPercent = total ? (occupiedCount / total) * 100 : 0; 
+
+  useEffect(() => {
+    const fetchUnits = async () => {
+      const { data, error } = await supabase.from("Units").select("UnitStatus");
+
+      if (error) {
+        console.error("Error fetching units:", error.message);
+        return;
+      }
+
+      const available = data.filter((u) => u.UnitStatus === "Available").length;
+      const occupied = data.filter((u) => u.UnitStatus === "Occupied").length;
+
+      setAvailableCount(available);
+      setOccupiedCount(occupied);
+      setTotal(data.length);
+    };
+
+    fetchUnits();
+  }, []);
+
   return (
     <div className="page-container">
       <Header />
@@ -61,8 +89,8 @@ const Dashboard: React.FC = () => {
                   <div className="card">
                     <p className="card-title">Available Units</p>
                     <div className="card-content units-card">
-                      <p className="card-number">03</p>
-                      <div className="circle-progress green"></div>
+                      <p className="card-number">{availableCount.toString().padStart(2, "0")}</p>
+                      <div className="circle-progress" style={{'--progress': `${availablePercent}%`, "--fill-color": "#20c86e",} as React.CSSProperties}></div>
                     </div>
                   </div>
 
@@ -70,8 +98,8 @@ const Dashboard: React.FC = () => {
                   <div className="card">
                     <p className="card-title">Occupied Units</p>
                     <div className="card-content units-card">
-                      <p className="card-number">07</p>
-                      <div className="circle-progress blue"></div>
+                      <p className="card-number">{occupiedCount.toString().padStart(2, "0")}</p>
+                      <div className="circle-progress" style={{'--progress': `${occupiedPercent}%`,"--fill-color": "#4361ee",} as React.CSSProperties}></div>
                     </div>
                   </div>
                 </div>
