@@ -89,7 +89,7 @@ const Dashboard: React.FC = () => {
                   <div className="card">
                     <p className="card-title">Available Units</p>
                     <div className="card-content units-card">
-                      <p className="card-number">03</p>
+                      <p className="card-number">{availableCount.toString().padStart(2, "0")}</p>
                       <div className="circle-progress green"></div>
                     </div>
                   </div>
@@ -98,7 +98,7 @@ const Dashboard: React.FC = () => {
                   <div className="card">
                     <p className="card-title">Occupied Units</p>
                     <div className="card-content units-card">
-                      <p className="card-number">07</p>
+                      <p className="card-number">{occupiedCount.toString().padStart(2, "0")}</p>
                       <div className="circle-progress blue"></div>
                     </div>
                   </div>
