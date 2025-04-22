@@ -13,7 +13,7 @@ interface Unit {
   number: string;
   price: number;
   details: string;
-  status: 'Available' | 'Occupied';
+  status: 'Available' | 'Occupied'| 'Unavailable';
 }
 
 const Units: React.FC = () => {
@@ -83,7 +83,8 @@ const Units: React.FC = () => {
 
     const { error } = await supabase
     .from('Units')
-    .delete()
+    .update({UnitStatus: 'Unavailable'
+    })
     .eq('UnitID', unitID)
 
     if (error) {

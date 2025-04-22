@@ -102,8 +102,7 @@ const AdminViewTenant: React.FC = () => {
 
   const handleMoveOutSubmit = async (formData: any) => {
     try {
-      // Update tenant record to set move out date and reason
-      const { error } = await supabase
+      const { error: tenantError } = await supabase
         .from("Tenants")
         .update({
           MoveOutDate: formData.endDate,
@@ -111,15 +110,22 @@ const AdminViewTenant: React.FC = () => {
           MoveOutReason: formData.moveOutReason,
         })
         .eq("TenantID", selectedTenant.tenantID);
-
-      if (error) throw error;
-
-      // Refresh the tenant list
+  
+      if (tenantError) throw tenantError;
+  
+      const { error: unitError } = await supabase
+        .from("Units")
+        .update({
+          UnitStatus: "Available"
+        })
+        .eq("UnitID", selectedTenant.unit);
+  
+      if (unitError) throw unitError;
+  
       fetchTenants();
       setShowMoveOutModal(false);
     } catch (error: any) {
       console.error("Error processing move out:", error.message);
-      // You might want to show an error notification to the user
     }
   };
 

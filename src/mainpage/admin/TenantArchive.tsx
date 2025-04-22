@@ -17,6 +17,12 @@ interface Tenant {
   UnitPrice?: number;
 }
 
+interface Unit {
+  UnitID: number;
+  UnitNumber: string;
+  Price: number;
+}
+
 const TenantArchive: React.FC = () => {
   const navigate = useNavigate(); // Initialize useNavigate
   const [tenants, setTenants] = useState<Tenant[]>([]);
@@ -24,11 +30,31 @@ const TenantArchive: React.FC = () => {
   const [loading, setLoading] = useState<boolean>(true);
   const [searchTerm, setSearchTerm] = useState<string>("");
   const [isOpen, setIsOpen] = useState<boolean>(false); // Added for MenuComponent
+  const [units, setUnits] = useState<Record<number, Unit>>({});
 
   useEffect(() => {
-    const fetchTenants = async () => {
+    const fetchData = async () => {
       setLoading(true);
       try {
+        // First, fetch all units and create a lookup object
+        const { data: unitData, error: unitError } = await supabase
+          .from("Units")
+          .select("UnitID, UnitNumber, Price");
+
+        if (unitError) {
+          console.error("Error fetching units:", unitError);
+          setLoading(false);
+          return;
+        }
+
+        // Create a lookup object for units
+        const unitLookup: Record<number, Unit> = {};
+        unitData.forEach((unit: Unit) => {
+          unitLookup[unit.UnitID] = unit;
+        });
+        setUnits(unitLookup);
+
+        // Then fetch tenants
         const { data: tenantData, error: tenantError } = await supabase
           .from("Tenants")
           .select("*")
@@ -40,29 +66,14 @@ const TenantArchive: React.FC = () => {
           return;
         }
 
-        const tenantsWithUnit = await Promise.all(
-          tenantData.map(async (tenant: Tenant) => {
-            const { data: unitData, error: unitError } = await supabase
-              .from("Units")
-              .select("UnitNumber, Price")
-              .eq("UnitID", tenant.UnitID)
-              .single();
-
-            if (unitError) {
-              console.error(
-                `Error fetching unit for TenantID ${tenant.TenantID}:`,
-                unitError
-              );
-              return { ...tenant, UnitNumber: "Unknown", UnitPrice: 0 };
-            }
-
-            return {
-              ...tenant,
-              UnitNumber: unitData.UnitNumber,
-              UnitPrice: unitData.Price,
-            };
-          })
-        );
+        const tenantsWithUnit = tenantData.map((tenant: Tenant) => {
+          const unit = unitLookup[tenant.UnitID] || { UnitNumber: "Unknown", Price: 0 };
+          return {
+            ...tenant,
+            UnitNumber: unit.UnitNumber,
+            UnitPrice: unit.Price,
+          };
+        });
 
         setTenants(tenantsWithUnit);
         setFilteredTenants(tenantsWithUnit);
@@ -73,7 +84,7 @@ const TenantArchive: React.FC = () => {
       }
     };
 
-    fetchTenants();
+    fetchData();
   }, []);
 
   useEffect(() => {
@@ -157,7 +168,7 @@ const TenantArchive: React.FC = () => {
                         <td className="tenant-archive-td">{tenant.MoveInDate}</td>
                         <td className="tenant-archive-td">{tenant.UnitNumber}</td>
                         <td className="tenant-archive-td">{tenant.MoveOutDate}</td>
-                        <td className="tenant-archive-td tenant-archive-td-balance">${tenant.Balance}</td>
+                        <td className="tenant-archive-td tenant-archive-td-balance">₱{tenant.Balance}</td>
                       </tr>
                     ))
                   ) : (

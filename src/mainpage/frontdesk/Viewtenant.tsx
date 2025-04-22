@@ -2,7 +2,6 @@ import React, { useState, useEffect, useRef, ChangeEvent } from 'react';
 import Header from '../../components/header';
 import MenuComponent from '../../components/frontdesk_menu';
 import { AddTenantModal } from '../../components/Addtenant';
-import { MoveOutModal } from '../../components/moveout';
 import './FrontdeskViewtenant.css';
 import supabase from '../../supabaseClient';
 
@@ -161,24 +160,7 @@ const FrontdeskViewTenant: React.FC = () => {
         </main>
       </div>
       {showAddModal && <AddTenantModal onClose={() => setShowAddModal(false)} onTenantAdded={fetchTenants} />}
-      {showMoveOutModal && selectedTenant && (
-        <MoveOutModal 
-          onClose={() => setShowMoveOutModal(false)}
-          onSubmit={handleMoveOutSubmit}
-          initialData={{
-            name: selectedTenant.firstName,
-            lastName: selectedTenant.lastName,
-            unit: selectedTenant.unit,
-            unpaidBalance: selectedTenant.balance,
-            startDate: selectedTenant.moveInDate,
-            endDate: new Date().toLocaleDateString('en-US', {
-              month: '2-digit',
-              day: '2-digit',
-              year: '2-digit'
-            }).replace(/\//g, '/')
-          }}
-        />
-      )}
+      
     </div>
 
   );

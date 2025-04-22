@@ -230,7 +230,7 @@
   border: 1px solid #6D85E8;
   margin-right: 4px;
   padding: 6px 12px;
-  border-radius: 4px;
+  border-radius: 10px;
   cursor: pointer;
   font-size: 14px;
   transition: all 0.2s ease;
