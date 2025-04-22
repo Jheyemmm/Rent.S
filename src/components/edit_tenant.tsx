@@ -46,7 +46,6 @@ export const EditTenantModal: React.FC<EditTenantModalProps> = ({ onClose, tenan
       }
     };
 
-    // Fetch tenant details if this is an edit operation
     const fetchTenantDetails = async () => {
       if (tenantData && tenantData.tenantID) {
         const { data, error } = await supabase
