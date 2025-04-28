@@ -4,7 +4,6 @@ import Header from "../../components/header";
 import MenuComponent from "../../components/frontdesk_menu";
 import { AddTenantModal } from "../../components/Addtenant";
 import { MoveOutModal } from "../../components/moveout";
-import { EditTenantModal } from "../../components/edit_tenant";
 import "./FrontdeskViewtenant.css";
 import supabase from "../../supabaseClient";
 
@@ -32,7 +31,6 @@ const ViewTenant: React.FC = () => {
   const [selectedTenant, setSelectedTenant] = useState<any>(null);
   const sidebarRef = useRef<HTMLDivElement>(null);
   const [search, setSearch] = useState("");
-  const [showEditModal, setShowEditModal] = useState(false);
 
   const fetchTenants = async () => {
     setLoading(true);
@@ -95,10 +93,6 @@ const ViewTenant: React.FC = () => {
     setShowMoveOutModal(true);
   };
 
-  const handleEditClick = (tenant: any) => {
-    setSelectedTenant(tenant);
-    setShowEditModal(true);
-  };
 
   const handleMoveOutSubmit = async (formData: any) => {
     try {
@@ -215,12 +209,7 @@ const ViewTenant: React.FC = () => {
                           <td>{tenant.balance}</td>
                           <td>{tenant.lastPayment}</td>
                           <td>
-                            <button
-                              className="tenant-edit-btn"
-                              onClick={() => handleEditClick(tenant)}
-                            >
-                              Edit
-                            </button>
+                           
                             <button
                               className="move-out-btn"
                               onClick={() => handleMoveOutClick(tenant)}
@@ -264,13 +253,7 @@ const ViewTenant: React.FC = () => {
           }}
         />
       )}
-      {showEditModal && selectedTenant && (
-        <EditTenantModal
-          onClose={() => setShowEditModal(false)}
-          tenantData={selectedTenant}
-          onTenantUpdated={fetchTenants} // Using the correct prop name
-        />
-      )}
+      
     </div>
   );
 };

@@ -1,15 +1,13 @@
 /* Container for main content */
 .payment-container {
-  width: 100%;
-  max-width: 1400px;
-  margin: 0 auto;
-  padding: 25px;
-  background: white;
-  border-radius: 10px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-  flex: 1;
-  position: relative;
-  z-index: 1;
+ 
+  height: 85vh;
+  background: #fff;
+  border-radius: 8px;
+  padding: 3rem;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+  margin-top: -10px;
+  overflow-x: hidden;
 }
 
 
