@@ -1,0 +1,59 @@
+/* Updated CSS for Units page to match Payments page positioning */
+.header-section {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+  }
+  
+  .header-right-section {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+  }
+  
+  .search-container {
+    position: relative;
+    width: 220px;
+  }
+  
+  .search-container input {
+    width: 100%;
+    padding: 10px 35px 10px 15px;
+    border: 1px solid #C8CBD2;
+    border-radius: 20px;
+    background-color: #E5F2F1;
+    color: #333;
+    font-size: 14px;
+    outline: none;
+    transition: all 0.3s;
+  }
+  
+  .system-button {
+    background-color: #E5F2F1;
+    color: black;
+    border: 1px solid #C8CBD2;
+    padding: 8px 16px;
+    border-radius: 20px;
+    font-size: 14px;
+    font-weight: 300;
+    cursor: pointer;
+    white-space: nowrap;
+    display: flex;
+    align-items: center;
+  }
+  
+  .plus-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    margin-left: 8px;
+    font-weight: bold;
+    color: white;
+    background-color: #4CBD8D;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    font-size: 14px;
+    line-height: 1;
+  }

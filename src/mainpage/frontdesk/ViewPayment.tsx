@@ -1,43 +1,64 @@
-import React, { useState, useRef, useEffect, ChangeEvent } from 'react';
-import MenuComponent from '../../components/frontdesk_menu';
-import Header from '../../components/header';
-import AddPaymentModal from '../../components/addpayment';
-import '../admin/AdminViewPayment.css';
-import supabase from '../../supabaseClient';
+"use client"
+
+import type React from "react"
+import { useState, useRef, useEffect, type ChangeEvent } from "react"
+import MenuComponent from "../../components/frontdesk_menu"
+import Header from "../../components/header"
+import AddPaymentModal from "../../components/addpayment"
+import ReceiptModal from "../../components/Receipt"
+import "../admin/AdminViewPayment.css"
+import supabase from "../../supabaseClient"
 
 interface Transaction {
-  id: number;
-  name: string;
-  unit: string;
-  amount: string;
-  receipt: string;
-  receiptFile: string | null;
-  date: string;
+  id: number
+  name: string
+  unit: string
+  amount: string
+  receipt: string
+  receiptFile: string | null
+  date: string
 }
+
+interface ReceiptData {
+  paymentData: {
+    PaymentAmount: number
+    PaymentDate: string
+  }
+  unitData: {
+    UnitNumber: string
+    Price: number
+    TenantFirstName: string
+    TenantLastName: string
+  }
+}
+
 const Payments: React.FC = () => {
-  const [searchValue, setSearchValue] = useState('');
-  const [searchFocused, setSearchFocused] = useState(false);
-  const [showModal, setShowModal] = useState(false);
-  const [transactions, setTransactions] = useState<Transaction[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const sidebarRef = useRef<HTMLDivElement>(null);
-  const [showImageModal, setShowImageModal] = useState(false);
-  const [selectedImage, setSelectedImage] = useState<string | null>(null);
-  const [imageLoading, setImageLoading] = useState(false);
-  const [imageError, setImageError] = useState<string | null>(null);
+  const [searchValue, setSearchValue] = useState("")
+  const [searchFocused, setSearchFocused] = useState(false)
+  const [showModal, setShowModal] = useState(false)
+  const [transactions, setTransactions] = useState<Transaction[]>([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
+  const sidebarRef = useRef<HTMLDivElement>(null)
+  const [showImageModal, setShowImageModal] = useState(false)
+  const [selectedImage, setSelectedImage] = useState<string | null>(null)
+  const [imageLoading, setImageLoading] = useState(false)
+  const [imageError, setImageError] = useState<string | null>(null)
+  // Add state for receipt modal
+  const [showReceipt, setShowReceipt] = useState(false)
+  const [receiptData, setReceiptData] = useState<ReceiptData | null>(null)
 
   useEffect(() => {
-    fetchTransactions();
-  }, []);
+    fetchTransactions()
+  }, [])
 
   const fetchTransactions = async () => {
-    setLoading(true);
-    setError(null);
+    setLoading(true)
+    setError(null)
 
     try {
       const { data, error } = await supabase
-        .from('Payments')
+        .from("Payments")
         .select(`
           PaymentID,
           PaymentAmount,
@@ -46,108 +67,125 @@ const Payments: React.FC = () => {
           Tenants (TenantID, TenantFirstName, TenantLastName),
           Units (UnitID, UnitNumber)
         `)
-        .order('PaymentDate', { ascending: false });
+        .order("PaymentDate", { ascending: false })
 
       if (error) {
-        console.error('Error fetching payments:', error);
-        setError('Failed to load payment transactions.');
-        return;
+        console.error("Error fetching payments:", error)
+        setError("Failed to load payment transactions.")
+        return
       }
 
       const formattedTransactions = data.map((payment: any) => {
-        const receiptFileName = payment.PaymentProof 
-          ? payment.PaymentProof.split('/').pop() 
-          : null;
+        const receiptFileName = payment.PaymentProof ? payment.PaymentProof.split("/").pop() : null
 
         return {
           id: payment.PaymentID,
-          name: payment.Tenants 
+          name: payment.Tenants
             ? `${payment.Tenants.TenantFirstName} ${payment.Tenants.TenantLastName}`
-            : 'Unknown Tenant',
-          unit: payment.Units 
-            ? `Unit ${payment.Units.UnitNumber}`
-            : `Unit ${payment.UnitID || 'Unknown'}`,
-          amount: `₱${payment.PaymentAmount.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}`,
-          receipt: receiptFileName || 'No Receipt',
+            : "Unknown Tenant",
+          unit: payment.Units ? `Unit ${payment.Units.UnitNumber}` : `Unit ${payment.UnitID || "Unknown"}`,
+          amount: `₱${payment.PaymentAmount.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`,
+          receipt: receiptFileName || "No Receipt",
           receiptFile: payment.PaymentProof,
-          date: payment.PaymentDate 
-            ? new Date(payment.PaymentDate).toLocaleDateString()
-            : 'Unknown Date'
-        };
-      });
+          date: payment.PaymentDate ? new Date(payment.PaymentDate).toLocaleDateString() : "Unknown Date",
+        }
+      })
 
-      setTransactions(formattedTransactions);
+      setTransactions(formattedTransactions)
     } catch (err) {
-      console.error('Error in fetchTransactions:', err);
-      setError('An unexpected error occurred while loading payment data.');
+      console.error("Error in fetchTransactions:", err)
+      setError("An unexpected error occurred while loading payment data.")
     } finally {
-      setLoading(false);
+      setLoading(false)
     }
-  };
+  }
 
   const handleAddPayment = async (paymentData: any) => {
-    console.log('Submitted payment:', paymentData);
+    console.log("Submitted payment:", paymentData)
     try {
-      await fetchTransactions();
-      setShowModal(false);
-    } catch (err) {
-      console.error('Error refreshing transactions after add:', err);
-    }
-  };
+      // Create receipt data from the payment
+      const newReceiptData = {
+        paymentData: {
+          PaymentAmount: paymentData.PaymentAmount,
+          PaymentDate: paymentData.PaymentDate,
+          ReferenceNumber: `${paymentData.TenantID}${paymentData.UnitID}${Date.now().toString().slice(-6)}`,
+        },
+        unitData: {
+          UnitNumber: paymentData.UnitNumber,
+          Price: paymentData.Price || 0,
+          TenantFirstName: paymentData.TenantFirstName,
+          TenantLastName: paymentData.TenantLastName,
+        },
+      }
 
-  
+      // Set receipt data and show receipt
+      setReceiptData(newReceiptData)
+      setShowReceipt(true)
+
+      // Close the payment modal but don't refresh transactions yet
+      setShowModal(false)
+
+      // Refresh transactions in the background
+      await fetchTransactions()
+    } catch (err) {
+      console.error("Error refreshing transactions after add:", err)
+    }
+  }
+
+  const handleCloseReceipt = () => {
+    setShowReceipt(false)
+    setReceiptData(null)
+  }
 
   const handleSearchChange = (e: ChangeEvent<HTMLInputElement>) => {
-    setSearchValue(e.target.value);
-  };
+    setSearchValue(e.target.value)
+  }
 
-  const filteredTransactions = transactions.filter(transaction =>
-    transaction.name.toLowerCase().includes(searchValue.toLowerCase()) ||
-    transaction.unit.toLowerCase().includes(searchValue.toLowerCase())
-  );
+  const filteredTransactions = transactions.filter(
+    (transaction) =>
+      transaction.name.toLowerCase().includes(searchValue.toLowerCase()) ||
+      transaction.unit.toLowerCase().includes(searchValue.toLowerCase()),
+  )
 
   const openImageModal = async (receiptFile: string | null) => {
     if (!receiptFile) {
-      alert('No receipt image available');
-      return;
+      alert("No receipt image available")
+      return
     }
 
-    setImageLoading(true);
-    setImageError(null);
-    setShowImageModal(true);
+    setImageLoading(true)
+    setImageError(null)
+    setShowImageModal(true)
 
     try {
-      if (receiptFile.startsWith('http://') || receiptFile.startsWith('https://')) {
-        setSelectedImage(receiptFile);
-        return;
+      if (receiptFile.startsWith("http://") || receiptFile.startsWith("https://")) {
+        setSelectedImage(receiptFile)
+        return
       }
 
-      const fileName = receiptFile.split('/').pop();
-      const storagePath = `proofs/${fileName}`;
+      const fileName = receiptFile.split("/").pop()
+      const storagePath = `proofs/${fileName}`
 
-      const { publicUrl } = supabase
-        .storage
-        .from('proof-of-payment')
-        .getPublicUrl(storagePath).data;
+      const { publicUrl } = supabase.storage.from("proof-of-payment").getPublicUrl(storagePath).data
 
       if (!publicUrl) {
-        throw new Error('No public URL returned from Supabase');
+        throw new Error("No public URL returned from Supabase")
       }
 
-      setSelectedImage(publicUrl);
+      setSelectedImage(publicUrl)
     } catch (error) {
-      console.error('Error preparing image:', error);
-      setImageError(error instanceof Error ? error.message : 'Unknown error occurred');
+      console.error("Error preparing image:", error)
+      setImageError(error instanceof Error ? error.message : "Unknown error occurred")
     } finally {
-      setImageLoading(false);
+      setImageLoading(false)
     }
-  };
+  }
 
   const closeImageModal = () => {
-    setShowImageModal(false);
-    setSelectedImage(null);
-    setImageError(null);
-  };
+    setShowImageModal(false)
+    setSelectedImage(null)
+    setImageError(null)
+  }
 
   return (
     <div className="dashboard-container">
@@ -160,10 +198,7 @@ const Payments: React.FC = () => {
               <h1>List of Transactions</h1>
 
               <div className="header-right-section">
-                <button 
-                  className="add-payment-btn"
-                  onClick={() => setShowModal(true)}
-                >
+                <button className="add-payment-btn" onClick={() => setShowModal(true)}>
                   Add new payment
                   <span className="plus-icon">+</span>
                 </button>
@@ -175,7 +210,7 @@ const Payments: React.FC = () => {
                     onChange={handleSearchChange}
                     onFocus={() => setSearchFocused(true)}
                     onBlur={() => setSearchFocused(false)}
-                    placeholder={!searchFocused && searchValue === '' ? "Search Here" : ""}
+                    placeholder={!searchFocused && searchValue === "" ? "Search Here" : ""}
                   />
                   <i className="fas fa-search search-icon"></i>
                 </div>
@@ -214,19 +249,18 @@ const Payments: React.FC = () => {
                           <td>{transaction.amount}</td>
                           <td>
                             {transaction.receiptFile ? (
-                              <button 
+                              <button
                                 className="view-receipt-btn"
                                 onClick={() => openImageModal(transaction.receiptFile)}
                               >
                                 View Receipt
                               </button>
                             ) : (
-                              'No Receipt'
+                              "No Receipt"
                             )}
                           </td>
                           <td>{transaction.date}</td>
-                          <td>
-                          </td>
+                          <td></td>
                         </tr>
                       ))
                     )}
@@ -236,49 +270,53 @@ const Payments: React.FC = () => {
             </div>
           </div>
 
-          {showModal && (
-            <AddPaymentModal
-              onClose={() => setShowModal(false)}
-              onSubmit={handleAddPayment}
+          {showModal && <AddPaymentModal onClose={() => setShowModal(false)} onSubmit={handleAddPayment} />}
+
+          {/* Receipt Modal - Controlled by this component instead of AddPaymentModal */}
+          {showReceipt && receiptData && (
+            <ReceiptModal
+              paymentData={receiptData.paymentData}
+              unitData={receiptData.unitData}
+              onClose={handleCloseReceipt}
             />
           )}
-
-        
 
           {showImageModal && (
             <div className="image-modal-overlay" onClick={closeImageModal}>
               <div className="image-modal-content" onClick={(e) => e.stopPropagation()}>
                 <div className="image-modal-header">
                   <h3>Payment Receipt</h3>
-                  <button onClick={closeImageModal} className="close-modal-btn">×</button>
+                  <button onClick={closeImageModal} className="close-modal-btn">
+                    ×
+                  </button>
                 </div>
                 <div className="image-modal-body">
-                  {imageLoading && (
-                    <div className="loading-receipt">Loading receipt...</div>
-                  )}
-                  
+                  {imageLoading && <div className="loading-receipt">Loading receipt...</div>}
+
                   {!imageLoading && imageError && (
                     <div className="error-message">
                       <p>Error loading receipt: {imageError}</p>
                       <p>Please try again later or contact support.</p>
                     </div>
                   )}
-                  
+
                   {!imageLoading && !imageError && selectedImage && (
                     <div className="image-container">
-                      <img 
-                        src={selectedImage} 
-                        alt="Payment Receipt" 
+                      <img
+                        src={selectedImage || "/placeholder.svg"}
+                        alt="Payment Receipt"
                         onError={() => {
-                          console.error('Image failed to load:', selectedImage);
-                          setImageError('The image could not be displayed. It may be corrupted or in an unsupported format.');
+                          console.error("Image failed to load:", selectedImage)
+                          setImageError(
+                            "The image could not be displayed. It may be corrupted or in an unsupported format.",
+                          )
                         }}
                       />
                       <div className="image-actions">
-                        <a 
-                          href={selectedImage} 
-                          download="receipt" 
-                          target="_blank" 
+                        <a
+                          href={selectedImage}
+                          download="receipt"
+                          target="_blank"
                           rel="noopener noreferrer"
                           className="download-btn"
                         >
@@ -294,7 +332,7 @@ const Payments: React.FC = () => {
         </main>
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default Payments;
+export default Payments

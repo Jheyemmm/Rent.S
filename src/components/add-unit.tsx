@@ -16,7 +16,6 @@ const AddUnit: React.FC<AddUnitProps> = ({ closeForm, refreshUnits }) => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Add logic for adding the unit (e.g., sending the data to the backend)
     setLoading(true);
     setError(null);
 

@@ -54,6 +54,32 @@
     font-weight: bold;
     color: #333;
   }
+  .validation-error {
+    display: flex;
+    align-items: center;
+    margin-top: 5px;
+    color: #e74c3c;
+    font-size: 13px;
+  }
+  
+  .error-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 20px;
+    height: 20px;
+    background-color: #ff9800;
+    color: white;
+    border-radius: 50%;
+    margin-right: 5px;
+    font-weight: bold;
+  }
+  
+  .error-message {
+    color: #e74c3c;
+    margin-top: 10px;
+    font-size: 14px;
+  }
   
   .addtenant-form-section h2 {
     text-align: left;
@@ -172,13 +198,6 @@
       background: #f0f0f0;
     }
     
-    .error-message {
-      background-color: #ffebee;
-      border-left: 4px solid #ef5350;
-      padding: 10px 15px;
-      margin: 10px 25px 0;
-      border-radius: 4px;
-    } 
     
   }
   .confirmation-dialog-overlay {
