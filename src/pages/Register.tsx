@@ -1,8 +1,10 @@
 import React, { useState } from "react";
 import supabase from "../supabaseClient";
 import "./Register.css";
+import { useNavigate } from "react-router-dom";
 import loginlogo from "../assets/icons/LoginLogo.png";
 import Login from "./Login";
+
 
 const Register: React.FC = () => {
   const [formData, setFormData] = useState({
@@ -14,6 +16,7 @@ const Register: React.FC = () => {
     userRole: ""
   });
   const [error, setError] = useState<string>("");
+  const navigate = useNavigate(); // Add this hook
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
@@ -172,6 +175,16 @@ const Register: React.FC = () => {
             </div>  
 
             <button type="submit" className="register-submit">Sign Up</button>
+            <div className="register-login-link">
+  Already have an account?{" "}
+  <span 
+    onClick={() => navigate("/login")} 
+    className="register-login-text"
+  >
+    Log in
+  </span>
+</div>
+
           </form>
         </div>
       </div>
