@@ -60,7 +60,7 @@ const Units: React.FC = () => {
   };
 
   const filteredUnits = units.filter((unit) =>
-    unit.number.toLowerCase().includes(search.toLowerCase())
+    unit.number.toString().toLowerCase().includes(search.toLowerCase())
   );
 
   const toggleDropdown = (unitId: number) => {

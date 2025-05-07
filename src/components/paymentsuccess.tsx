@@ -24,13 +24,13 @@ const SuccessModal: React.FC<SuccessModalProps> = ({ onClose, onViewPayment }) =
           click <span style={{ color: '#007BFF', cursor: 'pointer' }}>here</span> to go back to dashboard
         </p>
         <div style={{ display: 'flex', gap: '10px', justifyContent: 'center', marginTop: '20px' }}>
-  <button className="view-payment-btn" onClick={onViewPayment}>
-    View Payment
-  </button>
-  <button className="receipt-btn">
-    Receipt
-  </button>
-</div>
+          <button className="view-payment-btn" onClick={onClose}>
+            View Payment
+          </button>
+          <button className="receipt-btn" onClick={onViewPayment}>
+            Receipt
+          </button>
+        </div>
       </div>
     </div>
   );
