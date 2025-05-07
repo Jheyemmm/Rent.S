@@ -8,7 +8,7 @@ interface ReceiptProps {
   };
   unitData: {
     UnitNumber: string;
-    Price: number;
+    Price: number;  
     TenantFirstName: string;
     TenantLastName: string;
   };

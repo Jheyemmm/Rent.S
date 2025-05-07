@@ -4,6 +4,7 @@ import Header from "../../components/header";
 import MenuComponent from "../../components/frontdesk_menu";
 import { AddTenantModal } from "../../components/Addtenant";
 import { MoveOutModal } from "../../components/moveout";
+import UpdateSuccessDialog from "../../components/Editsuccess"; // Import the success dialog
 import "./FrontdeskViewtenant.css";
 import supabase from "../../supabaseClient";
 
@@ -29,8 +30,11 @@ const ViewTenant: React.FC = () => {
   const [showAddModal, setShowAddModal] = useState(false);
   const [showMoveOutModal, setShowMoveOutModal] = useState(false);
   const [selectedTenant, setSelectedTenant] = useState<any>(null);
-  const sidebarRef = useRef<HTMLDivElement>(null);
   const [search, setSearch] = useState("");
+  const [showSuccessDialog, setShowSuccessDialog] = useState(false); // State for success dialog
+  const [successTitle, setSuccessTitle] = useState("Tenant Added");
+  const [successMessage, setSuccessMessage] = useState("The tenant has been successfully added.");
+  const sidebarRef = useRef<HTMLDivElement>(null);
 
   const fetchTenants = async () => {
     setLoading(true);
@@ -50,8 +54,7 @@ const ViewTenant: React.FC = () => {
         // Sort payments by date to get the latest one
         const sortedPayments = tenant.Payments?.sort(
           (a: any, b: any) =>
-            new Date(b.PaymentDate).getTime() -
-            new Date(a.PaymentDate).getTime()
+            new Date(b.PaymentDate).getTime() - new Date(a.PaymentDate).getTime()
         );
         const lastPayment = sortedPayments?.[0]?.PaymentDate || "-";
 
@@ -93,7 +96,6 @@ const ViewTenant: React.FC = () => {
     setShowMoveOutModal(true);
   };
 
-
   const handleMoveOutSubmit = async (formData: any) => {
     try {
       const { error: tenantError } = await supabase
@@ -104,20 +106,25 @@ const ViewTenant: React.FC = () => {
           MoveOutReason: formData.moveOutReason,
         })
         .eq("TenantID", selectedTenant.tenantID);
-  
+
       if (tenantError) throw tenantError;
-  
+
       const { error: unitError } = await supabase
         .from("Units")
         .update({
           UnitStatus: "Available"
         })
         .eq("UnitID", selectedTenant.unit);
-  
+
       if (unitError) throw unitError;
-  
+
       fetchTenants();
       setShowMoveOutModal(false);
+
+      // Show success dialog after move-out is successful
+      setShowSuccessDialog(true);
+      setSuccessTitle("Tenant Moved Out");
+      setSuccessMessage("The tenant has been successfully moved out.");
     } catch (error: any) {
       console.error("Error processing move out:", error.message);
     }
@@ -126,9 +133,6 @@ const ViewTenant: React.FC = () => {
   const navigateToTenantHistory = () => {
     // Updated to use React Router for better navigation
     navigate("/TenantArchive");
-    
-    // Alternative if React Router doesn't work:
-    // window.location.href = "/admin/TenantArchive";
   };
 
   return (
@@ -163,9 +167,7 @@ const ViewTenant: React.FC = () => {
                     onChange={handleSearchChange}
                     onFocus={() => setSearchFocused(true)}
                     onBlur={() => setSearchFocused(false)}
-                    placeholder={
-                      !searchFocused && search === "" ? "Search Here" : ""
-                    }
+                    placeholder={search === "" ? "Search Here" : ""}
                   />
                   <i className="fas fa-search search-icon"></i>
                 </div>
@@ -209,7 +211,6 @@ const ViewTenant: React.FC = () => {
                           <td>{tenant.balance}</td>
                           <td>{tenant.lastPayment}</td>
                           <td>
-                           
                             <button
                               className="move-out-btn"
                               onClick={() => handleMoveOutClick(tenant)}
@@ -227,12 +228,28 @@ const ViewTenant: React.FC = () => {
           </div>
         </main>
       </div>
+
       {showAddModal && (
         <AddTenantModal
           onClose={() => setShowAddModal(false)}
-          onTenantAdded={fetchTenants}
+          onTenantAdded={async () => {
+            await fetchTenants();
+            setShowSuccessDialog(true); // Show success dialog
+            setSuccessTitle("Tenant Added"); // Set success dialog title
+            setSuccessMessage("The tenant has been successfully added."); // Set success message
+          }}
         />
       )}
+
+      {showSuccessDialog && (
+        <UpdateSuccessDialog
+          onClose={() => setShowSuccessDialog(false)}
+          title={successTitle}
+          message={successMessage}
+          type="edit" 
+        />
+      )}
+
       {showMoveOutModal && selectedTenant && (
         <MoveOutModal
           onClose={() => setShowMoveOutModal(false)}
@@ -253,7 +270,6 @@ const ViewTenant: React.FC = () => {
           }}
         />
       )}
-      
     </div>
   );
 };

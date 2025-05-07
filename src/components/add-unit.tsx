@@ -1,13 +1,14 @@
 import React, { useState } from 'react';
-import './AddUnit.css'; // Import the custom CSS file
+import './AddUnit.css'; 
 import supabase from '../supabaseClient';
 
 interface AddUnitProps {
-  closeForm: () => void; // Function to close the form
+  closeForm: () => void; 
   refreshUnits: () => void;
+  onSuccess: () => void;  // New prop for success callback
 }
 
-const AddUnit: React.FC<AddUnitProps> = ({ closeForm, refreshUnits }) => {
+const AddUnit: React.FC<AddUnitProps> = ({ closeForm, refreshUnits, onSuccess }) => {
   const [unitNumber, setUnitNumber] = useState('');
   const [unitPrice, setUnitPrice] = useState('');
   const [unitDetails, setUnitDetails] = useState('');
@@ -16,48 +17,37 @@ const AddUnit: React.FC<AddUnitProps> = ({ closeForm, refreshUnits }) => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Add logic for adding the unit (e.g., sending the data to the backend)
     setLoading(true);
     setError(null);
 
-     // Get authenticated user
-     try {
-      const {
-        data: { user },
-        error: userError,
-      } = await supabase.auth.getUser();
+    try {
+      const { data: { user }, error: userError } = await supabase.auth.getUser();
 
-    if (userError || !user) {
-      setError('You must be logged in to add a unit.');
-      // setLoading(false);
-      return;
-    }
+      if (userError || !user) {
+        setError('You must be logged in to add a unit.');
+        return;
+      }
 
-    // Insert into Units table
-    const { error: insertError } = await supabase.from('Units').insert([
-      {
+      const { error: insertError } = await supabase.from('Units').insert([{
         UnitNumber: unitNumber.trim(),
         Price: Number(unitPrice.trim()),
         Description: unitDetails.trim(),
-        UnitStatus: 'Available', // default room status
+        UnitStatus: 'Available',
         UserID: user.id,
-      },
-    ]);
+      }]);
 
-    if (insertError) {
-      setError(insertError.message);
-    } else {
-      refreshUnits();
-      closeForm();
+      if (insertError) {
+        setError(insertError.message);
+      } else {
+        refreshUnits();
+        onSuccess();  // Trigger success dialog
+        closeForm();
+      }
+    } catch (err) {
+      setError('An unexpected error occurred.');
+    } finally {
+      setLoading(false);
     }
-  } catch (err) {
-    setError('An unexpected error occurred.');
-  } finally {
-    setLoading(false);
-  }
-
-    console.log('Unit added:', { unitNumber, unitPrice, unitDetails });
-    // closeForm(); // Close the form after submission
   };
 
   return (
@@ -103,22 +93,13 @@ const AddUnit: React.FC<AddUnitProps> = ({ closeForm, refreshUnits }) => {
           </div>
 
           <div className="form-actions">
-            <button
-              type="button"
-              className="cancel-btn"
-              onClick={closeForm}
-            >
+            <button type="button" className="cancel-btn" onClick={closeForm}>
               Cancel
             </button>
 
-            <button
-              type="submit"
-              className="submit-btn"
-              disabled={loading}
-            >
+            <button type="submit" className="submit-btn" disabled={loading}>
               {loading ? 'Adding...' : 'Submit'}
             </button>
-
           </div>
         </form>
       </div>

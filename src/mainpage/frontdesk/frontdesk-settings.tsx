@@ -3,6 +3,7 @@ import Header from "../../components/header";
 import MenuComponent from "../../components/frontdesk_menu";
 import supabase from "../../supabaseClient";
 import './frontdesk-settings.css';
+import UpdateSuccessDialog from "../../components/Editsuccess";
 
 interface User {
   UserID: string;
@@ -24,97 +25,67 @@ const FrontdeskSettings: React.FC = () => {
   const sidebarRef = useRef<HTMLDivElement>(null);
   const [isOpen, setIsOpen] = useState(false);
   
-  // User state
   const [userFirstName, setUserFirstName] = useState("");
   const [userLastName, setUserLastName] = useState("");
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
-  const [roleID, setRoleID] = useState<number | null>(null);
   const [roleName, setRoleName] = useState("");
   const [loading, setLoading] = useState(true);
   const [message, setMessage] = useState<{text: string, type: 'success' | 'error'} | null>(null);
   const [currentUser, setCurrentUser] = useState<User | null>(null);
+  const [showSuccessDialog, setShowSuccessDialog] = useState(false);
 
-  // Fetch current user data on component mount
   useEffect(() => {
     const fetchUserData = async () => {
       try {
-        // First, check if we can get the user directly from auth
         const { data: authData, error: authError } = await supabase.auth.getUser();
-        
-        if (authError) {
-          console.error("Auth error:", authError.message);
+        if (authError || !authData.user) {
           setMessage({ text: "Authentication error", type: "error" });
           setLoading(false);
           return;
         }
-        
-        if (!authData.user) {
-          console.error("No authenticated user found");
-          setMessage({ text: "No authenticated user found", type: "error" });
-          setLoading(false);
-          return;
-        }
-        
-        // Get user info from Users table based on email
+
         const { data: userData, error: userError } = await supabase
           .from('Users')
           .select('*')
           .eq('Email', authData.user.email)
           .single();
-        
-        if (userError) {
-          console.error("Failed to fetch user data:", userError.message);
+
+        if (userError || !userData) {
           setMessage({ text: "Failed to load user data", type: "error" });
           setLoading(false);
           return;
         }
-        
-        if (!userData) {
-          console.error("No user data found");
-          setMessage({ text: "User data not found", type: "error" });
-          setLoading(false);
-          return;
-        }
-        
-        // Get the role name from the Roles table
-        const { data: roleData, error: roleError } = await supabase
+
+        const { data: roleData } = await supabase
           .from('Roles')
           .select('Role')
           .eq('RoleID', userData.RoleID)
           .single();
-        
-        if (roleError) {
-          console.error("Failed to fetch role data:", roleError.message);
-        }
-        
-        // Set user data in state
+
         setCurrentUser(userData);
         setUserFirstName(userData.UserFirstName || "");
         setUserLastName(userData.UserLastName || "");
         setUsername(userData.Username || "");
         setEmail(userData.Email || "");
-        setRoleID(userData.RoleID);
         setRoleName(roleData?.Role || "Unknown Role");
       } catch (error) {
-        console.error("Unexpected error:", error);
         setMessage({ text: "An unexpected error occurred", type: "error" });
       } finally {
         setLoading(false);
       }
     };
-    
+
     fetchUserData();
   }, []);
 
   const handleSaveChanges = async () => {
     if (!currentUser) return;
-    
+
     setLoading(true);
     setMessage(null);
-    
+
     try {
-      // Update the user record
       const { error: updateError } = await supabase
         .from('Users')
         .update({
@@ -122,27 +93,24 @@ const FrontdeskSettings: React.FC = () => {
           UserLastName: userLastName,
           Username: username,
           Email: email,
-          // Note: We're not updating RoleID here as it should be managed separately
         })
         .eq('UserID', currentUser.UserID);
-      
+
       if (updateError) {
-        console.error("Error updating profile:", updateError.message);
         setMessage({ text: "Failed to update profile", type: "error" });
         return;
       }
-      
-      // Also update auth user metadata if needed
+
       await supabase.auth.updateUser({
         data: { 
           first_name: userFirstName,
           last_name: userLastName
         }
       });
-      
+
       setMessage({ text: "Changes saved successfully", type: "success" });
+      setShowSuccessDialog(true);
     } catch (error) {
-      console.error("Unexpected error:", error);
       setMessage({ text: "An unexpected error occurred", type: "error" });
     } finally {
       setLoading(false);
@@ -238,6 +206,15 @@ const FrontdeskSettings: React.FC = () => {
           </div>
         </main>
       </div>
+
+      {showSuccessDialog && (
+        <UpdateSuccessDialog
+          type="edit"
+          title="Profile Updated"
+          message="Your profile information has been successfully updated."
+          onClose={() => setShowSuccessDialog(false)}
+        />
+      )}
     </div>
   );
 };

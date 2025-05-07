@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import './AddUnit.css'; // Same styles as before
+import React, { useState } from 'react';
+import './AddUnit.css';
 import supabase from '../supabaseClient';
 
 interface EditUnitProps {
@@ -8,56 +8,53 @@ interface EditUnitProps {
     number: string; 
     price: number; 
     details: string;
-    status?: string; // Added status field
-  }; // Pass the unit to be edited
+    status?: string;
+  };
   closeForm: () => void;
   refreshUnits: () => void;
+  onSuccess: () => void; // ✅ Trigger success
 }
 
-const EditUnit: React.FC<EditUnitProps> = ({ unit, closeForm, refreshUnits }) => {
+const EditUnit: React.FC<EditUnitProps> = ({ unit, closeForm, refreshUnits, onSuccess }) => {
   const [unitName, setUnitName] = useState(unit.number);
   const [unitPrice, setUnitPrice] = useState(unit.price.toString());
   const [unitDetails, setUnitDetails] = useState(unit.details);
-  const [unitStatus, setUnitStatus] = useState(unit.status || 'Available'); // Default to Available if not provided
-  const [loading, setLoading] = useState(false); // For loading state
-  const [error, setError] = useState<string | null>(null); // For error handling
+  const [unitStatus, setUnitStatus] = useState(unit.status || 'Available');
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
-  // Handle status change
   const handleStatusChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     setUnitStatus(e.target.value);
   };
-  
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
-    // to prevent submitting if loading or there is an error
     if (loading) return;
-    
-    setLoading(true); // start loading
-    
-    const { data, error } = await supabase
-    .from('Units')
-    .update({
-      Price: parseFloat(unitPrice),
-      Description: unitDetails,
-      UnitNumber: unitName,
-      UnitStatus: unitStatus // Add status to the update
-    })
-    .eq('UnitID', unit.unitID);
-    
+
+    setLoading(true);
+
+    const { error } = await supabase
+      .from('Units')
+      .update({
+        Price: parseFloat(unitPrice),
+        Description: unitDetails,
+        UnitNumber: unitName,
+        UnitStatus: unitStatus
+      })
+      .eq('UnitID', unit.unitID);
+
     if (error) {
       setError(error.message);
       setLoading(false);
       return;
     }
-    
-    console.log('Unit updated:', { unitName, unitPrice, unitDetails, unitStatus });
-    
+
     await refreshUnits();
     setLoading(false);
-    closeForm(); // Close the form after updating
+    onSuccess(); // ✅ show success dialog
+    closeForm(); // ✅ close form
   };
-  
+
   return (
     <div className="overlay" onClick={closeForm}>
       <div className="add-unit-container" onClick={(e) => e.stopPropagation()}>
@@ -92,8 +89,6 @@ const EditUnit: React.FC<EditUnitProps> = ({ unit, closeForm, refreshUnits }) =>
               required
             />
           </div>
-          
-          {/* Status dropdown - only showing when the unit is Unavailable */}
           <div className="form-group">
             <label className="form-label">Status</label>
             {unitStatus === "Unavailable" ? (
@@ -115,7 +110,7 @@ const EditUnit: React.FC<EditUnitProps> = ({ unit, closeForm, refreshUnits }) =>
               />
             )}
           </div>
-          
+
           <div className="form-actions">
             <button
               type="button"

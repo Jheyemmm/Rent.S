@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect, ChangeEvent } from 'react';
 import MenuComponent from '../../components/frontdesk_menu';
 import Header from '../../components/header';
 import AddPaymentModal from '../../components/addpayment';
+import SuccessModal from '../../components/paymentsuccess';
 import '../admin/AdminViewPayment.css';
 import supabase from '../../supabaseClient';
 
@@ -14,6 +15,7 @@ interface Transaction {
   receiptFile: string | null;
   date: string;
 }
+
 const Payments: React.FC = () => {
   const [searchValue, setSearchValue] = useState('');
   const [searchFocused, setSearchFocused] = useState(false);
@@ -26,6 +28,7 @@ const Payments: React.FC = () => {
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const [imageLoading, setImageLoading] = useState(false);
   const [imageError, setImageError] = useState<string | null>(null);
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
 
   useEffect(() => {
     fetchTransactions();
@@ -90,12 +93,11 @@ const Payments: React.FC = () => {
     try {
       await fetchTransactions();
       setShowModal(false);
+      setShowSuccessModal(true);
     } catch (err) {
       console.error('Error refreshing transactions after add:', err);
     }
   };
-
-  
 
   const handleSearchChange = (e: ChangeEvent<HTMLInputElement>) => {
     setSearchValue(e.target.value);
@@ -158,7 +160,6 @@ const Payments: React.FC = () => {
           <div className="payment-container">
             <div className="payment-header">
               <h1>List of Transactions</h1>
-
               <div className="header-right-section">
                 <button 
                   className="add-payment-btn"
@@ -167,7 +168,6 @@ const Payments: React.FC = () => {
                   Add new payment
                   <span className="plus-icon">+</span>
                 </button>
-
                 <div className="payment-search-container">
                   <input
                     type="text"
@@ -225,8 +225,7 @@ const Payments: React.FC = () => {
                             )}
                           </td>
                           <td>{transaction.date}</td>
-                          <td>
-                          </td>
+                          <td></td>
                         </tr>
                       ))
                     )}
@@ -243,7 +242,12 @@ const Payments: React.FC = () => {
             />
           )}
 
-        
+          {showSuccessModal && (
+            <SuccessModal
+              onClose={() => setShowSuccessModal(false)}
+              onViewPayment={() => setShowSuccessModal(false)}
+            />
+          )}
 
           {showImageModal && (
             <div className="image-modal-overlay" onClick={closeImageModal}>
@@ -253,17 +257,13 @@ const Payments: React.FC = () => {
                   <button onClick={closeImageModal} className="close-modal-btn">×</button>
                 </div>
                 <div className="image-modal-body">
-                  {imageLoading && (
-                    <div className="loading-receipt">Loading receipt...</div>
-                  )}
-                  
+                  {imageLoading && <div className="loading-receipt">Loading receipt...</div>}
                   {!imageLoading && imageError && (
                     <div className="error-message">
                       <p>Error loading receipt: {imageError}</p>
                       <p>Please try again later or contact support.</p>
                     </div>
                   )}
-                  
                   {!imageLoading && !imageError && selectedImage && (
                     <div className="image-container">
                       <img 

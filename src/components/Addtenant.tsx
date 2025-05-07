@@ -14,7 +14,7 @@ interface Unit {
   UnitStatus: 'Available' | string;
 }
 
-export const AddTenantModal: React.FC<AddTenantModalProps> = ({ onClose }) => {
+export const AddTenantModal: React.FC<AddTenantModalProps> = ({ onClose, onTenantAdded }) => {
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
   const [phone, setPhone] = useState('');
@@ -22,10 +22,10 @@ export const AddTenantModal: React.FC<AddTenantModalProps> = ({ onClose }) => {
   const [unitID, setUnitID] = useState('');
   const [moveInDate, setMoveInDate] = useState('');
   const [balance, setBalance] = useState('');
-  const [units, setUnits] = useState<{ UnitID: number; UnitNumber: string; Price: number; UnitStatus: string }[]>([]);
+  const [units, setUnits] = useState<Unit[]>([]);
   const [selectedPrice, setPrice] = useState<number | null>(null);
   const [error, setError] = useState<string | null>(null);
-  
+
   useEffect(() => {
     const fetchUnits = async () => {
       const { data, error } = await supabase
@@ -37,7 +37,7 @@ export const AddTenantModal: React.FC<AddTenantModalProps> = ({ onClose }) => {
         const availableUnits = data.filter((unit: Unit) => unit.UnitStatus === 'Available');
         setUnits(availableUnits);
       } else {
-        setError('Failed to fetch units.')
+        setError('Failed to fetch units.');
       }
     };
 
@@ -53,19 +53,17 @@ export const AddTenantModal: React.FC<AddTenantModalProps> = ({ onClose }) => {
 
   const handleSubmit = async () => {
     try {
-      const { 
-        data: { user }, 
-        error: userError, 
+      const {
+        data: { user },
+        error: userError,
       } = await supabase.auth.getUser();
 
       if (userError || !user) {
-        setError('You must be logged in to add a tenant.')
+        setError('You must be logged in to add a tenant.');
         return;
       }
 
-      const { error: insertError } = await supabase
-      .from('Tenants')
-      .insert({
+      const { error: insertError } = await supabase.from('Tenants').insert({
         TenantFirstName: firstName.trim(),
         TenantLastName: lastName.trim(),
         ContactNumber: phone.trim(),
@@ -80,22 +78,20 @@ export const AddTenantModal: React.FC<AddTenantModalProps> = ({ onClose }) => {
         setError(insertError.message);
         return;
       }
-  
-      // Step 2: Update unit status to 'Occupied'
+
       const { error: updateError } = await supabase
         .from('Units')
         .update({ UnitStatus: 'Occupied' })
         .eq('UnitID', parseInt(unitID));
-  
+
       if (updateError) {
         setError('Tenant added, but failed to update unit status: ' + updateError.message);
         return;
       }
-  
-      setError(null); // clear any previous error
-      alert('Tenant added successfully!');
-      onClose(); // close modal on success
 
+      setError(null);
+      await onTenantAdded(); // ✅ Trigger success modal or refresh
+      onClose(); // ✅ Close modal after successful addition
     } catch (err) {
       console.error(err);
       setError('Unexpected error occurred.');
@@ -108,7 +104,7 @@ export const AddTenantModal: React.FC<AddTenantModalProps> = ({ onClose }) => {
         <button className="addtenant-modal-close" onClick={onClose}>
           ×
         </button>
-        
+
         <div className="addtenant-form-container">
           <h1 className="addtenant-form-title">Add Tenant</h1>
 
@@ -117,24 +113,23 @@ export const AddTenantModal: React.FC<AddTenantModalProps> = ({ onClose }) => {
           <div className="addtenant-form-section">
             <h2>Tenant Details</h2>
             <div className="addtenant-form-row">
-
               <div className="addtenant-form-group">
                 <label>First Name</label>
-                <input 
-                type="text" 
-                className="addtenant-form-input" 
-                value={firstName} 
-                onChange={(e) => setFirstName(e.target.value)}
+                <input
+                  type="text"
+                  className="addtenant-form-input"
+                  value={firstName}
+                  onChange={(e) => setFirstName(e.target.value)}
                 />
               </div>
 
               <div className="addtenant-form-group">
                 <label>Last Name</label>
-                <input 
-                type="text" 
-                className="addtenant-form-input"
-                value={lastName} 
-                onChange={(e) => setLastName(e.target.value)}
+                <input
+                  type="text"
+                  className="addtenant-form-input"
+                  value={lastName}
+                  onChange={(e) => setLastName(e.target.value)}
                 />
               </div>
             </div>
@@ -142,21 +137,21 @@ export const AddTenantModal: React.FC<AddTenantModalProps> = ({ onClose }) => {
             <div className="addtenant-form-row">
               <div className="addtenant-form-group">
                 <label>Phone Number</label>
-                <input 
-                type="tel" 
-                className="addtenant-form-input" 
-                value={phone} 
-                onChange={(e) => setPhone(e.target.value)}
+                <input
+                  type="tel"
+                  className="addtenant-form-input"
+                  value={phone}
+                  onChange={(e) => setPhone(e.target.value)}
                 />
               </div>
 
               <div className="addtenant-form-group">
                 <label>Email</label>
-                <input 
-                type="email" 
-                className="addtenant-form-input" 
-                value={email} 
-                onChange={(e) => setEmail(e.target.value)}
+                <input
+                  type="email"
+                  className="addtenant-form-input"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
                 />
               </div>
             </div>
@@ -165,13 +160,9 @@ export const AddTenantModal: React.FC<AddTenantModalProps> = ({ onClose }) => {
           <div className="addtenant-form-section">
             <h2>Assign unit</h2>
             <div className="addtenant-form-row">
-
               <div className="addtenant-form-group">
                 <label>Unit number</label>
-                <select
-                  value={unitID} 
-                  onChange={handleUnitChange}
-                >
+                <select value={unitID} onChange={handleUnitChange}>
                   <option value="">Select a unit</option>
                   {units.map((unit) => (
                     <option key={unit.UnitID} value={unit.UnitID}>
@@ -183,10 +174,10 @@ export const AddTenantModal: React.FC<AddTenantModalProps> = ({ onClose }) => {
 
               <div className="addtenant-form-group">
                 <label>Move in date</label>
-                <input 
-                type="date" 
-                value = {moveInDate}
-                onChange={(e) => setMoveInDate(e.target.value)}
+                <input
+                  type="date"
+                  value={moveInDate}
+                  onChange={(e) => setMoveInDate(e.target.value)}
                 />
               </div>
             </div>
@@ -194,10 +185,7 @@ export const AddTenantModal: React.FC<AddTenantModalProps> = ({ onClose }) => {
             <div className="addtenant-form-row">
               <div className="addtenant-form-group">
                 <label>Price</label>
-                <input 
-                type="number" 
-                value={selectedPrice ?? ''} readOnly 
-                />
+                <input type="number" value={selectedPrice ?? ''} readOnly />
               </div>
 
               <div className="addtenant-form-group"></div>
@@ -205,25 +193,25 @@ export const AddTenantModal: React.FC<AddTenantModalProps> = ({ onClose }) => {
           </div>
 
           <div className="addtenant-form-actions">
-            <button 
-            type="button" 
-            className="addtenant-clear-btn"
-            onClick={() =>{
-              setFirstName('');
-              setLastName('');
-              setPhone('');
-              setEmail('');
-              setUnitID('');
-              setPrice(null);
-              setMoveInDate('');
-            }}
-            >Clear</button>
+            <button
+              type="button"
+              className="addtenant-clear-btn"
+              onClick={() => {
+                setFirstName('');
+                setLastName('');
+                setPhone('');
+                setEmail('');
+                setUnitID('');
+                setPrice(null);
+                setMoveInDate('');
+              }}
+            >
+              Clear
+            </button>
 
-            <button 
-            type="button"
-            className="addtenant-submit-btn"
-            onClick={handleSubmit}
-            >Submit</button>
+            <button type="button" className="addtenant-submit-btn" onClick={handleSubmit}>
+              Submit
+            </button>
           </div>
         </div>
       </div>
