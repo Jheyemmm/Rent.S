@@ -6,13 +6,14 @@ interface EditTenantModalProps {
   onClose: () => void;
   tenantData?: any; // Add this prop to receive tenant data
   onTenantUpdated: () => Promise<void>; // Add this prop for callback after update
+  
 }
 
 interface Unit {
   UnitID: number;
   UnitNumber: string;
   Price: number;
-  UnitStatus: 'Available' | 'Occupied' | string;
+  UnitStatus: 'Available' | 'Occupied' | string;  
 }
 
 export const EditTenantModal: React.FC<EditTenantModalProps> = ({ onClose, tenantData, onTenantUpdated }) => {

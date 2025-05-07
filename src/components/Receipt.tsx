@@ -11,13 +11,22 @@ interface ReceiptProps {
     PaymentDate: string
   }
   unitData: {
+<<<<<<< HEAD
     UnitNumber: string
     Price: number
     TenantFirstName: string
     TenantLastName: string
   }
   onClose: () => void
+=======
+    UnitNumber: string;
+    Price: number;  
+    TenantFirstName: string;
+    TenantLastName: string;
+  };ccfc8e435f4ea0a792cd760cff39c
 }
+  onClose: () => void;
+>>>>>>> ead6dbac0c4
 
 const Receipt: React.FC<ReceiptProps> = ({ paymentData, unitData, onClose }) => {
   const paymentDate = new Date(paymentData.PaymentDate)
