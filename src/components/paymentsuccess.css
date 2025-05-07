@@ -1,0 +1,102 @@
+.success-modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    backdrop-filter: blur(6px);
+    background-color: rgba(0, 0, 0, 0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+}
+
+.success-modal {
+    background: white;
+    padding: 40px 50px;
+    border-radius: 20px;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+    text-align: center;
+    max-width: 400px;
+    width: 100%;
+    border: 1px solid black; /* Added green border */
+}
+
+.checkmark-circle {
+    width: 120px;
+    height: 120px;
+    border: 8px solid #28a745; /* Default green border */
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 20px auto;
+    transition: border-color 0.3s ease;
+}
+
+.checkmark {
+    color: #1FAC71; /* Default green color */
+    font-size: 60px; /* Massive checkmark */
+    font-weight: bold;
+    transition: color 0.3s ease;
+}
+
+.success-title {
+    color: #1FAC71;
+    font-size: 24px;
+    font-weight: 600;
+    margin-bottom: 10px;
+}
+
+.success-message {
+    font-size: 16px;
+    margin-bottom: 8px;
+    color: #333;
+}
+
+.success-link {
+    font-size: 14px;
+    color: #444;
+    margin-bottom: 20px;
+}
+
+.link-text {
+    color: #1FAC71;
+    text-decoration: underline;
+    cursor: pointer;
+}
+
+.view-payment-btn {
+    padding: 10px 20px;
+    background-color: #1FAC71;
+    border: none;
+    color: white;
+    font-size: 14px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background-color 0.2s ease-in-out;
+}
+
+.view-payment-btn:hover {
+    background-color: #1FAC71;
+}
+
+.view-payment-btn:hover {
+    background-color: #289366; /* Darker blue on hover */
+  }
+
+.receipt-btn {
+    padding: 10px 20px;
+    background-color: #007bff; /* Blue color */
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+  }
+  
+  .receipt-btn:hover {
+    background-color: #0056b3; /* Darker blue on hover */
+  }

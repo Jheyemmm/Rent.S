@@ -1,13 +1,10 @@
-"use client"
-
-import type React from "react"
-import { useState, useRef, useEffect, type ChangeEvent } from "react"
-import MenuComponent from "../../components/frontdesk_menu"
-import Header from "../../components/header"
-import AddPaymentModal from "../../components/addpayment"
-import ReceiptModal from "../../components/Receipt"
-import "../admin/AdminViewPayment.css"
-import supabase from "../../supabaseClient"
+import React, { useState, useRef, useEffect, ChangeEvent } from 'react';
+import MenuComponent from '../../components/frontdesk_menu';
+import Header from '../../components/header';
+import AddPaymentModal from '../../components/addpayment';
+import SuccessModal from '../../components/paymentsuccess';
+import '../admin/AdminViewPayment.css';
+import supabase from '../../supabaseClient';
 
 interface Transaction {
   id: number
@@ -33,20 +30,18 @@ interface ReceiptData {
 }
 
 const Payments: React.FC = () => {
-  const [searchValue, setSearchValue] = useState("")
-  const [searchFocused, setSearchFocused] = useState(false)
-  const [showModal, setShowModal] = useState(false)
-  const [transactions, setTransactions] = useState<Transaction[]>([])
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState<string | null>(null)
-  const sidebarRef = useRef<HTMLDivElement>(null)
-  const [showImageModal, setShowImageModal] = useState(false)
-  const [selectedImage, setSelectedImage] = useState<string | null>(null)
-  const [imageLoading, setImageLoading] = useState(false)
-  const [imageError, setImageError] = useState<string | null>(null)
-  // Add state for receipt modal
-  const [showReceipt, setShowReceipt] = useState(false)
-  const [receiptData, setReceiptData] = useState<ReceiptData | null>(null)
+  const [searchValue, setSearchValue] = useState('');
+  const [searchFocused, setSearchFocused] = useState(false);
+  const [showModal, setShowModal] = useState(false);
+  const [transactions, setTransactions] = useState<Transaction[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const sidebarRef = useRef<HTMLDivElement>(null);
+  const [showImageModal, setShowImageModal] = useState(false);
+  const [selectedImage, setSelectedImage] = useState<string | null>(null);
+  const [imageLoading, setImageLoading] = useState(false);
+  const [imageError, setImageError] = useState<string | null>(null);
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
 
   useEffect(() => {
     fetchTransactions()
@@ -101,41 +96,15 @@ const Payments: React.FC = () => {
   }
 
   const handleAddPayment = async (paymentData: any) => {
-    console.log("Submitted payment:", paymentData)
+    console.log('Submitted payment:', paymentData);
     try {
-      // Create receipt data from the payment
-      const newReceiptData = {
-        paymentData: {
-          PaymentAmount: paymentData.PaymentAmount,
-          PaymentDate: paymentData.PaymentDate,
-          ReferenceNumber: `${paymentData.TenantID}${paymentData.UnitID}${Date.now().toString().slice(-6)}`,
-        },
-        unitData: {
-          UnitNumber: paymentData.UnitNumber,
-          Price: paymentData.Price || 0,
-          TenantFirstName: paymentData.TenantFirstName,
-          TenantLastName: paymentData.TenantLastName,
-        },
-      }
-
-      // Set receipt data and show receipt
-      setReceiptData(newReceiptData)
-      setShowReceipt(true)
-
-      // Close the payment modal but don't refresh transactions yet
-      setShowModal(false)
-
-      // Refresh transactions in the background
-      await fetchTransactions()
+      await fetchTransactions();
+      setShowModal(false);
+      setShowSuccessModal(true);
     } catch (err) {
       console.error("Error refreshing transactions after add:", err)
     }
-  }
-
-  const handleCloseReceipt = () => {
-    setShowReceipt(false)
-    setReceiptData(null)
-  }
+  };
 
   const handleSearchChange = (e: ChangeEvent<HTMLInputElement>) => {
     setSearchValue(e.target.value)
@@ -196,13 +165,11 @@ const Payments: React.FC = () => {
           <div className="payment-container">
             <div className="payment-header">
               <h1>List of Transactions</h1>
-
               <div className="header-right-section">
                 <button className="add-payment-btn" onClick={() => setShowModal(true)}>
                   Add new payment
                   <span className="plus-icon">+</span>
                 </button>
-
                 <div className="payment-search-container">
                   <input
                     type="text"
@@ -270,14 +237,17 @@ const Payments: React.FC = () => {
             </div>
           </div>
 
-          {showModal && <AddPaymentModal onClose={() => setShowModal(false)} onSubmit={handleAddPayment} />}
+          {showModal && (
+            <AddPaymentModal
+              onClose={() => setShowModal(false)}
+              onSubmit={handleAddPayment}
+            />
+          )}
 
-          {/* Receipt Modal - Controlled by this component instead of AddPaymentModal */}
-          {showReceipt && receiptData && (
-            <ReceiptModal
-              paymentData={receiptData.paymentData}
-              unitData={receiptData.unitData}
-              onClose={handleCloseReceipt}
+          {showSuccessModal && (
+            <SuccessModal
+              onClose={() => setShowSuccessModal(false)}
+              onViewPayment={() => setShowSuccessModal(false)}
             />
           )}
 
@@ -292,14 +262,12 @@ const Payments: React.FC = () => {
                 </div>
                 <div className="image-modal-body">
                   {imageLoading && <div className="loading-receipt">Loading receipt...</div>}
-
                   {!imageLoading && imageError && (
                     <div className="error-message">
                       <p>Error loading receipt: {imageError}</p>
                       <p>Please try again later or contact support.</p>
                     </div>
                   )}
-
                   {!imageLoading && !imageError && selectedImage && (
                     <div className="image-container">
                       <img
@@ -335,4 +303,4 @@ const Payments: React.FC = () => {
   )
 }
 
-export default Payments
+export default Payments;

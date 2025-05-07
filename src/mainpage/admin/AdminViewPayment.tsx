@@ -1,53 +1,35 @@
-import React, { useState, useRef, useEffect, ChangeEvent } from 'react';
-import MenuComponent from '../../components/admin_menu';
-import Header from '../../components/header';
-import AddPaymentModal from '../../components/addpayment';  
-import EditPaymentModal from '../../components/edit-payment';
-import Receipt from '../../components/Receipt'; // Import the Receipt component
-import './AdminViewPayment.css';
-import supabase from '../../supabaseClient';
+  import React, { useState, useRef, useEffect, ChangeEvent } from 'react';
+  import MenuComponent from '../../components/admin_menu';
+  import Header from '../../components/header';
+  import AddPaymentModal from '../../components/addpayment';  
+  import EditPaymentModal from '../../components/edit-payment';
+  import './AdminViewPayment.css';
+  import supabase from '../../supabaseClient';
 
-interface Transaction {
-  id: number;
-  name: string;
-  unit: string;
-  amount: string;
-  receipt: string;
-  receiptFile: string | null;
-  date: string;
-}
+  interface Transaction {
+    id: number;
+    name: string;
+    unit: string;
+    amount: string;
+    receipt: string;
+    receiptFile: string | null;
+    date: string;
+  }
 
-// Add interface for receipt data
-interface ReceiptData {
-  paymentData: {
-    PaymentAmount: number;
-    PaymentDate: string;
-  };
-  unitData: {
-    UnitNumber: string;
-    Price: number;
-    TenantFirstName: string;
-    TenantLastName: string;
-  };
-}
-
-const AdminPayments: React.FC = () => {
-  const [searchValue, setSearchValue] = useState('');
-  const [searchFocused, setSearchFocused] = useState(false);
-  const [showModal, setShowModal] = useState(false);
-  const [showEditModal, setShowEditModal] = useState(false);
-  const [selectedTransaction, setSelectedTransaction] = useState<Transaction | null>(null);
-  const [transactions, setTransactions] = useState<Transaction[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const sidebarRef = useRef<HTMLDivElement>(null);
-  const [showImageModal, setShowImageModal] = useState(false);
-  const [selectedImage, setSelectedImage] = useState<string | null>(null);
-  const [imageLoading, setImageLoading] = useState(false);
-  const [imageError, setImageError] = useState<string | null>(null);
-  // Add state for receipt modal
-  const [showReceipt, setShowReceipt] = useState(false);
-  const [receiptData, setReceiptData] = useState<ReceiptData | null>(null);
+  const AdminPayments: React.FC = () => {
+    const [searchValue, setSearchValue] = useState('');
+    const [searchFocused, setSearchFocused] = useState(false);
+    const [showModal, setShowModal] = useState(false);
+    const [showEditModal, setShowEditModal] = useState(false);
+    const [selectedTransaction, setSelectedTransaction] = useState<Transaction | null>(null);
+    const [transactions, setTransactions] = useState<Transaction[]>([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState<string | null>(null);
+    const sidebarRef = useRef<HTMLDivElement>(null);
+    const [showImageModal, setShowImageModal] = useState(false);
+    const [selectedImage, setSelectedImage] = useState<string | null>(null);
+    const [imageLoading, setImageLoading] = useState(false);
+    const [imageError, setImageError] = useState<string | null>(null);
 
   useEffect(() => {
     fetchTransactions();
@@ -107,46 +89,25 @@ const AdminPayments: React.FC = () => {
     }
   };
 
-  const handleAddPayment = async (paymentData: any) => {
-    console.log('Submitted payment:', paymentData);
-    try {
-      // Create receipt data from the payment
-      const newReceiptData = {
-        paymentData: {
-          PaymentAmount: paymentData.PaymentAmount,
-          PaymentDate: paymentData.PaymentDate
-        },
-        unitData: {
-          UnitNumber: paymentData.UnitNumber,
-          Price: paymentData.Price || 0,
-          TenantFirstName: paymentData.TenantFirstName,
-          TenantLastName: paymentData.TenantLastName
-        }
-      };
+    const handleAddPayment = async (paymentData: any) => {
+      console.log('Submitted payment:', paymentData);
+      try {
+        await fetchTransactions();
+        setShowModal(false);
+      } catch (err) {
+        console.error('Error refreshing transactions after add:', err);
+      }
+    };
 
-      // Set receipt data and show receipt
-      setReceiptData(newReceiptData);
-      setShowReceipt(true);
-
-      // Close the payment modal but don't refresh transactions yet
-      setShowModal(false);
-
-      // Refresh transactions in the background
-      await fetchTransactions();
-    } catch (err) {
-      console.error('Error refreshing transactions after add:', err);
-    }
-  };
-
-  const handleEditPayment = async () => {
-    try {
-      await fetchTransactions();
-      setShowEditModal(false);
-      setSelectedTransaction(null);
-    } catch (err) {
-      console.error('Error refreshing transactions after edit:', err);
-    }
-  };
+    const handleEditPayment = async () => {
+      try {
+        await fetchTransactions();
+        setShowEditModal(false);
+        setSelectedTransaction(null);
+      } catch (err) {
+        console.error('Error refreshing transactions after edit:', err);
+      }
+    };
 
   const handleSearchChange = (e: ChangeEvent<HTMLInputElement>) => {
     setSearchValue(e.target.value);
@@ -194,17 +155,11 @@ const AdminPayments: React.FC = () => {
     }
   };
 
-  const closeImageModal = () => {
-    setShowImageModal(false);
-    setSelectedImage(null);
-    setImageError(null);
-  };
-
-  // Add function to close receipt
-  const handleCloseReceipt = () => {
-    setShowReceipt(false);
-    setReceiptData(null);
-  };
+    const closeImageModal = () => {
+      setShowImageModal(false);
+      setSelectedImage(null);
+      setImageError(null);
+    };
 
   return (
     <div className="dashboard-container">
@@ -312,22 +267,13 @@ const AdminPayments: React.FC = () => {
           {showEditModal && selectedTransaction && (
             <EditPaymentModal
               transaction={selectedTransaction}
-              onClose={() => {
-                setShowEditModal(false);
-                setSelectedTransaction(null);
-              }}
-              onSubmit={handleEditPayment}
-            />
-          )}
-
-          {/* Add Receipt Modal */}
-          {showReceipt && receiptData && (
-            <Receipt
-              paymentData={receiptData.paymentData}
-              unitData={receiptData.unitData}
-              onClose={handleCloseReceipt}
-            />
-          )}
+                onClose={() => {
+                  setShowEditModal(false);
+                  setSelectedTransaction(null);
+                }}
+                onSubmit={handleEditPayment}
+              />
+            )}
 
           {showImageModal && (
             <div className="image-modal-overlay" onClick={closeImageModal}>

@@ -1,144 +1,139 @@
-"use client"
+  import React, { useEffect, useState } from 'react';
+  import './addpayment.css';
+  import supabase from '../supabaseClient';
+  import Receipt from '../components/Receipt';
 
-import type React from "react"
-import { useEffect, useState } from "react"
-import "./addpayment.css"
-import supabase from "../supabaseClient"
-import Receipt from "../components/Receipt"
-
-interface AddPaymentModalProps {
-  onClose: () => void
-  onSubmit: (paymentData: any) => void
-}
-
-interface Unit {
-  UnitID: number
-  UnitNumber: string
-  Price: number
-  Tenants?: {
-    TenantID: number
-    TenantFirstName: string
-    TenantLastName: string
-    MoveInDate: string
-  }
-}
-
-const AddPaymentModal: React.FC<AddPaymentModalProps> = ({ onClose, onSubmit }) => {
-  const [amount, setAmount] = useState("")
-  const [paymentDate, setPaymentDate] = useState("")
-  const [proofFile, setProofFile] = useState<File | null>(null)
-  const [selectedUnit, setSelectedUnit] = useState("")
-  const [units, setUnits] = useState<Unit[]>([])
-  const [error, setError] = useState<string | null>(null)
-  const [currentUserID, setCurrentUserID] = useState<string | null>(null)
-  const [isSubmitting, setIsSubmitting] = useState(false)
-  const [totalPaid, setTotalPaid] = useState<number>(0)
-  const [showReceipt, setShowReceipt] = useState(false)
-  const [receiptData, setReceiptData] = useState<any>(null)
-
-  // Fetch current user ID when component mounts
-  useEffect(() => {
-    const fetchCurrentUser = async () => {
-      try {
-        // Get the current authenticated user
-        const {
-          data: { user: authUser },
-        } = await supabase.auth.getUser()
-
-        if (!authUser) {
-          setError("User not authenticated")
-          return
-        }
-
-        // Fetch the user's database record to get their UserID
-        const { data: userData, error: userError } = await supabase
-          .from("Users")
-          .select("UserID")
-          .eq("Email", authUser.email)
-          .single()
-
-        if (userError || !userData) {
-          console.error("Error fetching user ID:", userError)
-          setError("Failed to get user information")
-          return
-        }
-
-        setCurrentUserID(userData.UserID)
-      } catch (err) {
-        console.error("Error fetching current user:", err)
-        setError("Authentication error")
-      }
-    }
-
-    fetchCurrentUser()
-  }, [])
-
-  useEffect(() => {
-    const fetchUnits = async () => {
-      const { data, error } = await supabase
-        .from("Units")
-        .select(
-          "UnitID, UnitNumber, Price, UnitStatus, Tenants (TenantID, TenantFirstName, TenantLastName, MoveInDate)",
-        )
-        .eq("UnitStatus", "Occupied")
-
-      if (error) {
-        console.error(error)
-        setError("Failed to fetch units.")
-      } else {
-        console.log("Fetched occupied units with tenants:", data)
-        setUnits(
-          data.map((unit: any) => ({
-            UnitID: unit.UnitID,
-            UnitNumber: unit.UnitNumber,
-            Price: unit.Price || 0, // Ensure Price is never undefined
-            Tenants: Array.isArray(unit.Tenants) ? unit.Tenants[0] : (unit.Tenants ?? undefined),
-          })),
-        )
-      }
-    }
-
-    fetchUnits()
-  }, [])
-
-  const selectedUnitDetails = units.find((unit) => unit.UnitID.toString() === selectedUnit)
-
-  useEffect(() => {
-    const fetchTotalPaid = async () => {
-      if (!selectedUnit) {
-        setTotalPaid(0) // Reset to 0 when no unit is selected
-        return
-      }
-
-      const { data, error } = await supabase.from("Payments").select("PaymentAmount").eq("UnitID", selectedUnit)
-
-      if (error) {
-        console.error("Error fetching payments:", error)
-        setTotalPaid(0)
-        return
-      }
-
-      if (data && data.length > 0) {
-        const total = data.reduce((sum, p) => sum + (p.PaymentAmount || 0), 0)
-        setTotalPaid(total)
-      } else {
-        setTotalPaid(0)
-      }
-    }
-
-    fetchTotalPaid()
-  }, [selectedUnit])
-
-  const handleCloseReceipt = () => {
-    setShowReceipt(true)
+  interface AddPaymentModalProps {
+    onClose: () => void;
+    onSubmit: (paymentData: any) => void;
   }
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault() // Prevent default form submission
+  interface Unit {
+    UnitID: number;
+    UnitNumber: string;
+    Price: number;  
+    Tenants?: {
+      TenantID: number;
+      TenantFirstName: string;
+      TenantLastName: string;
+      MoveInDate: string;
+    }
+  }
 
-    if (isSubmitting) return // Prevent multiple submissions
-    setIsSubmitting(true)
-    setError(null) // Clear previous errors
+  const AddPaymentModal: React.FC<AddPaymentModalProps> = ({ onClose, onSubmit }) => {
+      const [amount, setAmount] = useState('');
+      const [paymentDate, setPaymentDate] = useState('');
+      const [proofFile, setProofFile] = useState<File | null>(null);
+      const [selectedUnit, setSelectedUnit] = useState('');
+      const [units, setUnits] = useState<Unit[]>([]);
+      const [error, setError] = useState<string | null>(null);
+      const [currentUserID, setCurrentUserID] = useState<string | null>(null);
+      const [isSubmitting, setIsSubmitting] = useState(false);
+      const [totalPaid, setTotalPaid] = useState<number>(0);
+      const [showReceipt, setShowReceipt] = useState(false);
+      const [receiptData, setReceiptData] = useState<any>(null);
+    
+      // Fetch current user ID when component mounts
+      useEffect(() => {
+        const fetchCurrentUser = async () => {  
+          try {
+            // Get the current authenticated user
+            const { data: { user: authUser } } = await supabase.auth.getUser();
+            
+            if (!authUser) {
+              setError("User not authenticated");
+              return;
+            }
+            
+            // Fetch the user's database record to get their UserID
+            const { data: userData, error: userError } = await supabase
+              .from('Users')
+              .select('UserID')
+              .eq('Email', authUser.email)
+              .single();
+              
+            if (userError || !userData) {
+              console.error('Error fetching user ID:', userError);
+              setError("Failed to get user information");
+              return;
+            }
+            
+            setCurrentUserID(userData.UserID);
+          } catch (err) {
+            console.error("Error fetching current user:", err);
+            setError("Authentication error");
+          }
+        };
+        
+        fetchCurrentUser();
+      }, []);
+
+      useEffect(() => {
+        const fetchUnits = async () => {
+          const { data, error } = await supabase
+          .from('Units')
+          .select('UnitID, UnitNumber, Price, UnitStatus, Tenants (TenantID, TenantFirstName, TenantLastName, MoveInDate)')
+          .eq('UnitStatus', 'Occupied'); 
+
+          if (error) {
+            console.error(error);
+            setError('Failed to fetch units.');
+          } else {
+            console.log('Fetched occupied units with tenants:', data);
+            setUnits(data.map((unit: any) => ({
+              UnitID: unit.UnitID,
+              UnitNumber: unit.UnitNumber,
+              Price: unit.Price || 0,  // Ensure Price is never undefined
+              Tenants: Array.isArray(unit.Tenants) ? unit.Tenants[0] : unit.Tenants ?? undefined
+            })));
+          }
+        };
+
+        fetchUnits();
+      }, []);
+
+      const selectedUnitDetails = units.find((unit) => unit.UnitID.toString() === selectedUnit);
+
+      useEffect(() => {
+        const fetchTotalPaid = async () => {
+          if (!selectedUnit) {
+            setTotalPaid(0); // Reset to 0 when no unit is selected
+            return;
+          }
+
+          const { data, error } = await supabase
+            .from('Payments')
+            .select('PaymentAmount')
+            .eq('UnitID', selectedUnit);
+
+          if (error) {
+            console.error('Error fetching payments:', error);
+            setTotalPaid(0);
+            return;
+          }
+
+          if (data && data.length > 0) {
+            const total = data.reduce((sum, p) => sum + (p.PaymentAmount || 0), 0);
+            setTotalPaid(total);
+          } else {
+            setTotalPaid(0);
+          }
+        };
+
+        fetchTotalPaid();
+      }, [selectedUnit]);
+
+      const handleCloseReceipt = () => {
+        setShowReceipt(false);
+        onClose(); // Close the modal after closing receipt
+      };
+
+    const handleSubmit = async (e: React.FormEvent) => {
+      e.preventDefault(); // Prevent default form submission
+      
+      if (isSubmitting) return; // Prevent multiple submissions
+      setIsSubmitting(true);
+      setError(null); // Clear previous errors
 
     try {
       if (!amount || !paymentDate || !selectedUnit) {
@@ -168,64 +163,66 @@ const AddPaymentModal: React.FC<AddPaymentModalProps> = ({ onClose, onSubmit }) 
 
       let proofUrl = ""
 
-      try {
-        // Get file extension and create a unique filename
-        const fileExt = proofFile.name.split(".").pop()
-        const fileName = `${Date.now()}-${Math.random().toString(36).substring(2, 15)}.${fileExt}`
-        const filePath = `proofs/${fileName}`
+        try {
+          // Get file extension and create a unique filename
+          const fileExt = proofFile.name.split('.').pop();
+          const fileName = `${Date.now()}-${Math.random().toString(36).substring(2, 15)}.${fileExt}`;
+          const filePath = `proofs/${fileName}`;
 
-        console.log("Uploading file to bucket: proof-of-payment, path:", filePath)
+          console.log("Uploading file to bucket: proof-of-payment, path:", filePath);
 
-        // Upload the proof file to the correct bucket
-        const { data: uploadData, error: uploadError } = await supabase.storage
-          .from("proof-of-payment") // Using the correct bucket name
-          .upload(filePath, proofFile, {
-            cacheControl: "3600",
-            upsert: false,
-          })
-
-        if (uploadError) {
-          console.error("Upload error:", uploadError)
-          setError(`Failed to upload proof of payment: ${uploadError.message}`)
-          setIsSubmitting(false)
-          return
+          // Upload the proof file to the correct bucket
+          const { data: uploadData, error: uploadError } = await supabase.storage
+            .from('proof-of-payment')  // Using the correct bucket name
+            .upload(filePath, proofFile, {
+              cacheControl: '3600',
+              upsert: false
+            });
+        
+          if (uploadError) {
+            console.error("Upload error:", uploadError);
+            setError(`Failed to upload proof of payment: ${uploadError.message}`);
+            setIsSubmitting(false);
+            return;
+          }
+          
+          // Get the public URL from the correct bucket
+          const { data } = supabase.storage
+            .from('proof-of-payment')  // Using the correct bucket name
+            .getPublicUrl(filePath);
+            
+          proofUrl = data.publicUrl;
+          console.log("File uploaded successfully. Public URL:", proofUrl);
+        } catch (uploadErr) {
+          console.error("File upload error:", uploadErr);
+          setError("Error during file upload. Please try again.");
+          setIsSubmitting(false);
+          return;
+        }
+        
+        const parsedAmount = parseFloat(amount);
+        if (isNaN(parsedAmount)) {
+          setError("Please enter a valid payment amount.");
+          setIsSubmitting(false);
+          return;
         }
 
-        // Get the public URL from the correct bucket
-        const { data } = supabase.storage
-          .from("proof-of-payment") // Using the correct bucket name
-          .getPublicUrl(filePath)
+        // Create payment data object matching the Payments table structure
+        const paymentData = {
+          TenantID: unit.Tenants.TenantID,
+          UnitID: unit.UnitID,
+          PaymentAmount: parsedAmount,
+          PaymentDate: paymentDate,
+          PaymentProof: proofUrl,
+          UserID: currentUserID, // Use the fetched UserID from the authenticated user
+        };
 
-        proofUrl = data.publicUrl
-        console.log("File uploaded successfully. Public URL:", proofUrl)
-      } catch (uploadErr) {
-        console.error("File upload error:", uploadErr)
-        setError("Error during file upload. Please try again.")
-        setIsSubmitting(false)
-        return
-      }
+        console.log("Sending payment data:", paymentData);
 
-      const parsedAmount = Number.parseFloat(amount)
-      if (isNaN(parsedAmount)) {
-        setError("Please enter a valid payment amount.")
-        setIsSubmitting(false)
-        return
-      }
-
-      // Create payment data object matching the Payments table structure
-      const paymentData = {
-        TenantID: unit.Tenants.TenantID,
-        UnitID: unit.UnitID,
-        PaymentAmount: parsedAmount,
-        PaymentDate: paymentDate,
-        PaymentProof: proofUrl,
-        UserID: currentUserID, // Use the fetched UserID from the authenticated user
-      }
-
-      console.log("Sending payment data:", paymentData)
-
-      // Insert payment record into the database
-      const { error: insertError } = await supabase.from("Payments").insert([paymentData])
+        // Insert payment record into the database
+        const { error: insertError } = await supabase
+          .from('Payments')
+          .insert([paymentData]);
 
       if (insertError) {
         console.error("Insert error:", insertError)
@@ -234,66 +231,63 @@ const AddPaymentModal: React.FC<AddPaymentModalProps> = ({ onClose, onSubmit }) 
         return
       }
 
-      // Prepare receipt data and show receipt
-      const paymentSuccessData = {
-        ...paymentData,
-        UnitNumber: unit.UnitNumber,
-        TenantFirstName: unit.Tenants.TenantFirstName,
-        TenantLastName: unit.Tenants.TenantLastName,
-        Price: unit.Price,
-      }
-
-      setReceiptData({
-        paymentData: paymentSuccessData,
-        unitData: {
+        // Prepare receipt data and show receipt
+        const paymentSuccessData = {
+          ...paymentData,
           UnitNumber: unit.UnitNumber,
-          Price: unit.Price,
           TenantFirstName: unit.Tenants.TenantFirstName,
           TenantLastName: unit.Tenants.TenantLastName,
-        },
-      })
+          Price: unit.Price
+        };
 
-      onSubmit(paymentSuccessData)
-      // Show receipt after successful payment
-      setShowReceipt(true)
-      console.log("Payment saved successfully.")
-    } catch (err) {
-      console.error("Error in payment submission:", err)
-      setError("An unexpected error occurred.")
-    } finally {
-      setIsSubmitting(false)
-    }
-  }
+        setReceiptData({
+          paymentData: paymentSuccessData,
+          unitData: {
+            UnitNumber: unit.UnitNumber,
+            Price: unit.Price,
+            TenantFirstName: unit.Tenants.TenantFirstName,
+            TenantLastName: unit.Tenants.TenantLastName
+          }
+        });
 
-  return (
-    <div className="addpayment-modal-overlay">
-      <div className="addpayment-modal-container">
-        <div className="addpayment-modal-header">
-          <h2>NEW PAYMENT</h2>
-          <button className="close-btn" onClick={onClose}>
-            ×
-          </button>
-        </div>
-
-        <form onSubmit={handleSubmit}>
-          <div className="addpayment-modal-columns">
-            <div className="addpayment-left-column">
-              <div className="addpayment-form-group">
-                <h3>UNIT NUMBER</h3>
-                <select
-                  value={selectedUnit}
-                  onChange={(e) => setSelectedUnit(e.target.value)}
-                  className="unit-select"
-                  required
-                >
-                  <option value="">Select Unit</option>
-                  {units.map((unit) => (
-                    <option key={unit.UnitID} value={unit.UnitID}>
-                      Unit {unit.UnitNumber}
-                    </option>
-                  ))}
-                </select>
-              </div>
+        onSubmit(paymentSuccessData);
+        setShowReceipt(true);
+        console.log('Payment saved successfully.');
+      } catch (err) {
+        console.error("Error in payment submission:", err);
+        setError("An unexpected error occurred.");
+      } finally {
+        setIsSubmitting(false);
+      }
+    };
+    
+    return (
+      <div className="addpayment-modal-overlay"> 
+        <div className="addpayment-modal-container"> 
+          <div className="addpayment-modal-header"> 
+            <h2>NEW PAYMENT</h2>
+            <button className="close-btn" onClick={onClose}>×</button>
+          </div>
+    
+          <form onSubmit={handleSubmit}>
+            <div className="addpayment-modal-columns">
+              <div className="addpayment-left-column">
+                <div className="addpayment-form-group">
+                  <h3>UNIT NUMBER</h3>
+                  <select
+                    value={selectedUnit}
+                    onChange={(e) => setSelectedUnit(e.target.value)}
+                    className="unit-select"
+                    required
+                  >
+                    <option value="">Select Unit</option>
+                    {units.map((unit) => (
+                      <option key={unit.UnitID} value={unit.UnitID}>
+                        Unit {unit.UnitNumber}
+                      </option>
+                    ))}
+                  </select>
+                </div>
 
               <div className="addpayment-unit-details">
                 <h4>DETAILS</h4>
@@ -368,31 +362,39 @@ const AddPaymentModal: React.FC<AddPaymentModalProps> = ({ onClose, onSubmit }) 
                 </div>
               )}
 
-              <div className="addpayment-modal-actions">
-                <button type="button" className="addpayment-cancel-btn" onClick={onClose} disabled={isSubmitting}>
-                  Cancel
-                </button>
-                <button type="button" className="addpayment-save-btn" onClick={handleSubmit} disabled={isSubmitting}>
-                  {isSubmitting ? "Saving..." : "Save Payment"}
-                </button>
+                <div className="addpayment-modal-actions">
+                  <button 
+                    type="button" 
+                    className="addpayment-cancel-btn" 
+                    onClick={onClose}
+                    disabled={isSubmitting}
+                  >
+                    Cancel
+                  </button>
+                  <button 
+                    type="button" 
+                    className="addpayment-save-btn" 
+                    onClick={handleSubmit}
+                    disabled={isSubmitting}
+                  >
+                    {isSubmitting ? 'Saving...' : 'Save Payment'}
+                  </button>
+                </div>
               </div>
             </div>
-          </div>
-        </form>
-      </div>
+          </form>
+        </div>
 
-      {/* Receipt Modal */}
-      {showReceipt && receiptData && (
-        <Receipt
-          paymentData={{
-            PaymentAmount: receiptData.paymentData.PaymentAmount,
-            PaymentDate: receiptData.paymentData.PaymentDate
-          }}
-          unitData={receiptData.unitData}
-          onClose={handleCloseReceipt}
-        />
-      )}
-    </div>
-  )
-}
-export default AddPaymentModal
+        {/* Receipt Modal */}
+        {showReceipt && receiptData && (
+          <Receipt
+            paymentData={receiptData.paymentData}
+            unitData={receiptData.unitData}
+            onClose={handleCloseReceipt}
+          />
+        )}
+      </div>
+    );
+  };
+
+  export default AddPaymentModal;

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import './edit_user.css';
 import supabase from '../supabaseClient';
+import UpdateSuccessDialog from './Editsuccess'; // Import the UpdateSuccessDialog component
 
 interface User {
   id: string;
@@ -17,12 +18,13 @@ interface User {
 
 interface Role {
   RoleID: number;
-  Role: string; // Changed from RoleName to Role
+  Role: string;
 }
 
 interface EditUserProps {
   user: User;
   closeForm: () => void;
+  onUpdateSuccess: () => void; // Add this property
 }
 
 const EditUser: React.FC<EditUserProps> = ({ user, closeForm }) => {
@@ -36,6 +38,7 @@ const EditUser: React.FC<EditUserProps> = ({ user, closeForm }) => {
   const [roles, setRoles] = useState<Role[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [showSuccessDialog, setShowSuccessDialog] = useState(false); // State to control the success dialog
 
   useEffect(() => {
     fetchRoles();
@@ -45,8 +48,8 @@ const EditUser: React.FC<EditUserProps> = ({ user, closeForm }) => {
     try {
       const { data, error } = await supabase
         .from('Roles')
-        .select('RoleID, Role') // Changed from RoleName to Role
-        .order('Role'); // Changed from RoleName to Role
+        .select('RoleID, Role')
+        .order('Role');
 
       if (error) {
         throw error;
@@ -67,7 +70,6 @@ const EditUser: React.FC<EditUserProps> = ({ user, closeForm }) => {
     setError(null);
 
     try {
-      // Prepare update object
       const updates: any = {
         UserFirstName: firstName,
         UserLastName: lastName,
@@ -91,7 +93,11 @@ const EditUser: React.FC<EditUserProps> = ({ user, closeForm }) => {
       }
 
       console.log('User updated successfully');
-      closeForm();
+      setShowSuccessDialog(true); // Show success dialog after successful update
+      setTimeout(() => {
+        setShowSuccessDialog(false); // Close the dialog after a brief delay
+        closeForm(); // Close the form
+      }, 3000); // Show the dialog for 3 seconds
     } catch (error: any) {
       console.error('Error updating user:', error.message);
       setError(`Failed to update user: ${error.message}`);
@@ -100,7 +106,6 @@ const EditUser: React.FC<EditUserProps> = ({ user, closeForm }) => {
     }
   };
 
-  // Close the form when clicking outside
   const handleOverlayClick = (e: React.MouseEvent) => {
     if (e.target === e.currentTarget) {
       closeForm();
@@ -109,13 +114,10 @@ const EditUser: React.FC<EditUserProps> = ({ user, closeForm }) => {
 
   return (
     <div className="overlay" onClick={handleOverlayClick}>
-      <div
-        className="edit-account-container"
-        onClick={(e) => e.stopPropagation()}
-      >
+      <div className="edit-account-container" onClick={(e) => e.stopPropagation()}>
         <h2 className="form-title">Edit User</h2>
         {error && <p className="error-message">{error}</p>}
-        
+
         <form onSubmit={handleSubmit}>
           <div className="form-group">
             <label className="form-label">First Name</label>
@@ -212,6 +214,15 @@ const EditUser: React.FC<EditUserProps> = ({ user, closeForm }) => {
           </div>
         </form>
       </div>
+
+      {showSuccessDialog && (
+        <UpdateSuccessDialog
+        type='delete' // Specify the type of message
+        title='User Updated'
+        message='User details have been successfully updated.' // Custom message
+          onClose={() => setShowSuccessDialog(false)} // Close the dialog when the "Close" button is clicked
+        />
+      )}
     </div>
   );
 };
