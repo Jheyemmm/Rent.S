@@ -3,6 +3,7 @@ import MenuComponent from '../../components/frontdesk_menu';
 import Header from '../../components/header';
 import AddPaymentModal from '../../components/addpayment';
 import SuccessModal from '../../components/paymentsuccess';
+import Receipt from "../../components/Receipt";
 import '../admin/AdminViewPayment.css';
 import supabase from '../../supabaseClient';
 
@@ -42,6 +43,8 @@ const Payments: React.FC = () => {
   const [imageLoading, setImageLoading] = useState(false);
   const [imageError, setImageError] = useState<string | null>(null);
   const [showSuccessModal, setShowSuccessModal] = useState(false);
+  const [showReceipt, setShowReceipt] = useState(false);
+  const [receiptData, setReceiptData] = useState<ReceiptData | null>(null);
 
   useEffect(() => {
     fetchTransactions()
@@ -95,25 +98,59 @@ const Payments: React.FC = () => {
     }
   }
 
-  const handleAddPayment = async (paymentData: any) => {
-    console.log('Submitted payment:', paymentData);
-    try {
-      await fetchTransactions();
-      setShowModal(false);
-      setShowSuccessModal(true);
-    } catch (err) {
-      console.error("Error refreshing transactions after add:", err)
+  
+const handleAddPayment = async (paymentData: any) => {
+  console.log("Submitted payment:", paymentData)
+  try {
+    // Store receipt data for later use when button is clicked
+    const newReceiptData = {
+      paymentData: {
+        PaymentAmount: paymentData.PaymentAmount,
+        PaymentDate: paymentData.PaymentDate,
+        // Add the current timestamp as created_at
+        created_at: new Date().toISOString(),
+      },
+      unitData: {
+        UnitNumber: paymentData.UnitNumber || "",
+        Price: paymentData.Price || 0,
+        TenantFirstName: paymentData.TenantFirstName || "",
+        TenantLastName: paymentData.TenantLastName || "",
+      },
     }
-  };
+
+    // First explicitly make sure receipt is hidden
+    setShowReceipt(false)
+    // Then store the receipt data for later use
+    setReceiptData(newReceiptData)
+
+    await fetchTransactions()
+    setShowModal(false)
+    // Show success modal only
+    setShowSuccessModal(true)
+  } catch (err) {
+    console.error("Error refreshing transactions after add:", err)
+  }
+}
+
 
   const handleSearchChange = (e: ChangeEvent<HTMLInputElement>) => {
     setSearchValue(e.target.value)
   }
 
+  const handleViewReceipt = () => {
+    setShowSuccessModal(false);
+    setShowReceipt(true);
+  };
+  
+  const handleCloseReceipt = () => {
+    setShowReceipt(false);
+  };
+
   const filteredTransactions = transactions.filter(
     (transaction) =>
       transaction.name.toLowerCase().includes(searchValue.toLowerCase()) ||
       transaction.unit.toLowerCase().includes(searchValue.toLowerCase()),
+      
   )
 
   const openImageModal = async (receiptFile: string | null) => {
@@ -247,7 +284,15 @@ const Payments: React.FC = () => {
           {showSuccessModal && (
             <SuccessModal
               onClose={() => setShowSuccessModal(false)}
-              onViewPayment={() => setShowSuccessModal(false)}
+              onViewPayment={handleViewReceipt}
+            />
+          )}
+
+          {showReceipt && receiptData && (
+            <Receipt
+              paymentData={receiptData.paymentData}
+              unitData={receiptData.unitData}
+              onClose={handleCloseReceipt}
             />
           )}
 
@@ -261,13 +306,17 @@ const Payments: React.FC = () => {
                   </button>
                 </div>
                 <div className="image-modal-body">
-                  {imageLoading && <div className="loading-receipt">Loading receipt...</div>}
+                  {imageLoading && (
+                    <div className="loading-receipt">Loading receipt...</div>
+                  )}
+                  
                   {!imageLoading && imageError && (
                     <div className="error-message">
                       <p>Error loading receipt: {imageError}</p>
                       <p>Please try again later or contact support.</p>
                     </div>
                   )}
+                  
                   {!imageLoading && !imageError && selectedImage && (
                     <div className="image-container">
                       <img

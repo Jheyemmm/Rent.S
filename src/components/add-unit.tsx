@@ -5,7 +5,7 @@ import supabase from '../supabaseClient';
 interface AddUnitProps {
   closeForm: () => void; 
   refreshUnits: () => void;
-  onSuccess: () => void;  // New prop for success callback
+  onSuccess: () => void;
 }
 
 const AddUnit: React.FC<AddUnitProps> = ({ closeForm, refreshUnits, onSuccess }) => {
@@ -14,11 +14,57 @@ const AddUnit: React.FC<AddUnitProps> = ({ closeForm, refreshUnits, onSuccess })
   const [unitDetails, setUnitDetails] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [validationErrors, setValidationErrors] = useState<{
+    unitNumber?: string;
+  }>({});
+  const [priceError, setPriceError] = useState<string | null>(null);
+
+  const validateUnitNumber = (value: string): boolean => {
+    if (!/^\d+$/.test(value.trim())) {
+      setValidationErrors(prev => ({...prev, unitNumber: "Unit number must contain only digits"}));
+      return false;
+    }
+    setValidationErrors(prev => ({...prev, unitNumber: undefined}));
+    return true;
+  };
+
+  const validatePrice = (value: string): boolean => {
+    if (!value) return true; // Skip empty validation, handled by required attribute
+    
+    const numValue = parseFloat(value);
+    if (isNaN(numValue) || numValue <= 0) {
+      setPriceError("Price must be greater than zero");
+      return false;
+    }
+    setPriceError(null);
+    return true;
+  };
+
+  const handleUnitNumberChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    setUnitNumber(value);
+    validateUnitNumber(value);
+  };
+
+  const handleUnitPriceChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    setUnitPrice(value);
+    validatePrice(value);
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setLoading(true);
     setError(null);
+
+    // Validate form fields before submission
+    const isUnitNumberValid = validateUnitNumber(unitNumber);
+    const isPriceValid = validatePrice(unitPrice);
+
+    if (!isUnitNumberValid || !isPriceValid) {
+      return;
+    }
+
+    setLoading(true);
 
     try {
       const { data: { user }, error: userError } = await supabase.auth.getUser();
@@ -40,7 +86,7 @@ const AddUnit: React.FC<AddUnitProps> = ({ closeForm, refreshUnits, onSuccess })
         setError(insertError.message);
       } else {
         refreshUnits();
-        onSuccess();  // Trigger success dialog
+        onSuccess();
         closeForm();
       }
     } catch (err) {
@@ -55,7 +101,7 @@ const AddUnit: React.FC<AddUnitProps> = ({ closeForm, refreshUnits, onSuccess })
       <div className="add-unit-container" onClick={(e) => e.stopPropagation()}>
         <h2 className="form-title">Add Unit</h2>
         <form onSubmit={handleSubmit}>
-          {error && <p className="form-error">{error}</p>}
+          {error && <div className="form-error">{error}</div>}
 
           <div className="form-group">
             <label className="form-label">Unit Number</label>
@@ -63,10 +109,13 @@ const AddUnit: React.FC<AddUnitProps> = ({ closeForm, refreshUnits, onSuccess })
               type="text"
               placeholder="Enter Unit Number"
               value={unitNumber}
-              onChange={(e) => setUnitNumber(e.target.value)}
-              className="form-input"
+              onChange={handleUnitNumberChange}
+              className={`form-input ${validationErrors.unitNumber ? 'error-input' : ''}`}
               required
             />
+            {validationErrors.unitNumber && (
+              <div className="field-error">{validationErrors.unitNumber}</div>
+            )}
           </div>
 
           <div className="form-group">
@@ -75,10 +124,15 @@ const AddUnit: React.FC<AddUnitProps> = ({ closeForm, refreshUnits, onSuccess })
               type="number"
               placeholder="Enter Unit Price"
               value={unitPrice}
-              onChange={(e) => setUnitPrice(e.target.value)}
-              className="form-input"
+              onChange={handleUnitPriceChange}
+              className={`form-input ${priceError ? 'error-input' : ''}`}
+              min="0.01"
+              step="0.01"
               required
             />
+            {priceError && (
+              <div className="field-error">{priceError}</div>
+            )}
           </div>
 
           <div className="form-group">
@@ -97,7 +151,11 @@ const AddUnit: React.FC<AddUnitProps> = ({ closeForm, refreshUnits, onSuccess })
               Cancel
             </button>
 
-            <button type="submit" className="submit-btn" disabled={loading}>
+            <button 
+              type="submit" 
+              className="submit-btn" 
+              disabled={loading || !!priceError || !!validationErrors.unitNumber}
+            >
               {loading ? 'Adding...' : 'Submit'}
             </button>
           </div>
