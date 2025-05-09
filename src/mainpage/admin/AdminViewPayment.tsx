@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect, ChangeEvent } from 'react';
+import { useNavigate } from 'react-router-dom';
 import MenuComponent from '../../components/admin_menu';
 import Header from '../../components/header';
 import AddPaymentModal from '../../components/addpayment';  
@@ -32,6 +33,7 @@ interface ReceiptData {
 }
 
 const AdminPayments: React.FC = () => {
+  const navigate = useNavigate();
   const [searchValue, setSearchValue] = useState('');
   const [searchFocused, setSearchFocused] = useState(false);
   const [showModal, setShowModal] = useState(false);
@@ -58,6 +60,29 @@ const AdminPayments: React.FC = () => {
     setError(null);
 
     try {
+      // First, get all current tenants (where MoveOutDate is null)
+      const { data: currentTenants, error: tenantError } = await supabase
+        .from('Tenants')
+        .select('TenantID')
+        .is('MoveOutDate', null);
+
+      if (tenantError) {
+        console.error('Error fetching current tenants:', tenantError);
+        setError('Failed to load current tenants.');
+        return;
+      }
+
+      // Extract tenant IDs
+      const currentTenantIds = currentTenants.map(tenant => tenant.TenantID);
+      
+      if (currentTenantIds.length === 0) {
+        // No current tenants found
+        setTransactions([]);
+        setLoading(false);
+        return;
+      }
+
+      // Fetch payments for current tenants only
       const { data, error } = await supabase
         .from('Payments')
         .select(`
@@ -68,6 +93,7 @@ const AdminPayments: React.FC = () => {
           Tenants (TenantID, TenantFirstName, TenantLastName),
           Units (UnitID, UnitNumber)
         `)
+        .in('TenantID', currentTenantIds)
         .order('PaymentDate', { ascending: false });
 
       if (error) {
@@ -211,6 +237,11 @@ const AdminPayments: React.FC = () => {
     setImageError(null);
   };
 
+  // Add a function to navigate to payment history
+  const goToPaymentHistory = () => {
+    navigate('/payment-history');
+  };
+
   return (
     <div className="dashboard-container">
       <Header />
@@ -219,7 +250,16 @@ const AdminPayments: React.FC = () => {
         <main className="dashboard-main">
           <div className="payment-container">
             <div className="payment-header">
-              <h1>List of Transactions</h1>
+              {/* Add title section with history button */}
+              <div className="title-section">
+                <h1>List of Transactions</h1>
+                <button 
+                  className="payment-history-btn"
+                  onClick={goToPaymentHistory}
+                >
+                  Past Tenant Payment History
+                </button>
+              </div>
 
               <div className="header-right-section">
                 <button 
@@ -265,7 +305,7 @@ const AdminPayments: React.FC = () => {
                     {filteredTransactions.length === 0 ? (
                       <tr>
                         <td colSpan={6} className="no-transactions-message">
-                          No payment transactions found.
+                          No current tenant payment transactions found.
                         </td>
                       </tr>
                     ) : (
@@ -362,7 +402,7 @@ const AdminPayments: React.FC = () => {
                   {!imageLoading && !imageError && selectedImage && (
                     <div className="image-container">
                       <img 
-                        src={selectedImage} 
+                        src={selectedImage || "/placeholder.svg"} 
                         alt="Payment Receipt" 
                         onError={() => {
                           console.error('Image failed to load:', selectedImage);

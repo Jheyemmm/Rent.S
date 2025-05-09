@@ -13,6 +13,7 @@ import AdminViewTenant from "./mainpage/admin/AdminViewtenant";
 import FDSettings from "./mainpage/frontdesk/frontdesk-settings";
 import AccountSettings from "./mainpage/admin/account-settings";
 import TenantArchive from "./mainpage/admin/TenantArchive";
+import PaymentHistory from "./mainpage/admin/payment-history"; // Added payment history import
 import AdminSettings from "./mainpage/admin/admin-settings";
 import ProtectedRoute from "./components/ProtectedRoute";
 import Unauthorized from "./pages/unauthorized"; 
@@ -33,6 +34,7 @@ const App: React.FC = () => {
           <Route path="/adminViewtenant" element={<AdminViewTenant />} />
           <Route path="/admin-settings" element={<AdminSettings />} />
           <Route path="/TenantArchive" element={<TenantArchive />} />
+          <Route path="/payment-history" element={<PaymentHistory />} /> {/* Added payment history route */}
           <Route path="/account-settings" element={<AccountSettings />} />
         </Route>
         

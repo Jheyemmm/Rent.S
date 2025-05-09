@@ -217,7 +217,7 @@ const EditUser: React.FC<EditUserProps> = ({ user, closeForm }) => {
 
       {showSuccessDialog && (
         <UpdateSuccessDialog
-        type='delete' // Specify the type of message
+        type='edit' // Specify the type of message
         title='User Updated'
         message='User details have been successfully updated.' // Custom message
           onClose={() => setShowSuccessDialog(false)} // Close the dialog when the "Close" button is clicked

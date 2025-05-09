@@ -1,0 +1,247 @@
+/* General Layout */
+.dashboard-container {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+  }
+  
+  .dashboard-content {
+    display: flex;
+    flex: 1;
+    position: relative;
+  }
+  
+  .dashboard-main {
+    flex: 1;
+    padding: 20px;
+    margin-left: 250px;
+    display: flex;
+    flex-direction: column;
+    min-height: 100%;
+  }
+  
+  /* Tenant Container */
+  .tenant-container {
+    width: 100%;
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 24px;
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    flex: 1;
+    position: relative;
+    z-index: 10;
+  }
+  
+  /* Header Layout */
+  .tenant-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    margin-bottom: 20px;
+    gap: 20px;
+  }
+  
+  .tenant-header h1 {
+    font-size: 24px;
+    font-weight: normal;
+    color: black;
+    margin: 0;
+    white-space: nowrap;
+    margin-left: 20px;
+  }
+  
+  .header-right-section {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-left: auto;
+  }
+  
+  /* Buttons */
+  button {
+    cursor: pointer;
+    border-radius: 10px;
+    padding: 8px 16px;
+    font-size: 14px;
+    transition: all 0.2s ease;
+  }
+  
+  button:hover {
+    opacity: 0.9;
+  }
+  
+  /* Search Input */
+  .relative {
+    position: relative;
+  }
+  
+  input[type="text"] {
+    width: 100%;
+    padding: 8px 16px;
+    padding-right: 40px;
+    border: 1px solid #ccc;
+    border-radius: 20px;
+    font-size: 14px;
+  }
+  
+  input[type="text"]:focus {
+    outline: none;
+    border-color: #4CBD8D;
+    box-shadow: 0 0 0 2px rgba(76, 189, 141, 0.2);
+  }
+  
+  .fas.fa-search {
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #777;
+  }
+  
+  /* Table Styles */
+  .tenant-table-container {
+    overflow-x: auto;
+    margin-top: 20px;
+  }
+  
+  table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+  
+  thead tr {
+    background-color: #E5F2F1;
+    color: #666;
+  }
+  
+  th {
+    padding: 14px;
+    text-align: left;
+    font-size: 14px;
+    font-weight: 500;
+  }
+  
+  td {
+    padding: 14px;
+    font-size: 14px;
+    border-bottom: 1px solid #f0f0f0;
+  }
+  
+  /* Loading and Empty States */
+  .loading-indicator {
+    text-align: center;
+    padding: 32px;
+    color: #666;
+  }
+  
+  /* Image Modal */
+  .image-modal-overlay {
+    position: fixed;
+    inset: 0;
+    background-color: rgba(0, 0, 0, 0.7);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 50;
+  }
+  
+  .image-modal-content {
+    background-color: white;
+    border-radius: 8px;
+    width: 100%;
+    max-width: 800px;
+    max-height: 90vh;
+    overflow: hidden;
+  }
+  
+  .image-modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px;
+    border-bottom: 1px solid #eee;
+  }
+  
+  .image-modal-header h3 {
+    font-size: 18px;
+    font-weight: 500;
+    margin: 0;
+  }
+  
+  .image-modal-header button {
+    background: none;
+    border: none;
+    font-size: 24px;
+    font-weight: bold;
+    color: #777;
+    cursor: pointer;
+  }
+  
+  .image-modal-body {
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .image-modal-body img {
+    max-width: 100%;
+    max-height: 70vh;
+    object-fit: contain;
+    margin-bottom: 20px;
+  }
+  
+  .image-modal-body a {
+    display: inline-block;
+    padding: 8px 16px;
+    background-color: #538787;
+    color: white;
+    text-decoration: none;
+    border-radius: 4px;
+    font-size: 14px;
+    text-align: center;
+    margin-top: 16px;
+    transition: background-color 0.2s ease;
+  }
+  
+  .image-modal-body a:hover {
+    background-color: #3a6060;
+  }
+  
+  /* View Receipt Button */
+  button.view-receipt-btn {
+    padding: 4px 12px;
+    background-color: #e9f5f5;
+    color: #538787;
+    border-radius: 4px;
+    font-size: 12px;
+    border: none;
+  }
+  
+  button.view-receipt-btn:hover {
+    background-color: #538787;
+    color: white;
+  }
+  
+  /* Responsive Adjustments */
+  @media (max-width: 768px) {
+    .dashboard-main {
+      margin-left: 0;
+      padding: 16px;
+    }
+  
+    .tenant-header {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 16px;
+    }
+  
+    .header-right-section {
+      width: 100%;
+      justify-content: space-between;
+    }
+  }

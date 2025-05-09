@@ -1,7 +1,6 @@
 "use client"
 
-import type React from "react"
-import { useEffect, useState } from "react"
+import React, { useEffect, useState } from "react"
 import "./Addtenant.css"
 import supabase from "../supabaseClient"
 
@@ -38,6 +37,7 @@ export const AddTenantModal: React.FC<AddTenantModalProps> = ({ onClose, onTenan
   const [error, setError] = useState<string | null>(null);
   const [validationErrors, setValidationErrors] = useState<ValidationErrors>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [formValidated, setFormValidated] = useState(false);
 
   useEffect(() => {
     const fetchUnits = async () => {
@@ -114,6 +114,7 @@ export const AddTenantModal: React.FC<AddTenantModalProps> = ({ onClose, onTenan
     }
 
     setValidationErrors(errors)
+    setFormValidated(true)
     return isValid
   }
 
@@ -150,7 +151,8 @@ export const AddTenantModal: React.FC<AddTenantModalProps> = ({ onClose, onTenan
     e.preventDefault()
     setError(null)
 
-    if (!validateForm()) {
+    const isValid = validateForm()
+    if (!isValid) {
       return
     }
 
@@ -207,6 +209,10 @@ export const AddTenantModal: React.FC<AddTenantModalProps> = ({ onClose, onTenan
       setIsSubmitting(false)
     }
   }
+
+  const hasValidationErrors = () => {
+    return Object.values(validationErrors).some(error => error !== undefined);
+  };
 
   return (
     <div className="addtenant-modal-overlay" onClick={onClose}>
@@ -347,6 +353,7 @@ export const AddTenantModal: React.FC<AddTenantModalProps> = ({ onClose, onTenan
                 setMoveInDate("")
                 setValidationErrors({})
                 setError(null)
+                setFormValidated(false)
               }}
               disabled={isSubmitting}
             >
@@ -357,7 +364,7 @@ export const AddTenantModal: React.FC<AddTenantModalProps> = ({ onClose, onTenan
               type="button" 
               className="addtenant-submit-btn" 
               onClick={handleSubmit}
-              disabled={isSubmitting || Object.keys(validationErrors).length > 0}
+              disabled={isSubmitting || (formValidated && hasValidationErrors())}
             >
               {isSubmitting ? 'Submitting...' : 'Submit'}
             </button>

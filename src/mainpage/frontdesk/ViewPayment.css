@@ -65,6 +65,31 @@
   line-height: 1;
 }
 
+/* Title section with history button */
+.title-section {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.history-btn {
+  background-color: #E5F2F1;
+  color: black;
+  border: 1px solid #C8CBD2;
+  padding: 8px 16px;
+  border-radius: 20px;
+  font-size: 14px;
+  font-weight: 300;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.2s ease;
+}
+
+.history-btn:hover {
+  background-color: #4CBD8D;
+  color: white;
+}
+
 /* Search bar styling */
 .payment-search-container {
   position: relative;
