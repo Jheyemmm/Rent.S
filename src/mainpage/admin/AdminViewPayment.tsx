@@ -320,7 +320,7 @@ const AdminPayments: React.FC = () => {
                                 className="view-receipt-btn"
                                 onClick={() => openImageModal(transaction.receiptFile)}
                               >
-                                View Receipt
+                                View Image
                               </button>
                             ) : (
                               'No Receipt'
@@ -384,7 +384,7 @@ const AdminPayments: React.FC = () => {
             <div className="image-modal-overlay" onClick={closeImageModal}>
               <div className="image-modal-content" onClick={(e) => e.stopPropagation()}>
                 <div className="image-modal-header">
-                  <h3>Payment Receipt</h3>
+                  <h3>Payment Proof</h3>
                   <button onClick={closeImageModal} className="close-modal-btn">×</button>
                 </div>
                 <div className="image-modal-body">
@@ -417,7 +417,7 @@ const AdminPayments: React.FC = () => {
                           rel="noopener noreferrer"
                           className="download-btn"
                         >
-                          Download Receipt
+                          Download
                         </a>
                       </div>
                     </div>

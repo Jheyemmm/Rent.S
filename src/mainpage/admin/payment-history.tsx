@@ -219,7 +219,7 @@ const PaymentHistory: React.FC = () => {
                                 className="view-receipt-btn"
                                 onClick={() => openReceiptModal(payment.PaymentProof as string)}
                               >
-                                View Receipt
+                                View Image
                               </button>
                             )}
                           </td>
@@ -251,7 +251,7 @@ const PaymentHistory: React.FC = () => {
             <div className="image-modal-body">
               <img src={selectedReceipt || "/placeholder.svg"} alt="Payment Receipt" />
               <a href={selectedReceipt} target="_blank" rel="noopener noreferrer">
-                Open Original
+                Donwload
               </a>
             </div>
           </div>
