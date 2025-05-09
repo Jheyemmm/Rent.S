@@ -2,9 +2,9 @@ import React, { useState, useRef, useEffect, ChangeEvent } from 'react';
 import { useNavigate } from 'react-router-dom';
 import MenuComponent from '../../components/admin_menu';
 import Header from '../../components/header';
-import AddPaymentModal from '../../components/addpayment';  
+import AddPaymentModal from '../../components/addpayment';
 import EditPaymentModal from '../../components/edit-payment';
-import SuccessModal from '../../components/paymentsuccess';
+import PaymentUpdateSuccessDialog from '../../components/paymenteditsuccess'; // Import success dialog
 import Receipt from "../../components/Receipt";
 import './AdminViewPayment.css';
 import supabase from '../../supabaseClient';
@@ -47,7 +47,9 @@ const AdminPayments: React.FC = () => {
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const [imageLoading, setImageLoading] = useState(false);
   const [imageError, setImageError] = useState<string | null>(null);
-  const [showSuccessModal, setShowSuccessModal] = useState(false);
+  const [showSuccessDialog, setShowSuccessDialog] = useState(false); // State for success dialog
+  const [successTitle, setSuccessTitle] = useState('');
+  const [successMessage, setSuccessMessage] = useState('');
   const [showReceipt, setShowReceipt] = useState(false);
   const [receiptData, setReceiptData] = useState<ReceiptData | null>(null);
 
@@ -60,7 +62,6 @@ const AdminPayments: React.FC = () => {
     setError(null);
 
     try {
-      // First, get all current tenants (where MoveOutDate is null)
       const { data: currentTenants, error: tenantError } = await supabase
         .from('Tenants')
         .select('TenantID')
@@ -72,17 +73,14 @@ const AdminPayments: React.FC = () => {
         return;
       }
 
-      // Extract tenant IDs
       const currentTenantIds = currentTenants.map(tenant => tenant.TenantID);
       
       if (currentTenantIds.length === 0) {
-        // No current tenants found
         setTransactions([]);
         setLoading(false);
         return;
       }
 
-      // Fetch payments for current tenants only
       const { data, error } = await supabase
         .from('Payments')
         .select(`
@@ -113,7 +111,7 @@ const AdminPayments: React.FC = () => {
             ? `${payment.Tenants.TenantFirstName} ${payment.Tenants.TenantLastName}`
             : 'Unknown Tenant',
           unit: payment.Units 
-            ? `Unit ${payment.Units.UnitNumber}`
+            ? `Unit ${payment.Units.UnitNumber}` 
             : `Unit ${payment.UnitID || 'Unknown'}`,
           amount: `₱${payment.PaymentAmount.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}`,
           receipt: receiptFileName || 'No Receipt',
@@ -133,53 +131,14 @@ const AdminPayments: React.FC = () => {
     }
   };
 
-  const handleAddPayment = async (paymentData: any) => {
-    console.log('Submitted payment:', paymentData);
-    try {
-      // Store receipt data for later use when button is clicked
-      const newReceiptData = {
-        paymentData: {
-          PaymentAmount: paymentData.PaymentAmount,
-          PaymentDate: paymentData.PaymentDate,
-          // Add the current timestamp as created_at
-          created_at: new Date().toISOString(),
-        },
-        unitData: {
-          UnitNumber: paymentData.UnitNumber || "",
-          Price: paymentData.Price || 0,
-          TenantFirstName: paymentData.TenantFirstName || "",
-          TenantLastName: paymentData.TenantLastName || "",
-        },
-      };
-
-      // First explicitly make sure receipt is hidden
-      setShowReceipt(false);
-      // Then store the receipt data for later use
-      setReceiptData(newReceiptData);
-
-      await fetchTransactions();
-      setShowModal(false);
-      // Show success modal only
-      setShowSuccessModal(true);
-    } catch (err) {
-      console.error('Error refreshing transactions after add:', err);
-    }
-  };
-
-  const handleViewReceipt = () => {
-    setShowSuccessModal(false);
-    setShowReceipt(true);
-  };
-  
-  const handleCloseReceipt = () => {
-    setShowReceipt(false);
-  };
-
   const handleEditPayment = async () => {
     try {
       await fetchTransactions();
       setShowEditModal(false);
       setSelectedTransaction(null);
+      setShowSuccessDialog(true); // Show success dialog
+      setSuccessTitle('Payment Updated');
+      setSuccessMessage('The payment has been successfully updated.');
     } catch (err) {
       console.error('Error refreshing transactions after edit:', err);
     }
@@ -194,54 +153,6 @@ const AdminPayments: React.FC = () => {
     transaction.unit.toLowerCase().includes(searchValue.toLowerCase())
   );
 
-  const openImageModal = async (receiptFile: string | null) => {
-    if (!receiptFile) {
-      alert('No receipt image available');
-      return;
-    }
-
-    setImageLoading(true);
-    setImageError(null);
-    setShowImageModal(true);
-
-    try {
-      if (receiptFile.startsWith('http://') || receiptFile.startsWith('https://')) {
-        setSelectedImage(receiptFile);
-        return;
-      }
-
-      const fileName = receiptFile.split('/').pop();
-      const storagePath = `proofs/${fileName}`;
-
-      const { publicUrl } = supabase
-        .storage
-        .from('proof-of-payment')
-        .getPublicUrl(storagePath).data;
-
-      if (!publicUrl) {
-        throw new Error('No public URL returned from Supabase');
-      }
-
-      setSelectedImage(publicUrl);
-    } catch (error) {
-      console.error('Error preparing image:', error);
-      setImageError(error instanceof Error ? error.message : 'Unknown error occurred');
-    } finally {
-      setImageLoading(false);
-    }
-  };
-
-  const closeImageModal = () => {
-    setShowImageModal(false);
-    setSelectedImage(null);
-    setImageError(null);
-  };
-
-  // Add a function to navigate to payment history
-  const goToPaymentHistory = () => {
-    navigate('/payment-history');
-  };
-
   return (
     <div className="dashboard-container">
       <Header />
@@ -250,12 +161,11 @@ const AdminPayments: React.FC = () => {
         <main className="dashboard-main">
           <div className="payment-container">
             <div className="payment-header">
-              {/* Add title section with history button */}
               <div className="title-section">
                 <h1>List of Transactions</h1>
                 <button 
                   className="payment-history-btn"
-                  onClick={goToPaymentHistory}
+                  onClick={() => navigate('/payment-history')}
                 >
                   Past Tenant Payment History
                 </button>
@@ -318,7 +228,10 @@ const AdminPayments: React.FC = () => {
                             {transaction.receiptFile ? (
                               <button 
                                 className="view-receipt-btn"
-                                onClick={() => openImageModal(transaction.receiptFile)}
+                                onClick={() => {
+                                  setSelectedImage(transaction.receiptFile);
+                                  setShowImageModal(true);
+                                }}
                               >
                                 View Receipt
                               </button>
@@ -350,79 +263,45 @@ const AdminPayments: React.FC = () => {
           {showModal && (
             <AddPaymentModal
               onClose={() => setShowModal(false)}
-              onSubmit={handleAddPayment}
+              onSubmit={async () => {
+                await fetchTransactions();
+                setShowSuccessDialog(true);
+                setSuccessTitle('Payment Added');
+                setSuccessMessage('The payment has been successfully added.');
+              }}
             />
           )}
 
-          {showSuccessModal && (
-            <SuccessModal
-              onClose={() => setShowSuccessModal(false)}
-              onViewPayment={handleViewReceipt}
-            />
-          )}
-
-          {showReceipt && receiptData && (
-            <Receipt
-              paymentData={receiptData.paymentData}
-              unitData={receiptData.unitData}
-              onClose={handleCloseReceipt}
+          {showSuccessDialog && (
+            <PaymentUpdateSuccessDialog
+              onClose={() => setShowSuccessDialog(false)}
+              title={successTitle}
+              message={successMessage}
             />
           )}
 
           {showEditModal && selectedTransaction && (
             <EditPaymentModal
               transaction={selectedTransaction}
-                onClose={() => {
-                  setShowEditModal(false);
-                  setSelectedTransaction(null);
-                }}
-                onSubmit={handleEditPayment}
-              />
-            )}
+              onClose={() => {
+                setShowEditModal(false);
+                setSelectedTransaction(null);
+              }}
+              onSubmit={handleEditPayment}
+            />
+          )}
 
           {showImageModal && (
-            <div className="image-modal-overlay" onClick={closeImageModal}>
+            <div className="image-modal-overlay" onClick={() => setShowImageModal(false)}>
               <div className="image-modal-content" onClick={(e) => e.stopPropagation()}>
-                <div className="image-modal-header">
-                  <h3>Payment Receipt</h3>
-                  <button onClick={closeImageModal} className="close-modal-btn">×</button>
-                </div>
-                <div className="image-modal-body">
-                  {imageLoading && (
-                    <div className="loading-receipt">Loading receipt...</div>
-                  )}
-                  
-                  {!imageLoading && imageError && (
-                    <div className="error-message">
-                      <p>Error loading receipt: {imageError}</p>
-                      <p>Please try again later or contact support.</p>
-                    </div>
-                  )}
-                  
-                  {!imageLoading && !imageError && selectedImage && (
-                    <div className="image-container">
-                      <img 
-                        src={selectedImage || "/placeholder.svg"} 
-                        alt="Payment Receipt" 
-                        onError={() => {
-                          console.error('Image failed to load:', selectedImage);
-                          setImageError('The image could not be displayed. It may be corrupted or in an unsupported format.');
-                        }}
-                      />
-                      <div className="image-actions">
-                        <a 
-                          href={selectedImage} 
-                          download="receipt" 
-                          target="_blank" 
-                          rel="noopener noreferrer"
-                          className="download-btn"
-                        >
-                          Download Receipt
-                        </a>
-                      </div>
-                    </div>
-                  )}
-                </div>
+                {imageLoading ? (
+                  <div className="loading-spinner">Loading image...</div>
+                ) : imageError ? (
+                  <div className="error-message">{imageError}</div>
+                ) : (
+                  <img src={selectedImage || ''} alt="Receipt" />
+                )}
+                <button className="close-image-modal-btn" onClick={() => setShowImageModal(false)}>Close</button>
               </div>
             </div>
           )}
