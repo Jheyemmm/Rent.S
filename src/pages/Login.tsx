@@ -86,7 +86,7 @@ const Login: React.FC = () => {
           <h1>Log In</h1>
           {error && <p className="error">{error}</p>}
           <form onSubmit={handleSubmit}>
-            <div className="input">
+            <div className="input-login">
               <label>Username</label>
               <input
                 type="text"
@@ -106,7 +106,13 @@ const Login: React.FC = () => {
                 required
               />
             </div>
-            <p className="forgot-password">Forgot password?</p>
+            <p
+              className="forgot-password"
+              style={{ cursor: "pointer", color: "#007bff", textDecoration: "underline" }}
+              onClick={() => navigate("/forgot-password")}
+            >
+              Forgot password?
+            </p>
             <button type="submit" className="submit">
               Log In
             </button>

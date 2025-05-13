@@ -13,7 +13,8 @@ interface Tenant {
   firstName: string;
   lastName: string;
   moveIn: string;
-  unit: number;
+  unit: string;
+  unitID: number;
   balance: number;
   monthlyRent: number | string;
   lastPayment: string;
@@ -42,7 +43,7 @@ const ViewTenant: React.FC = () => {
     const { data, error } = await supabase
       .from("Tenants")
       .select(
-        "TenantID, TenantFirstName, TenantLastName, UnitID, MoveInDate, Balance, Units ( Price ), Payments (PaymentDate)"
+        "TenantID, TenantFirstName, TenantLastName, UnitID, MoveInDate, Balance, Units(Price, UnitNumber), Payments(PaymentDate)"
       )
       .is("MoveOutDate", null); // Only get active tenants (who haven't moved out)
 
@@ -63,7 +64,8 @@ const ViewTenant: React.FC = () => {
           firstName: tenant.TenantFirstName,
           lastName: tenant.TenantLastName,
           moveIn: new Date(tenant.MoveInDate).toLocaleDateString(),
-          unit: tenant.UnitID,
+          unit: tenant.Units?.UnitNumber ?? "Unknown", // Use UnitNumber instead of UnitID
+          unitID: tenant.UnitID, // Keep the UnitID for operations
           balance: tenant.Balance,
           monthlyRent: tenant.Units?.Price ?? "-",
           lastPayment:
@@ -114,7 +116,7 @@ const ViewTenant: React.FC = () => {
         .update({
           UnitStatus: "Available"
         })
-        .eq("UnitID", selectedTenant.unit);
+        .eq("UnitID", selectedTenant.unitID);
 
       if (unitError) throw unitError;
 

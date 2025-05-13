@@ -464,7 +464,7 @@ export const EditTenantModal: React.FC<EditTenantModalProps> = ({ onClose, tenan
               type="button"
               className="addtenant-submit-btn"
               onClick={handleSubmit}
-              disabled={isSubmitting || (formTouched && hasErrors)}
+              disabled={isSubmitting}
             >
               {isSubmitting ? 'Updating...' : 'Update'}
             </button>

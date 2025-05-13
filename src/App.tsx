@@ -17,6 +17,8 @@ import PaymentHistory from "./mainpage/admin/payment-history"; // Added payment 
 import AdminSettings from "./mainpage/admin/admin-settings";
 import ProtectedRoute from "./components/ProtectedRoute";
 import Unauthorized from "./pages/unauthorized"; 
+import ForgotPassword from "./pages/forgotpassword";
+import ResetPassword from "./pages/resetpassword";
 
 const App: React.FC = () => {
   return (
@@ -25,6 +27,8 @@ const App: React.FC = () => {
         <Route path="/" element={<Login />} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
+        <Route path="/reset-password" element={<ResetPassword />} />
+        <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/unauthorized" element={<Unauthorized />} />
         
         <Route element={<ProtectedRoute allowedRoles={['Admin']} />}>

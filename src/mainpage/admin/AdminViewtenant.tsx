@@ -39,43 +39,71 @@ const AdminViewTenant: React.FC = () => {
 
   const fetchTenants = async () => {
     setLoading(true);
-    const { data, error } = await supabase
-      .from("Tenants")
-      .select(
-        "TenantID, TenantFirstName, TenantLastName, UnitID, MoveInDate, Balance, Units ( Price ), Payments (PaymentDate)"
-      )
-      .is("MoveOutDate", null);
-
-    if (error) {
-      console.error("Error fetching tenants:", error.message);
-      setError("Failed to load tenants.");
-    } else {
-      const formattedTenants = data.map((tenant: any) => {
-        const sortedPayments = tenant.Payments?.sort(
-          (a: any, b: any) =>
-            new Date(b.PaymentDate).getTime() - new Date(a.PaymentDate).getTime()
-        );
-        const lastPayment = sortedPayments?.[0]?.PaymentDate || "-";
-
-        return {
-          tenantID: tenant.TenantID,
-          firstName: tenant.TenantFirstName,
-          lastName: tenant.TenantLastName,
-          moveIn: new Date(tenant.MoveInDate).toLocaleDateString(),
-          unit: tenant.UnitID,
-          balance: tenant.Balance,
-          monthlyRent: tenant.Units?.Price ?? "-",
-          lastPayment:
-            lastPayment !== "-"
-              ? new Date(lastPayment).toLocaleDateString()
-              : "-",
-        };
+    try {
+      // First, get all the units for a lookup
+      const { data: unitData, error: unitError } = await supabase
+        .from("Units")
+        .select("UnitID, UnitNumber, Price");
+        
+      if (unitError) {
+        console.error("Error fetching units:", unitError);
+        setError("Failed to load units.");
+        setLoading(false);
+        return;
+      }
+      
+      // Create a lookup object for quick unit reference
+      const unitLookup: Record<number, any> = {};
+      unitData.forEach((unit: any) => {
+        unitLookup[unit.UnitID] = unit;
       });
+      
+      // Now get the active tenants
+      const { data, error } = await supabase
+        .from("Tenants")
+        .select(
+          "TenantID, TenantFirstName, TenantLastName, UnitID, MoveInDate, Balance, Payments(PaymentDate)"
+        )
+        .is("MoveOutDate", null);
 
-      setTenants(formattedTenants);
+      if (error) {
+        console.error("Error fetching tenants:", error.message);
+        setError("Failed to load tenants.");
+      } else {
+        const formattedTenants = data.map((tenant: any) => {
+          const sortedPayments = tenant.Payments?.sort(
+            (a: any, b: any) =>
+              new Date(b.PaymentDate).getTime() - new Date(a.PaymentDate).getTime()
+          );
+          const lastPayment = sortedPayments?.[0]?.PaymentDate || "-";
+          
+          // Get the unit details from our lookup
+          const unit = unitLookup[tenant.UnitID] || { UnitNumber: "Unknown", Price: 0 };
+
+          return {
+            tenantID: tenant.TenantID,
+            firstName: tenant.TenantFirstName,
+            lastName: tenant.TenantLastName,
+            moveIn: new Date(tenant.MoveInDate).toLocaleDateString(),
+            unit: unit.UnitNumber, // Use the unit number from the lookup
+            unitID: tenant.UnitID, // Keep the UnitID for edit operations
+            balance: tenant.Balance,
+            monthlyRent: unit.Price,
+            lastPayment:
+              lastPayment !== "-"
+                ? new Date(lastPayment).toLocaleDateString()
+                : "-",
+          };
+        });
+
+        setTenants(formattedTenants);
+      }
+    } catch (err) {
+      console.error("Unexpected error:", err);
+      setError("An unexpected error occurred.");
+    } finally {
+      setLoading(false);
     }
-
-    setLoading(false);
   };
 
   useEffect(() => {

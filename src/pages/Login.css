@@ -136,8 +136,10 @@ body, html {
 }
 
 .signup span {
-  text-decoration: none;
-  transition: text-decoration 0.3s ease;
+  color: #28a86c;
+  cursor: pointer;
+  text-decoration: underline;
+  font-size: 0.8rem;   /* Added to make text smaller */
 }
 
 .signup span:hover {

@@ -1,56 +1,51 @@
-
-
 /* Main container */
 .register-container {
   display: flex;
-  align-items: stretch; /* Changed from center to stretch for full height */
+  width: 100vw;
+  height: 100vh;
+  align-items: stretch;
   justify-content: center;
-  width: 100%;
-  min-height: 100vh;
   font-family: Arial, sans-serif;
   background-color: #E0F8EE;
-  padding: 1rem;
+  padding: 0; /* Removed padding to maximize space */
 }
 
-/* Form container */
 .register-form-container {
-  width: 50%;
+  flex: 1;
+  background: #EAF7F0;
   display: flex;
-  justify-content: center;
   align-items: center;
-  background-color: #ffffff;
-  border-top-left-radius: 12px;
-  border-bottom-left-radius: 12px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  justify-content: center;
+  border-radius: 0;
+  padding: 1.5rem; /* Added padding inside the container */
 }
 
 .register-form-inner {
   width: 100%;
-  max-width: 400px;
-  padding: 1rem;
+  max-width: 500px; /* Increased from 400px to 500px */
+  padding: 30px; /* Increased padding for more internal space */
+  background: #fff;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
   display: flex;
   flex-direction: column;
   justify-content: center;
 }
 
-/* Logo container */
+/* Logo container - RIGHT SIDE */
 .register-logo-container {
-  width: 50%;
-  background-color: #E9F7F1;
+  flex: 1;
+  background: #EAF7F0;
   display: flex;
-  flex-direction: column;
-  justify-content: center;
   align-items: center;
-  border-top-right-radius: 12px;
-  border-bottom-right-radius: 12px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  justify-content: center;
 }
 
 .register-logo {
-  width: 60%;
-  max-width: 200px;
-  height: auto;
-  object-fit: contain;
+  margin-left: 20px; /* Changed from margin-right to margin-left for better positioning */
+  width: 80%;
+  max-width: 450px; /* Increased from 400px to 450px */
 }
 
 /* Form styles */

@@ -5,8 +5,12 @@ import { useNavigate } from "react-router-dom";
 import loginlogo from "../assets/icons/LoginLogo.png";
 import Login from "./Login";
 
+// Add this to your props
+interface RegisterProps {
+  onLoginClick?: () => void;
+}
 
-const Register: React.FC = () => {
+const Register: React.FC<RegisterProps> = ({ onLoginClick }) => {
   const [formData, setFormData] = useState({
     firstName: "",
     lastName: "",
@@ -85,6 +89,15 @@ const Register: React.FC = () => {
     } catch (err: any) {
       console.error(err);
       setError("Something went wrong. Please try again.");
+    }
+  };
+
+  // Add this function:
+  const handleLoginClick = () => {
+    if (onLoginClick) {
+      onLoginClick();
+    } else {
+      navigate("/login");
     }
   };
 
@@ -178,7 +191,7 @@ const Register: React.FC = () => {
             <div className="register-login-link">
   Already have an account?{" "}
   <span 
-    onClick={() => navigate("/login")} 
+    onClick={handleLoginClick}
     className="register-login-text"
   >
     Log in

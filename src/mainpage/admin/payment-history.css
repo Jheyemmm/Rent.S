@@ -83,7 +83,7 @@
     padding: 8px 16px;
     padding-right: 40px;
     border: 1px solid #ccc;
-    border-radius: 20px;
+    border-radius: 4px;
     font-size: 14px;
   }
   
@@ -125,7 +125,7 @@
   }
   
   td {
-    padding: 14px;
+    padding: 10px;
     font-size: 14px;
     border-bottom: 1px solid #f0f0f0;
   }
