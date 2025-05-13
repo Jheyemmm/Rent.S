@@ -210,6 +210,93 @@ const AddPaymentModal: React.FC<AddPaymentModalProps> = ({ onClose, onSubmit }) 
     }
   }
 
+  const checkAndResetTenantBalance = async (tenantID: number, unitPrice: number) => {
+    try {
+      // Get tenant's move-in date and current balance
+      const { data: tenant, error: tenantError } = await supabase
+        .from("Tenants")
+        .select("MoveInDate, Balance")
+        .eq("TenantID", tenantID)
+        .single()
+
+      if (tenantError) {
+        console.error("Error fetching tenant data:", tenantError)
+        return false
+      }
+
+      const moveInDate = new Date(tenant.MoveInDate)
+      const today = new Date()
+      
+      // Get the billing day from the move-in date
+      const billingDay = moveInDate.getDate()
+      
+      // Find the most recent billing date that has passed
+      let lastBillingDate = new Date(today.getFullYear(), today.getMonth(), billingDay)
+      
+      // If the billing date hasn't occurred yet this month, use previous month's date
+      if (today.getDate() < billingDay) {
+        lastBillingDate.setMonth(lastBillingDate.getMonth() - 1)
+      }
+      
+      // Find most recent payment to estimate when rent was last added
+      const { data: recentPayments, error: paymentError } = await supabase
+        .from("Payments")
+        .select("PaymentDate")
+        .eq("TenantID", tenantID)
+        .order("PaymentDate", { ascending: false })
+        .limit(10)
+      
+      if (paymentError) {
+        console.error("Error fetching payments:", paymentError)
+      }
+      
+      // Check if we need to add rent
+      let shouldAddRent = false
+      
+      if (recentPayments && recentPayments.length > 0) {
+        // Get the last payment date
+        const lastPaymentDate = new Date(recentPayments[0].PaymentDate)
+        
+        // Find the billing date for the month of the last payment
+        const lastPaymentBillingDate = new Date(
+          lastPaymentDate.getFullYear(),
+          lastPaymentDate.getMonth(),
+          billingDay
+        )
+        
+        // If last payment was before the most recent billing date,
+        // we need to add rent to the balance
+        shouldAddRent = lastBillingDate > lastPaymentBillingDate
+      } else {
+        // If no payment history, check if it's been at least one month since move-in
+        shouldAddRent = today >= new Date(moveInDate.getFullYear(), moveInDate.getMonth() + 1, moveInDate.getDate())
+      }
+      
+      if (shouldAddRent) {
+        // Add one month's rent to the balance
+        const newBalance = (tenant.Balance || 0) + unitPrice
+        
+        const { error: updateError } = await supabase
+          .from("Tenants")
+          .update({ Balance: newBalance })
+          .eq("TenantID", tenantID)
+        
+        if (updateError) {
+          console.error("Error updating tenant balance:", updateError)
+          return false
+        }
+        
+        console.log(`Added monthly rent of ${unitPrice} to tenant ${tenantID}, new balance: ${newBalance}`)
+        return true
+      }
+      
+      return false // No rent added
+    } catch (err) {
+      console.error("Error in checking/resetting balance:", err)
+      return false
+    }
+  }
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
 
@@ -267,6 +354,7 @@ const AddPaymentModal: React.FC<AddPaymentModalProps> = ({ onClose, onSubmit }) 
       let proofUrl = ""
 
       try {
+        // File upload logic...
         // Get file extension and create a unique filename
         const fileExt = proofFile.name.split(".").pop()
         const fileName = `${Date.now()}-${Math.random().toString(36).substring(2, 15)}.${fileExt}`
@@ -276,7 +364,7 @@ const AddPaymentModal: React.FC<AddPaymentModalProps> = ({ onClose, onSubmit }) 
 
         // Upload the proof file to the correct bucket
         const { data: uploadData, error: uploadError } = await supabase.storage
-          .from("proof-of-payment") // Using the correct bucket name
+          .from("proof-of-payment")
           .upload(filePath, proofFile, {
             cacheControl: "3600",
             upsert: false,
@@ -291,11 +379,10 @@ const AddPaymentModal: React.FC<AddPaymentModalProps> = ({ onClose, onSubmit }) 
 
         // Get the public URL from the correct bucket
         const { data } = supabase.storage
-          .from("proof-of-payment") // Using the correct bucket name
+          .from("proof-of-payment")
           .getPublicUrl(filePath)
 
         proofUrl = data.publicUrl
-        console.log("File uploaded successfully. Public URL:", proofUrl)
       } catch (uploadErr) {
         console.error("File upload error:", uploadErr)
         setError("Error during file upload. Please try again.")
@@ -310,13 +397,49 @@ const AddPaymentModal: React.FC<AddPaymentModalProps> = ({ onClose, onSubmit }) 
         PaymentAmount: parsedAmount,
         PaymentDate: paymentDate,
         PaymentProof: proofUrl,
-        UserID: currentUserID, // Use the fetched UserID from the authenticated user
+        UserID: currentUserID,
       }
 
       console.log("Sending payment data:", paymentData)
 
+      // Check and possibly reset the tenant's balance if it's a new month
+      await checkAndResetTenantBalance(unit.Tenants.TenantID, unit.Price)
+
+      // Get current tenant balance
+      const { data: tenantData, error: tenantError } = await supabase
+        .from("Tenants")
+        .select("Balance")
+        .eq("TenantID", unit.Tenants.TenantID)
+        .single()
+
+      if (tenantError) {
+        console.error("Error fetching tenant balance:", tenantError)
+        setError("Failed to retrieve tenant balance information")
+        setIsSubmitting(false)
+        return
+      }
+
+      // Calculate new balance
+      const currentBalance = tenantData.Balance || 0
+      const newBalance = Math.max(0, currentBalance - parsedAmount) // Ensure balance doesn't go negative
+
+      // Update tenant balance
+      const { error: balanceError } = await supabase
+        .from("Tenants")
+        .update({ Balance: newBalance })
+        .eq("TenantID", unit.Tenants.TenantID)
+
+      if (balanceError) {
+        console.error("Error updating tenant balance:", balanceError)
+        setError("Failed to update tenant balance")
+        setIsSubmitting(false)
+        return
+      }
+
       // Insert payment record into the database
-      const { error: insertError } = await supabase.from("Payments").insert([paymentData])
+      const { error: insertError } = await supabase
+        .from("Payments")
+        .insert([paymentData])
 
       if (insertError) {
         console.error("Insert error:", insertError)
@@ -325,6 +448,7 @@ const AddPaymentModal: React.FC<AddPaymentModalProps> = ({ onClose, onSubmit }) 
         return
       }
 
+      // Rest of your code for showing receipt and success...
       // Prepare receipt data and show receipt
       const paymentSuccessData = {
         ...paymentData,

@@ -6,6 +6,7 @@ import AddPaymentModal from '../../components/addpayment';
 import EditPaymentModal from '../../components/edit-payment';
 import SuccessModal from '../../components/paymentsuccess';
 import Receipt from "../../components/Receipt";
+import PaymentUpdateSuccessDialog from '../../components/paymenteditsuccess';
 import './AdminViewPayment.css';
 import supabase from '../../supabaseClient';
 
@@ -50,6 +51,7 @@ const AdminPayments: React.FC = () => {
   const [showSuccessModal, setShowSuccessModal] = useState(false);
   const [showReceipt, setShowReceipt] = useState(false);
   const [receiptData, setReceiptData] = useState<ReceiptData | null>(null);
+  const [showEditSuccessModal, setShowEditSuccessModal] = useState(false);
 
   useEffect(() => {
     fetchTransactions();
@@ -180,6 +182,8 @@ const AdminPayments: React.FC = () => {
       await fetchTransactions();
       setShowEditModal(false);
       setSelectedTransaction(null);
+      // Show the edit success modal
+      setShowEditSuccessModal(true);
     } catch (err) {
       console.error('Error refreshing transactions after edit:', err);
     }
@@ -379,6 +383,14 @@ const AdminPayments: React.FC = () => {
                 onSubmit={handleEditPayment}
               />
             )}
+
+          {showEditSuccessModal && (
+            <PaymentUpdateSuccessDialog
+              title="Payment Updated"
+              message="The payment has been successfully updated."
+              onClose={() => setShowEditSuccessModal(false)}
+            />
+          )}
 
           {showImageModal && (
             <div className="image-modal-overlay" onClick={closeImageModal}>

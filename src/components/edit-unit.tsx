@@ -16,7 +16,7 @@ interface EditUnitProps {
 }
 
 const EditUnit: React.FC<EditUnitProps> = ({ unit, closeForm, refreshUnits, onSuccess }) => {
-  const [unitName, setUnitName] = useState(unit.number);
+  const [unitName, setUnitName] = useState(String(unit.number));
   const [unitPrice, setUnitPrice] = useState(unit.price.toString());
   const [unitDetails, setUnitDetails] = useState(unit.details);
   const [unitStatus, setUnitStatus] = useState(unit.status || 'Available');
@@ -31,8 +31,9 @@ const EditUnit: React.FC<EditUnitProps> = ({ unit, closeForm, refreshUnits, onSu
     setUnitStatus(e.target.value);
   };
 
-  const validateUnitNumber = (value: string) => {
-    if (!/^\d+$/.test(value.trim())) {
+  const validateUnitNumber = (value: string | number) => {
+    const stringValue = String(value);
+    if (!/^\d+$/.test(stringValue.trim())) {
       setValidationErrors(prev => ({...prev, unitNumber: "Unit number must contain only digits"}));
       return false;
     }

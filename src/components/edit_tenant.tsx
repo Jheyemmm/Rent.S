@@ -30,7 +30,7 @@ export const EditTenantModal: React.FC<EditTenantModalProps> = ({ onClose, tenan
   const [lastName, setLastName] = useState(tenantData ? tenantData.lastName : '');
   const [phone, setPhone] = useState('');
   const [email, setEmail] = useState('');
-  const [unitID, setUnitID] = useState(tenantData ? tenantData.unit.toString() : '');
+  const [unitID, setUnitID] = useState<number | null>(tenantData ? tenantData.unit : null);
   const [moveInDate, setMoveInDate] = useState('');
   const [balance, setBalance] = useState(tenantData ? tenantData.balance.toString() : '');
   const [units, setUnits] = useState<{ UnitID: number; UnitNumber: string; Price: number; UnitStatus: string }[]>([]);
@@ -66,13 +66,14 @@ export const EditTenantModal: React.FC<EditTenantModalProps> = ({ onClose, tenan
       if (tenantData && tenantData.tenantID) {
         const { data, error } = await supabase
           .from('Tenants')
-          .select('TenantFirstName, TenantLastName, ContactNumber, TenantEmail, MoveInDate')
+          .select('TenantFirstName, TenantLastName, ContactNumber, TenantEmail, MoveInDate, UnitID')
           .eq('TenantID', tenantData.tenantID)
           .single();
         
         if (!error && data) {
           setPhone(data.ContactNumber || '');
           setEmail(data.TenantEmail || '');
+          setUnitID(data.UnitID); // Set the UnitID from database
           // Format date for input element
           if (data.MoveInDate) {
             const dateObj = new Date(data.MoveInDate);
@@ -110,9 +111,10 @@ export const EditTenantModal: React.FC<EditTenantModalProps> = ({ onClose, tenan
       errors.phone = "Please enter a valid phone number";
       isValid = false;
     }
-    
-    // Email validation - optional but validated if provided
-    if (email && !/\S+@\S+\.\S+/.test(email)) {
+    if(!email.trim()) {
+      errors.email = "Email is required";
+      isValid = false;
+    } else if (email && !/\S+@\S+\.\S+/.test(email)) {
       errors.email = "Please enter a valid email address";
       isValid = false;
     }
@@ -182,13 +184,10 @@ export const EditTenantModal: React.FC<EditTenantModalProps> = ({ onClose, tenan
 
   const handleUnitChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     if (!formTouched) touchForm();
-    
-    const selectedUnitID = parseInt(e.target.value);
+    const selectedUnitID = parseInt(e.target.value, 10);
     const selectedUnit = units.find(unit => unit.UnitID === selectedUnitID);
-    setUnitID(e.target.value);
+    setUnitID(isNaN(selectedUnitID) ? null : selectedUnitID);
     setPrice(selectedUnit?.Price ?? null);
-    
-    // Clear unit validation error when user selects a unit
     setValidationErrors(prev => ({ ...prev, unitID: undefined }));
   };
   
@@ -230,19 +229,26 @@ export const EditTenantModal: React.FC<EditTenantModalProps> = ({ onClose, tenan
         return;
       }
 
-      // Update tenant information
-      const { error: updateError } = await supabase
-      .from('Tenants')
-      .update({
+      // Create update payload
+      const updatePayload: any = {
         TenantFirstName: firstName.trim(),
         TenantLastName: lastName.trim(),
         ContactNumber: phone.trim(),
         TenantEmail: email.trim(),
-        UnitID: parseInt(unitID),
         MoveInDate: moveInDate,
         Balance: balance,
-      })
-      .eq('TenantID', tenantID);
+      };
+
+      // Only include UnitID if it's not null
+      if (unitID !== null) {
+        updatePayload.UnitID = unitID;
+      }
+
+      // Update tenant information
+      const { error: updateError } = await supabase
+        .from('Tenants')
+        .update(updatePayload)
+        .eq('TenantID', tenantID);
 
       if (updateError) {
         setError(updateError.message);
@@ -251,7 +257,7 @@ export const EditTenantModal: React.FC<EditTenantModalProps> = ({ onClose, tenan
       }
   
       // Update unit status if unit has changed
-      if (tenantData && tenantData.unit !== parseInt(unitID)) {
+      if (tenantData && tenantData.unit !== unitID) {
         // Set previous unit to Available
         const { error: prevUnitError } = await supabase
           .from('Units')
@@ -268,7 +274,7 @@ export const EditTenantModal: React.FC<EditTenantModalProps> = ({ onClose, tenan
         const { error: newUnitError } = await supabase
           .from('Units')
           .update({ UnitStatus: 'Occupied' })
-          .eq('UnitID', parseInt(unitID));
+          .eq('UnitID', unitID);
           
         if (newUnitError) {
           setError('Tenant updated, but failed to update new unit status.');
@@ -292,8 +298,10 @@ export const EditTenantModal: React.FC<EditTenantModalProps> = ({ onClose, tenan
     }
   };
 
-  // Check if there are any errors that would prevent submission
+  // Check if there are any errors that would prevent submission - used for form validation
   const hasErrors = Object.keys(validationErrors).length > 0 || balanceError !== null;
+  // Disable submit button if there are errors
+  const isSubmitDisabled = isSubmitting || (formTouched && hasErrors);
 
   return (
     <div className="addtenant-modal-overlay" onClick={onClose}>
@@ -381,7 +389,7 @@ export const EditTenantModal: React.FC<EditTenantModalProps> = ({ onClose, tenan
               <div className="addtenant-form-group">
                 <label>Unit number <span className="required-field">*</span></label>
                 <select
-                  value={unitID}
+                  value={unitID ?? ''}
                   onChange={handleUnitChange}
                   className={`addtenant-form-input ${validationErrors.unitID ? 'error-input' : ''}`}
                   required
@@ -448,12 +456,11 @@ export const EditTenantModal: React.FC<EditTenantModalProps> = ({ onClose, tenan
                 setLastName('');
                 setPhone('');
                 setEmail('');
-                setUnitID('');
+                setUnitID(null); // <-- fix here
                 setPrice(null);
                 setMoveInDate('');
                 setBalance('');
                 setValidationErrors({});
-                setBalanceError(null);
               }}
               disabled={isSubmitting}
             >

@@ -67,15 +67,69 @@ const EditPaymentModal: React.FC<EditPaymentModalProps> = ({ transaction, onClos
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
 
-    // Validate amount before submitting
-    if (!validateAmount(amount)) {
-      return
-    }
-
+    if (isSubmitting) return
     setIsSubmitting(true)
     setError(null)
 
     try {
+      // Validation...
+
+      const parsedAmount = parseFloat(amount)
+      if (isNaN(parsedAmount) || parsedAmount <= 0) {
+        setAmountError("Please enter a valid payment amount greater than zero")
+        setIsSubmitting(false)
+        return
+      }
+
+      // Get the original payment amount for comparison
+      const { data: originalPayment, error: paymentError } = await supabase
+        .from("Payments")
+        .select("PaymentAmount, TenantID")
+        .eq("PaymentID", transaction.id)
+        .single()
+
+      if (paymentError) {
+        setError("Could not retrieve original payment information")
+        setIsSubmitting(false)
+        return
+      }
+
+      // Calculate the difference in payment amounts
+      const amountDifference = parsedAmount - originalPayment.PaymentAmount
+
+      // If there's a difference, update the tenant's balance
+      if (amountDifference !== 0) {
+        // Get current tenant balance
+        const { data: tenantData, error: tenantError } = await supabase
+          .from("Tenants")
+          .select("Balance")
+          .eq("TenantID", originalPayment.TenantID)
+          .single()
+
+        if (tenantError) {
+          setError("Could not retrieve tenant balance information")
+          setIsSubmitting(false)
+          return
+        }
+
+        const currentBalance = tenantData.Balance || 0
+
+        // If amount increased, reduce the balance; if decreased, increase the balance
+        const newBalance = Math.max(0, currentBalance - amountDifference) // Ensure balance doesn't go negative
+
+        // Update tenant balance
+        const { error: balanceError } = await supabase
+          .from("Tenants")
+          .update({ Balance: newBalance })
+          .eq("TenantID", originalPayment.TenantID)
+
+        if (balanceError) {
+          setError("Failed to update tenant balance")
+          setIsSubmitting(false)
+          return
+        }
+      }
+
       let updatedProofUrl = transaction.receiptFile
 
       if (proofFile) {
@@ -110,8 +164,8 @@ const EditPaymentModal: React.FC<EditPaymentModalProps> = ({ transaction, onClos
       onSubmit()
       onClose()
     } catch (err: any) {
-      console.error("Error updating payment:", err)
-      setError(err.message || "Something went wrong while updating the payment.")
+      console.error("Error in payment update:", err)
+      setError("An unexpected error occurred.")
     } finally {
       setIsSubmitting(false)
     }

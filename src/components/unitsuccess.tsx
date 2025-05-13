@@ -13,7 +13,7 @@ const SuccessDialog: React.FC<SuccessDialogProps> = ({ onClose }) => {
         <div className="checkmark-circle">
           <div className="checkmark">✔</div>
         </div>
-        <h2 className="success-title">Unit Added Successfully</h2>
+        <h2 className="success-title">Unit updated successfully</h2>
         <p className="success-message">The unit has been added to the system.</p>
         <button className="close-button" onClick={onClose}>Close</button>
       </div>
