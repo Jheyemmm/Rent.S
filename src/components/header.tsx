@@ -2,7 +2,6 @@ import * as React from 'react';
 import { useEffect, useState, useRef } from 'react';
 import MenuComponent from './admin_menu';
 import './header.css';
-import notification from '../assets/icons/bell.png';
 import userIcon from '../assets/icons/User.png';
 import supabase from '../supabaseClient';
 
@@ -70,7 +69,6 @@ const AdminHeader: React.FC = () => {
       <div className="admin-header">
         <div className="adminheader-container">
           <div className="adminheader-right">
-            <img src={notification} alt="Notification" className="icon-bell" />
             <div className="user-info">
               {loading ? (
                 <span className="user-name">Loading...</span>

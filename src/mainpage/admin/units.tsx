@@ -76,7 +76,7 @@ const Units: React.FC = () => {
   };
 
   const handleDelete = async (unitID: number) => {
-    const confirmDelete = window.confirm('Are you sure you want to delete this unit?');
+    const confirmDelete = window.confirm('Are you sure you want to disable this unit?');
     if (!confirmDelete) return;
 
     const { error } = await supabase
@@ -85,8 +85,8 @@ const Units: React.FC = () => {
       .eq('UnitID', unitID);
 
     if (error) {
-      console.error('Error deleting unit:', error.message);
-      setError('Failed to delete unit.');
+      console.error('Error disabling unit:', error.message);
+      setError('Failed to disable unit.');
     } else {
       fetchUnits();
     }
@@ -170,7 +170,7 @@ const Units: React.FC = () => {
                           className="dropdown-option"
                           onClick={() => handleDelete(unit.unitID)}
                         >
-                          Delete
+                          Disable
                         </div>
                       </div>
                     </div>

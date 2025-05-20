@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import './edit_user.css';
 import supabase from '../supabaseClient';
-import UpdateSuccessDialog from './Editsuccess'; // Import the UpdateSuccessDialog component
+import UpdateSuccessDialog from './Editsuccess';
 
 interface User {
   id: string;
@@ -10,7 +10,7 @@ interface User {
   fullName: string;
   email: string;
   username: string;
-  password?: string;
+  // Removed password from interface
   role: string;
   roleId: number;
   isActive: boolean;
@@ -24,7 +24,7 @@ interface Role {
 interface EditUserProps {
   user: User;
   closeForm: () => void;
-  onUpdateSuccess: () => void; // Add this property
+  onUpdateSuccess: () => void;
 }
 
 const EditUser: React.FC<EditUserProps> = ({ user, closeForm }) => {
@@ -32,13 +32,13 @@ const EditUser: React.FC<EditUserProps> = ({ user, closeForm }) => {
   const [lastName, setLastName] = useState(user.lastName);
   const [email, setEmail] = useState(user.email);
   const [username, setUsername] = useState(user.username);
-  const [password, setPassword] = useState('');
+  // Removed password state
   const [roleId, setRoleId] = useState(user.roleId);
   const [isActive, setIsActive] = useState(user.isActive);
   const [roles, setRoles] = useState<Role[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [showSuccessDialog, setShowSuccessDialog] = useState(false); // State to control the success dialog
+  const [showSuccessDialog, setShowSuccessDialog] = useState(false);
 
   useEffect(() => {
     fetchRoles();
@@ -79,9 +79,7 @@ const EditUser: React.FC<EditUserProps> = ({ user, closeForm }) => {
         StatusActive: isActive
       };
       
-      if (password) {
-        updates.Password = password;
-      }
+      // Removed password update code
 
       const { error: updateError } = await supabase
         .from('Users')
@@ -93,11 +91,11 @@ const EditUser: React.FC<EditUserProps> = ({ user, closeForm }) => {
       }
 
       console.log('User updated successfully');
-      setShowSuccessDialog(true); // Show success dialog after successful update
+      setShowSuccessDialog(true);
       setTimeout(() => {
-        setShowSuccessDialog(false); // Close the dialog after a brief delay
-        closeForm(); // Close the form
-      }, 3000); // Show the dialog for 3 seconds
+        setShowSuccessDialog(false);
+        closeForm();
+      }, 3000);
     } catch (error: any) {
       console.error('Error updating user:', error.message);
       setError(`Failed to update user: ${error.message}`);
@@ -163,17 +161,7 @@ const EditUser: React.FC<EditUserProps> = ({ user, closeForm }) => {
             />
           </div>
 
-          <div className="form-group">
-            <label className="form-label">Password</label>
-            <input
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              className="form-input"
-              placeholder="Leave empty to keep current password"
-            />
-            <small className="input-note">Leave empty to keep current password</small>
-          </div>
+          {/* Removed password field */}
 
           <div className="form-group">
             <label className="form-label">User Role</label>
@@ -217,10 +205,10 @@ const EditUser: React.FC<EditUserProps> = ({ user, closeForm }) => {
 
       {showSuccessDialog && (
         <UpdateSuccessDialog
-        type='edit' // Specify the type of message
-        title='User Updated'
-        message='User details have been successfully updated.' // Custom message
-          onClose={() => setShowSuccessDialog(false)} // Close the dialog when the "Close" button is clicked
+          type='edit'
+          title='User Updated'
+          message='User details have been successfully updated.'
+          onClose={() => setShowSuccessDialog(false)}
         />
       )}
     </div>

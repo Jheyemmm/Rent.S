@@ -451,20 +451,10 @@ export const EditTenantModal: React.FC<EditTenantModalProps> = ({ onClose, tenan
             <button 
               type="button" 
               className="addtenant-clear-btn"
-              onClick={() =>{
-                setFirstName('');
-                setLastName('');
-                setPhone('');
-                setEmail('');
-                setUnitID(null); // <-- fix here
-                setPrice(null);
-                setMoveInDate('');
-                setBalance('');
-                setValidationErrors({});
-              }}
+              onClick={onClose}  // Changed from clearing fields to just closing the modal
               disabled={isSubmitting}
             >
-              Clear
+              Cancel  {/* Changed from "Clear" to "Cancel" */}
             </button>
 
             <button 
