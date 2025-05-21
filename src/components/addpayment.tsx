@@ -77,27 +77,45 @@ const AddPaymentModal: React.FC<AddPaymentModalProps> = ({ onClose, onSubmit }) 
 
   useEffect(() => {
     const fetchUnits = async () => {
-      const { data, error } = await supabase
+      // First query to get occupied units
+      const { data: unitData, error: unitError } = await supabase
         .from("Units")
-        .select(
-          "UnitID, UnitNumber, Price, UnitStatus, Tenants (TenantID, TenantFirstName, TenantLastName, MoveInDate)",
-        )
+        .select("UnitID, UnitNumber, Price, UnitStatus")
         .eq("UnitStatus", "Occupied")
 
-      if (error) {
-        console.error(error)
+      if (unitError) {
+        console.error(unitError)
         setError("Failed to fetch units.")
-      } else {
-        console.log("Fetched occupied units with tenants:", data)
-        setUnits(
-          data.map((unit: any) => ({
+        return
+      }
+
+      const unitsWithTenants = await Promise.all(
+        unitData.map(async (unit) => {
+          // Get current tenant by checking move-in but no move-out
+          const { data: tenantData, error: tenantError } = await supabase
+            .from("Tenants")
+            .select("TenantID, TenantFirstName, TenantLastName, MoveInDate, Balance")
+            .eq("UnitID", unit.UnitID)
+            .not("MoveInDate", "is", null)  // They must have moved in
+            .is("MoveOutDate", null)        // But not moved out
+            .single()  // We expect only one current tenant per unit
+
+          if (tenantError && tenantError.code !== 'PGRST116') {
+            // PGRST116 is the "no rows returned" error
+            console.error(`Error fetching tenant for unit ${unit.UnitNumber}:`, tenantError)
+          }
+
+          return {
             UnitID: unit.UnitID,
             UnitNumber: unit.UnitNumber,
-            Price: unit.Price || 0, // Ensure Price is never undefined
-            Tenants: Array.isArray(unit.Tenants) ? unit.Tenants[0] : (unit.Tenants ?? undefined),
-          })),
-        )
-      }
+            Price: unit.Price || 0,
+            Tenants: tenantData || undefined
+          }
+        })
+      )
+
+      console.log("Fetched occupied units with current tenants:", unitsWithTenants)
+      setUnits(unitsWithTenants)
     }
 
     fetchUnits()
@@ -254,26 +272,22 @@ const AddPaymentModal: React.FC<AddPaymentModalProps> = ({ onClose, onSubmit }) 
       let shouldAddRent = false
       
       if (recentPayments && recentPayments.length > 0) {
-        // Get the last payment date
+        
         const lastPaymentDate = new Date(recentPayments[0].PaymentDate)
         
-        // Find the billing date for the month of the last payment
         const lastPaymentBillingDate = new Date(
           lastPaymentDate.getFullYear(),
           lastPaymentDate.getMonth(),
           billingDay
         )
         
-        // If last payment was before the most recent billing date,
-        // we need to add rent to the balance
         shouldAddRent = lastBillingDate > lastPaymentBillingDate
       } else {
-        // If no payment history, check if it's been at least one month since move-in
+       
         shouldAddRent = today >= new Date(moveInDate.getFullYear(), moveInDate.getMonth() + 1, moveInDate.getDate())
       }
       
       if (shouldAddRent) {
-        // Add one month's rent to the balance
         const newBalance = (tenant.Balance || 0) + unitPrice
         
         const { error: updateError } = await supabase
@@ -290,7 +304,7 @@ const AddPaymentModal: React.FC<AddPaymentModalProps> = ({ onClose, onSubmit }) 
         return true
       }
       
-      return false // No rent added
+      return false 
     } catch (err) {
       console.error("Error in checking/resetting balance:", err)
       return false
@@ -303,15 +317,12 @@ const AddPaymentModal: React.FC<AddPaymentModalProps> = ({ onClose, onSubmit }) 
     if (isSubmitting) return
     setIsSubmitting(true)
     setError(null)
-
-    // Validate amount specifically before continuing
     if (!validateAmount(amount)) {
       setIsSubmitting(false)
       return
     }
 
     try {
-      // Existing validation for required fields
       if (!amount || !paymentDate || !selectedUnit) {
         setError("Please fill all required fields.")
         setIsSubmitting(false)
@@ -344,7 +355,6 @@ const AddPaymentModal: React.FC<AddPaymentModalProps> = ({ onClose, onSubmit }) 
         return
       }
 
-      // Add validation for negative numbers or zero
       if (parsedAmount <= 0) {
         setError("Payment amount must be greater than zero.")
         setIsSubmitting(false)
@@ -354,15 +364,12 @@ const AddPaymentModal: React.FC<AddPaymentModalProps> = ({ onClose, onSubmit }) 
       let proofUrl = ""
 
       try {
-        // File upload logic...
-        // Get file extension and create a unique filename
         const fileExt = proofFile.name.split(".").pop()
         const fileName = `${Date.now()}-${Math.random().toString(36).substring(2, 15)}.${fileExt}`
         const filePath = `proofs/${fileName}`
 
         console.log("Uploading file to bucket: proof-of-payment, path:", filePath)
 
-        // Upload the proof file to the correct bucket
         const { data: uploadData, error: uploadError } = await supabase.storage
           .from("proof-of-payment")
           .upload(filePath, proofFile, {
@@ -377,7 +384,6 @@ const AddPaymentModal: React.FC<AddPaymentModalProps> = ({ onClose, onSubmit }) 
           return
         }
 
-        // Get the public URL from the correct bucket
         const { data } = supabase.storage
           .from("proof-of-payment")
           .getPublicUrl(filePath)
@@ -390,7 +396,6 @@ const AddPaymentModal: React.FC<AddPaymentModalProps> = ({ onClose, onSubmit }) 
         return
       }
 
-      // Create payment data object matching the Payments table structure
       const paymentData = {
         TenantID: unit.Tenants.TenantID,
         UnitID: unit.UnitID,

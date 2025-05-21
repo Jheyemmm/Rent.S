@@ -98,9 +98,10 @@ const TenantArchive: React.FC = () => {
       (tenant) =>
         tenant.TenantFirstName.toLowerCase().includes(term) ||
         tenant.TenantLastName.toLowerCase().includes(term) ||
-        tenant.UnitNumber?.toLowerCase().includes(term) ||
-        tenant.MoveInDate.includes(term) ||
-        tenant.MoveOutDate?.includes(term)
+        (tenant.UnitNumber ? String(tenant.UnitNumber).toLowerCase() : "").includes(term) ||
+        (tenant.MoveInDate ? tenant.MoveInDate.toLowerCase() : "").includes(term) ||
+        (tenant.MoveOutDate ? tenant.MoveOutDate.toLowerCase() : "").includes(term) ||
+        String(tenant.Balance).includes(term)
     );
 
     setFilteredTenants(filtered);
